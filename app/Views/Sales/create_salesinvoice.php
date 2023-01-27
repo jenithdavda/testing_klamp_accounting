@@ -901,7 +901,7 @@
             }
         });
     }
-
+  
     function calculate() {
         divide_disc = 0;
         var qty = $('input[name="qty[]"]').map(function() {
@@ -1405,7 +1405,7 @@
                 pids_exp.push(pids[pt]);
             }
         }
-        console.log(pids_item);
+       // console.log(pids_item);
 
         $("#product").on('click', '.btnDelete', function() {
 
@@ -1466,6 +1466,7 @@
         $('#code').on('select2:select', function(e) {
             var suggestion = e.params.data;
             $('.product_error_new').html('');
+            console.log(pids_item);
             if (pids_item.includes(parseInt(suggestion.id)) == false) {
                 $('.product_error').html('');
 

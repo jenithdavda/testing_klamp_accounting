@@ -51,9 +51,12 @@ class Balancesheet extends BaseController
             $balancesheet  = balancesheet_detail($post['from'], $post['to']);
             $pl  = pl_tot_data_bl($post['from'], $post['to']);
 
-            $closing_stock = $this->tmodel->get_closing_stock($post['from'], $post['to']);
-            $closing_bal = $this->tmodel->get_closing_bal($post['from'], $post['to']);
-            $Opening_bal = Opening_bal('Opening Stock', $post['from'], $post['to']);
+            // $closing_stock = $this->tmodel->get_closing_stock($post['from'], $post['to']);
+            // $closing_bal = $this->tmodel->get_closing_bal($post['from'], $post['to']);
+            // $Opening_bal = Opening_bal('Opening Stock', $post['from'], $post['to']);
+            $Opening_bal = Opening_bal('Opening Stock');
+            $manualy_closing_bal = $this->tmodel->get_manualy_stock($post['from'],$post['to']);
+            $closing_data = $this->tmodel->get_closing_detail($post['from'],$post['to']);
 
             $sale_purchase = sale_purchase_itm_total($post['from'], $post['to']);
 
@@ -91,9 +94,9 @@ class Balancesheet extends BaseController
             $balancesheet  = balancesheet_detail($post['from'], $post['to']);
             $pl  = pl_tot_data_bl($post['from'], $post['to']);
 
-            $closing_stock = $this->tmodel->get_closing_stock($post['from'], $post['to']);
-            $closing_bal = $this->tmodel->get_closing_bal($post['from'], $post['to']);
-            $Opening_bal = Opening_bal('Opening Stock', $post['from'], $post['to']);
+            $Opening_bal = Opening_bal('Opening Stock');
+            $manualy_closing_bal = $this->tmodel->get_manualy_stock($post['from'],$post['to']);
+            $closing_data = $this->tmodel->get_closing_detail($post['from'],$post['to']);
 
             $sale_purchase = sale_purchase_itm_total($post['from'], $post['to']);
 
@@ -155,14 +158,14 @@ class Balancesheet extends BaseController
             $sale_purchase = sale_purchase_itm_total();
             $pl = pl_tot_data_bl();
 
-            $closing_stock = $this->model->get_closing_stock();
-            $closing_bal = $this->model->get_closing_bal();
             $Opening_bal = Opening_bal('Opening Stock');
+            $manualy_closing_bal = $this->tmodel->get_manualy_stock();
+            $closing_data = $this->tmodel->get_closing_detail();
         }
        // echo '<pre>';Print_r($fixedassets);exit;
-        $sundry_debtors = ((@$sale_purchase['sale_total_rate'] + @$sale_purchase['sale_Gray_total_rate'] + $sale_purchase['sale_Finish_total_rate']) - (@$sale_purchase['Saleret_total_rate'] + @$sale_purchase['Retsale_Gray_total_rate'] + @$sale_purchase['Retsale_Finish_total_rate'])) + (@$currentassets['Sundry Debtors']['total']);
-        $sundry_creditor = ((@$sale_purchase['pur_total_rate'] + @$sale_purchase['purchase_Gray_total_rate'] + $sale_purchase['purchase_Finish_total_rate']))  - (@$sale_purchase['Purret_total_rate'] + @$sale_purchase['Retpurchase_Gray_total_rate'] + @$sale_purchase['Retpurchase_Finish_total_rate']) + (@$current_lib['Sundry Creditors']['total']);
-        // echo '<pre>';print_r($currentassets);exit;
+       $sundry_debtors = ((@$sale_purchase['sale_total_rate']) - (@$sale_purchase['Saleret_total_rate'] )) + (@$currentassets['Sundry Debtors']['total']);
+       $sundry_creditor = ((@$sale_purchase['pur_total_rate'])  - (@$sale_purchase['Purret_total_rate'])) + (@$current_lib['Sundry Creditors']['total']);
+      // echo '<pre>';print_r($currentassets);exit;
 
         $init_total = 0;
 
@@ -523,11 +526,13 @@ class Balancesheet extends BaseController
     }
     public function get_current_assets_sub_grp(){
         
+        
         if(!session('cid')){
             return redirect()->to(url('company'));
         }
 
         $get = $this->request->getGet();
+        //echo '<pre>';Print_r($get);exit;
         
         $current_assets[$get['id']] = Current_Assets_data($get['id'],db_date($get['from']),db_date($get['to']));
         $current_assets[$get['id']]['name'] = $get['name'];
@@ -546,6 +551,8 @@ class Balancesheet extends BaseController
         
         $data['date']['from'] = $get['from'];
         $data['date']['to'] = $get['to'];
+        $data['ac_id'] = $get['id'];
+        $data['ac_name'] = $get['name'];
         
         return view('trading/assets/current_assets_sub_group_detail',$data);
 
@@ -966,6 +973,183 @@ class Balancesheet extends BaseController
         $data['title'] = "General Purchase Voucher Wise";
        
         return view('trading/assets/generalPurchase_voucher',$data);
+    }
+    public function Balancesheet_xls(){
+
+        if (!session('uid')) {
+            return redirect()->to(url('auth'));
+        } 
+        $post = $this->request->getGet();
+        if(!empty($post)){
+            $data = $this->model->balancesheet_xls_export_data($post);
+        }else{       
+            $post['from'] = session('financial_form'); 
+            $post['to'] = session('financial_to'); 
+            $data = $this->model->balancesheet_xls_export_data($post);   
+        }
+
+        return $this->response->setHeader('Contente-Disposition','attachment;filename=abc.xlsx')
+        ->setContentType('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+       
+    }
+    // sub group
+    public function get_capital_sub_grp(){
+        
+        if(!session('cid')){
+            return redirect()->to(url('company'));
+        }
+
+        $get = $this->request->getGet();
+        
+        $capital[$get['id']] = capital_data($get['id'],db_date($get['from']),db_date($get['to']));
+        $capital[$get['id']]['name'] = $get['name'];
+        $capital[$get['id']]['sub_categories'] = get_capital_sub_grp_data($get['id'],db_date($get['from']),db_date($get['to']));
+
+        $data['title'] =  "Capital Sub Group";
+    
+        $init_total = 0;
+        $capital_total = subGrp_total($capital,$init_total);
+
+        $data['bl']['capital'] = @$capital;
+
+        $data['bl']['capital_total'] = @$capital_total;
+        
+        $data['date']['from'] = $get['from'];
+        $data['date']['to'] = $get['to'];
+
+        return view('trading/liability/capital_sub_group_detail',$data);
+
+    }
+
+    public function get_loan_sub_grp(){
+        
+        if(!session('cid')){
+            return redirect()->to(url('company'));
+        }
+
+        $get = $this->request->getGet();
+        
+        $loan[$get['id']] = loans_data($get['id'],db_date($get['from']),db_date($get['to']));
+        $loan[$get['id']]['name'] = $get['name'];
+        
+        $loan[$get['id']]['sub_categories'] = get_loans_sub_grp_data($get['id'],db_date($get['from']),db_date($get['to']));
+
+        $data['title'] =  "Loan Sub Group";
+    
+        $init_total = 0;
+        $loan_total = subGrp_total($loan,$init_total);
+
+        $data['bl']['loan'] = @$loan;
+
+        $data['bl']['loan_total'] = @$loan_total;
+        
+        $data['date']['from'] = $get['from'];
+        $data['date']['to'] = $get['to'];
+        $data['ac_id'] = $get['id'];
+        $data['ac_name'] = $get['name'];
+        
+        return view('trading/liability/loan_sub_group_detail',$data);
+
+    }
+
+    public function get_fixed_assets_sub_grp(){
+        
+        if(!session('cid')){
+            return redirect()->to(url('company'));
+        }
+
+        $get = $this->request->getGet();
+        
+        $fixed_assets[$get['id']] = Fixed_Assets_data($get['id'],db_date($get['from']),db_date($get['to']));
+        $fixed_assets[$get['id']]['name'] = $get['name'];
+        
+        $fixed_assets[$get['id']]['sub_categories'] = get_FixedAssets_sub_grp_data($get['id'],db_date($get['from']),db_date($get['to']));
+
+        $data['title'] =  "Fixed Assets Sub Group";
+    
+        $init_total = 0;
+        $fixed_assets_total = subGrp_total($fixed_assets,$init_total);
+
+        $data['bl']['fixed_assets'] = @$fixed_assets;
+
+        $data['bl']['fixed_assets_total'] = @$fixed_assets_total;
+        
+        $data['date']['from'] = $get['from'];
+        $data['date']['to'] = $get['to'];
+       // echo '<pre>';print_r($data);exit;
+
+        
+        return view('trading/assets/fixed_assets_sub_group_detail',$data);
+
+    }  
+    
+    public function get_income_sub_grp(){
+        
+        if (!session('cid')) {
+            return redirect()->to(url('company'));
+        }
+
+        $get = $this->request->getGet();
+
+        $inc[$get['id']] = trading_income_data($get['id'],$get['from'],$get['to']);
+        
+        $inc[$get['id']]['name'] = $get['name'];
+        if($get['type'] == 'pl'){
+            $data['title'] =  "P & L Income Sub Group";
+            $inc[$get['id']]['sub_categories'] = get_PL_income_sub_grp_data($get['id'],$get['from'],$get['to']);
+        }else{
+            $data['title'] =  "Trading Income Sub Group";
+            $inc[$get['id']]['sub_categories'] = get_income_sub_grp_data($get['id'],$get['from'],$get['to']);
+        }
+        
+        $init_total = 0;
+        $inc_total = subGrp_total($inc,$init_total);
+
+        $data['trading']['inc'] = @$inc;
+
+        $data['trading']['inc_total'] = @$inc_total;
+        
+        $data['date']['from'] = $get['from'];
+        $data['date']['to'] = $get['to'];
+        $data['type'] = $get['type'];
+        
+        return view('trading/income/sub_group_detail',$data);
+
+    }
+
+    public function get_expence_sub_grp(){
+        
+        if(!session('cid')){
+            return redirect()->to(url('company'));
+        }
+
+        $get = $this->request->getGet();
+        
+        $inc[$get['id']] = pl_expense_data($get['id'],$get['from'],$get['to']);
+        $inc[$get['id']]['name'] = $get['name'];
+        
+        if($get['type'] == 'pl'){
+            $data['title'] =  "P & L Income Sub Group";
+            $inc[$get['id']]['sub_categories'] = get_PL_expense_sub_grp_data($get['id'],$get['from'],$get['to']);
+        }else{
+            $data['title'] =  "Trading Income Sub Group";
+            $inc[$get['id']]['sub_categories'] = get_expense_sub_grp_data($get['id'],$get['from'],$get['to']);
+        }
+        $init_total = 0;
+        $inc_total = subGrp_total($inc,$init_total);
+
+        $data['trading']['inc'] = @$inc;
+
+        $data['trading']['inc_total'] = @$inc_total;
+        
+        $data['date']['from'] = $get['from'];
+        $data['date']['to'] = $get['to'];
+        $data['type'] = $get['type'];
+
+        //$data['title'] =  "Trading Expence Sub Group";
+        
+        return view('trading/expence/sub_group_detail',$data);
+
     }
 }
 

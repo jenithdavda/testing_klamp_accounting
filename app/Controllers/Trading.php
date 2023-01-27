@@ -42,7 +42,7 @@ class Trading extends BaseController{
             $post['to'] = date_format($to,"Y-m-d");
 
             $sale_pur = sale_purchase_vouhcer($post['from'],$post['to']); 
-            
+              
             $exp[$gl_id['id']] = trading_expense_data($gl_id['id'],$post['from'],$post['to']);
             $exp[$gl_id['id']]['name'] = $gl_id['name'];
             $exp[$gl_id['id']]['sub_categories'] = get_expense_sub_grp_data($gl_id['id'],$post['from'],$post['to']);
@@ -53,14 +53,10 @@ class Trading extends BaseController{
             
             $init_total = 0;
 
-            // $closing_stock = $this->model->get_closing_stock($post['from'],$post['to']);
-            // $closing_bal = $this->model->get_closing_bal($post['from'],$post['to']);
             $Opening_bal = Opening_bal('Opening Stock');
             $manualy_closing_bal = $this->model->get_manualy_stock($post['from'],$post['to']);
             $closing_data = $this->model->get_closing_detail($post['from'],$post['to']);
          
-
-
         }else if($company_from != 0000-00-00 && $company_to != 0000-00-00){
 
             $from =date_create($company_from) ;                                         
@@ -70,6 +66,7 @@ class Trading extends BaseController{
             $post['to'] = date_format($to,"Y-m-d");
 
             $sale_pur = sale_purchase_vouhcer($post['from'],$post['to']);
+           
             
             $exp[$gl_id['id']] = trading_expense_data($gl_id['id'],$post['from'],$post['to']);
             $exp[$gl_id['id']]['name'] = $gl_id['name'];
@@ -81,15 +78,13 @@ class Trading extends BaseController{
             
             $init_total = 0;
 
-            // $closing_stock = $this->model->get_closing_stock($post['from'],$post['to']);
-            // $closing_bal = $this->model->get_closing_bal($post['from'],$post['to']);
             $Opening_bal = Opening_bal('Opening Stock');
             $manualy_closing_bal = $this->model->get_manualy_stock($post['from'],$post['to']);
             $closing_data = $this->model->get_closing_detail($post['from'],$post['to']);
 
         }else{
             $sale_pur = sale_purchase_vouhcer();
-
+           
             $exp[$gl_id['id']] = trading_expense_data($gl_id['id']);
             $exp[$gl_id['id']]['name'] = $gl_id['name'];
             $exp[$gl_id['id']]['sub_categories'] = get_expense_sub_grp_data($gl_id['id']);
@@ -98,22 +93,17 @@ class Trading extends BaseController{
             $inc[$gl_inc_id['id']]['name'] = $gl_inc_id['name'];
             $inc[$gl_inc_id['id']]['sub_categories'] = get_income_sub_grp_data($gl_inc_id['id']);
             
-            // $closing_stock = $this->model->get_closing_stock();   
-            // $closing_bal = $this->model->get_closing_bal();
             $Opening_bal = Opening_bal('Opening Stock');
             $manualy_closing_bal = $this->model->get_manualy_stock();
             $closing_data = $this->model->get_closing_detail();
           
         }
-        // exit;
         $exp_total = subGrp_total($exp,$init_total);
         $inc_total = subGrp_total($inc,$init_total);
         
         $data['trading'] = $sale_pur;
-        
-        
+        //change calculation closing_bal update 21-01-2023
         $data['trading']['opening_bal'] = $Opening_bal;
-        
         $data['trading']['closing_bal'] = @$closing_data['closing_bal']; 
         $data['trading']['closing_stock'] = @$closing_data['closing_stock'];
         $data['trading']['manualy_closing_bal'] = @$manualy_closing_bal;

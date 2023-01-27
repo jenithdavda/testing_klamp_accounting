@@ -119,7 +119,7 @@
                             </tr>
                             <?php
 
-                            $closing = $opening_balance;
+                            $closing = @$opening_balance;
                             $debit = 0;
                             $credit = 0;
                             $count = count($purchase);

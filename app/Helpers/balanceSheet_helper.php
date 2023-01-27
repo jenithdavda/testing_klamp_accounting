@@ -146,7 +146,7 @@ function balancesheet_detail($start_date = '', $end_date = '')
         $current_lib[$key]['total'] = (@$value['receipt_total'] - @$value['payment_total']) + (@$value['cr_total'] - @$value['dr_total']);
     }
 
-    $current_lib['Sundry Creditors']['total'] = (($sale_purchase['pur_total_rate'] + $sale_purchase['purchase_Gray_total_rate'] + $sale_purchase['purchase_Finish_total_rate'])) - ($sale_purchase['Purret_total_rate'] + $sale_purchase['Retpurchase_Gray_total_rate'] + $sale_purchase['Retpurchase_Finish_total_rate']) + (@$current_lib['Sundry Creditors']['total']);
+    $current_lib['Sundry Creditors']['total'] = (($sale_purchase['pur_total_rate']) - ($sale_purchase['Purret_total_rate'])) + (@$current_lib['Sundry Creditors']['total']);
 
     $bank_parti_fixAset = bank_parti_master($start_date, $end_date, $gl = "Fixed Assets");
     $jv_fixAset = jv_master($start_date, $end_date, $gl = "Fixed Assets");
@@ -283,7 +283,7 @@ function balancesheet_detail($start_date = '', $end_date = '')
         $current_asset[$key]['total'] = @$value['payment_total'] - @$value['receipt_total'] + @$value['dr_total'] - @$value['cr_total'];
     }
 
-    $current_asset['Sundry Debtors']['total'] = ((@$sale_purchase['sale_total_rate'] + $sale_purchase['sale_Gray_total_rate'] + $sale_purchase['sale_Finish_total_rate']) - (@$sale_purchase['Saleret_total_rate'] + $sale_purchase['Retsale_Gray_total_rate'] + $sale_purchase['Retsale_Finish_total_rate'])) + (@$current_asset['Sundry Debtors']['total']);
+    $current_asset['Sundry Debtors']['total'] = ((@$sale_purchase['sale_total_rate']) - (@$sale_purchase['Saleret_total_rate']) + (@$current_asset['Sundry Debtors']['total']));
 
     // Fixed Assets Final Array //
     $data = array();

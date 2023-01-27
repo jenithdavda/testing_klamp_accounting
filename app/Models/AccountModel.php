@@ -74,7 +74,6 @@ class AccountModel extends Model
             'city' => @$post['city'],
             'state' => @$post['state'], 
             'country' => @$post['country'],
-
             'ship_pin' => !empty($post['ship_pin']) ? $post['ship_pin']:'',
             'ship_city' => @$post['ship_city'] ? $post['ship_city'] : '',
             'ship_state' => @$post['ship_state'] ? $post['ship_state'] : '', 

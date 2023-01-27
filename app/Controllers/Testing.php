@@ -105,8 +105,6 @@ class Testing extends BaseController{
         $data['title']="Add Shortcut Key";
         return view('testing/add_shortcut_key',$data);
     }
-   
-
     // jv management grouping by party updated by 19-01-2023
     public function Invoice_list()
     {
@@ -162,6 +160,40 @@ class Testing extends BaseController{
         
 		return view('testing/party_invoice_list',$data);
         
+    }
+    public function tds_report()
+    {
+        if (!session('uid')) {
+            return redirect()->to(url('Auth'));
+        } 
+        $post = $this->request->getPost();
+        $data['tds'] = array();
+        if(!empty($post)){
+            $data['tds'] = $this->model->tds_report_data($post);
+        } 
+        $data['month'] = @$post['month'];
+        $data['year'] = @$post['year'];
+        $data['ac_id'] = @$post['account_id'];
+        $data['title']="Tds Report"; 
+        //echo '<pre>';Print_r($data);exit;
+        
+		return view('testing/tds_report_list',$data);
+    }
+    public function tds_xls_export(){
+
+        if (!session('uid')) {
+            return redirect()->to(url('auth'));
+        } 
+
+        $post = $this->request->getGet();
+        $data = array();
+        if(!empty($post)){
+            $data = $this->model->tds_report_excel_data($post);
+        }
+
+        return $this->response->setHeader('Contente-Disposition','attachment;filename=abc.xlsx')
+        ->setContentType('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+       
     }
     public function Getdata($method = '',$type='') {
         if (!session('uid')) {

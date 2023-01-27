@@ -121,7 +121,7 @@
                            // echo '<pre>';Print_r($sales);exit;
                             
                             
-                            foreach ($sales as $row) { 
+                            foreach ($purchase as $row) { 
                                 //echo '<pre>';Print_r($row);exit;
                                 $new += $row['taxable'];
                                 ?>
@@ -146,7 +146,7 @@
                                 <th><?= number_format($new , 2) ?></th>
 
 
-                                <th><?= number_format($total['sales_total'], 2) ?></th>
+                                <th><?= number_format($total['purchase_total'], 2) ?></th>
 
                             </tr>
                         <tfooter>

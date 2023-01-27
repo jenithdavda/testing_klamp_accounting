@@ -1298,15 +1298,19 @@ class TradingModel extends Model
  
          $init_total = 0;
  
-         $closing_stock = $this->get_closing_stock($post['from'], $post['to']);
-         $closing_bal = $this->get_closing_bal($post['from'], $post['to']);
          $Opening_bal = Opening_bal('Opening Stock');
+         $manualy_closing_bal = $this->get_manualy_stock($post['from'],$post['to']);
+         $closing_data = $this->get_closing_detail($post['from'],$post['to']);
+
+         $closing_bal = @$closing_data['closing_bal']; 
+         $closing_stock = @$closing_data['closing_stock'];
+         $manualy_closing_bal = @$manualy_closing_bal;
  
-         if (session('is_stock') == 1) {
-             $closing_stock = @$closing_bal ? @$closing_bal : @$Opening_bal;
-         } else {
-             $closing_stock  = $closing_bal;
-         }
+         if(session('is_stock') == 1 ){
+            $closing_bal = @$manualy_closing_bal;
+        }else{
+            $closing_bal  = @$closing_bal;
+        }
  
          $all_purchase = @$sale_pur['pur_total_rate'];
          $all_purchase_return = @$sale_pur['Purret_total_rate'];
@@ -1314,7 +1318,7 @@ class TradingModel extends Model
          $all_sale = @$sale_pur['sale_total_rate'];
          $all_sale_return = @$sale_pur['Saleret_total_rate'];
  
-         $income_total = (float)$all_sale - (float)$all_sale_return + @$closing_stock + @$sale_pur['inc_total'];
+         $income_total = (float)$all_sale - (float)$all_sale_return + @$closing_bal + @$sale_pur['inc_total'];
          $expens_total = @$sale_pur['opening_bal'] + (float)$all_purchase  - (float)$all_purchase_return + @$sale_pur['exp_total'];
  
          if (($expens_total -  $income_total) < 0) {

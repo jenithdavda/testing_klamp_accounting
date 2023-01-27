@@ -28,6 +28,7 @@
                                 <a class="nav-sub-link" href="<?=url('Master/glgrp')?>">General Ledger Group</a>
                             </li>
                         </ul>
+                    </li>
 
                     <li class="nav-item ">
                         <a class="nav-link with-sub" href="#"><i class="fe fe-box"></i><span
@@ -465,6 +466,11 @@
                 <ul class="nav-sub">
                     <li class="nav-sub-item ">
                         <a class="nav-sub-link" href="<?=url('Testing/shortcut_keys_list');?>">Shortcut Key List</a>
+                    </li>
+                </ul>
+                <ul class="nav-sub">
+                    <li class="nav-sub-item ">
+                        <a class="nav-sub-link" href="<?=url('Testing/tds_report');?>">Tds Report</a>
                     </li>
                 </ul>
             </li>

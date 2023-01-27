@@ -4,12 +4,17 @@ namespace App\Models;
 use CodeIgniter\Model;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use App\Models\TradingModel;
 
 class BalancesheetModel extends Model
 {
+    public function __construct() {
+        parent::__construct();
+        $this->tmodel = new TradingModel();
+       
+    }
     public function purchase_voucher_wise_data($get)
     {
-        // print_r($get);exit;
         $db = $this->db;
         $db->setDatabase(session('DataSource'));
         
@@ -73,8 +78,6 @@ class BalancesheetModel extends Model
             $builder->groupBy('pi.id');
             $query = $builder->get();
             $purchase_sgst = $query->getResultArray();
-
-           
             $purchase['purchase'] =  array_merge($purchase_invoice, $purchase_igst, $purchase_cgst, $purchase_sgst);
 
         } else if (!empty(@$get['from'])) {
@@ -133,7 +136,6 @@ class BalancesheetModel extends Model
             $builder->groupBy('pi.id');
             $query = $builder->get();
             $purchase_sgst = $query->getResultArray();
-
             $purchase['purchase'] =  array_merge($purchase_invoice, $purchase_igst, $purchase_cgst, $purchase_sgst);
 
         } else {
@@ -1738,6 +1740,407 @@ class BalancesheetModel extends Model
 
         // echo '<pre>';print_r($result);exit;
         return $result;     
+    }
+    public function balancesheet_xls_export_data($post)
+    {
+        $gmodel = new GeneralModel;
+
+        $gl_capital = $gmodel->get_data_table('gl_group', array('name' => 'Capital'), 'id,name');
+        $gl_loan = $gmodel->get_data_table('gl_group', array('name' => 'Loans'), 'id,name');
+        $gl_lib = $gmodel->get_data_table('gl_group', array('name' => 'Current Liabilities'), 'id,name');
+        $gl_fixedassets = $gmodel->get_data_table('gl_group', array('name' => 'Fixed Assets'), 'id,name');
+        $gl_currentassets = $gmodel->get_data_table('gl_group', array('name' => 'Current Assets'), 'id,name');
+        $gl_otherassets = $gmodel->get_data_table('gl_group', array('name' => 'Other Assets'), 'id,name');
+
+        $balancesheet  = balancesheet_detail($post['from'], $post['to']);
+        $pl  = pl_tot_data($post['from'], $post['to']);
+
+        $Opening_bal = Opening_bal('Opening Stock');
+        $manualy_closing_bal =$this->tmodel->get_manualy_stock($post['from'],$post['to']);
+        $closing_data = $this->tmodel->get_closing_detail($post['from'],$post['to']);
+
+        $sale_purchase = sale_purchase_itm_total($post['from'], $post['to']);
+
+        $capital[$gl_capital['id']] = capital_data($gl_capital['id'], $post['from'], $post['to']);
+        $capital[$gl_capital['id']]['name'] = $gl_capital['name'];
+        $capital[$gl_capital['id']]['sub_categories'] = get_capital_sub_grp_data($gl_capital['id'], $post['from'], $post['to']);
+
+        $loan[$gl_loan['id']] = loans_data($gl_loan['id'], $post['from'], $post['to']);
+        $loan[$gl_loan['id']]['name'] = $gl_loan['name'];
+        $loan[$gl_loan['id']]['sub_categories'] = get_loans_sub_grp_data($gl_loan['id'], $post['from'], $post['to']);
+
+        $current_lib[$gl_lib['id']] = Currlib_data($gl_lib['id'], $post['from'], $post['to']);
+        $current_lib[$gl_lib['id']]['name'] = $gl_lib['name'];
+        $current_lib[$gl_lib['id']]['sub_categories'] = get_Currlib_sub_grp_data($gl_lib['id'], $post['from'], $post['to']);
+
+        $fixedassets[$gl_fixedassets['id']] = Fixed_Assets_data($gl_fixedassets['id'], $post['from'], $post['to']);
+        $fixedassets[$gl_fixedassets['id']]['name'] = $gl_fixedassets['name'];
+        $fixedassets[$gl_fixedassets['id']]['sub_categories'] = get_FixedAssets_sub_grp_data($gl_fixedassets['id'], $post['from'], $post['to']);
+
+        $currentassets[$gl_currentassets['id']] = Current_Assets_data($gl_currentassets['id'], $post['from'], $post['to']);
+        $currentassets[$gl_currentassets['id']]['name'] = $gl_currentassets['name'];
+        $currentassets[$gl_currentassets['id']]['sub_categories'] = get_CurrentAssets_sub_grp_data($gl_currentassets['id'], $post['from'], $post['to']);
+
+        $otherassets[$gl_otherassets['id']] = Other_Assets_data($gl_otherassets['id'], $post['from'], $post['to']);
+        $otherassets[$gl_otherassets['id']]['name'] = $gl_otherassets['name'];
+        $otherassets[$gl_otherassets['id']]['sub_categories'] = get_OtherAssets_sub_grp_data($gl_otherassets['id'], $post['from'], $post['to']);
+
+
+        $sundry_debtors = (@$sale_purchase['sale_total_rate'] - @$sale_purchase['Saleret_total_rate'] + @$currentassets['Sundry Debtors']['total']);
+        $sundry_creditor = (@$sale_purchase['pur_total_rate'] - @$sale_purchase['Purret_total_rate'] + @$current_lib['Sundry Creditors']['total']);
+        // echo '<pre>';print_r($currentassets);exit;
+
+        $init_total = 0;
+
+        $capital_total = subGrp_total($capital, $init_total);
+        $loan_total = subGrp_total($loan, $init_total);
+        $current_lib_total = subGrp_total($current_lib, $init_total);
+        $fixedassets_total = subGrp_total($fixedassets, $init_total);
+        $currentassets_total = subGrp_total($currentassets, $init_total);
+        $otherassets_total = subGrp_total($otherassets, $init_total);
+
+        $bl['capital'] = $capital;
+        $bl['capital_total'] = $capital_total;
+
+        $bl['loan'] = $loan;
+        $bl['loan_total'] = $loan_total;
+
+        $bl['current_lib'] = $current_lib;
+        $bl['current_lib_total'] = $current_lib_total;
+
+        $bl['fixedassets'] = $fixedassets;
+        $bl['fixedassets_total'] = $fixedassets_total;
+
+        $bl['currentassets'] = $currentassets;
+        $bl['currentassets_total'] = $currentassets_total;
+
+        $bl['otherassets'] = $otherassets;
+        $bl['otherassets_total'] = $otherassets_total;
+
+        // $data['pl'] = $pl;
+        $bl_sheet = $balancesheet;
+        $trading['sundry_debtors'] = $sundry_debtors;
+        $trading['sundry_creditor'] = $sundry_creditor;
+        $closing_bal = @$closing_data['closing_bal']; 
+        $closing_stock = @$closing_data['closing_stock'];
+        $manualy_closing_bal = @$manualy_closing_bal;
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        $spreadsheet->setActiveSheetIndex(0)->setCellValue('A2', session('name'));
+        $spreadsheet->setActiveSheetIndex(0)->mergeCells('A2:C2');
+        $spreadsheet->getActiveSheet()->getStyle('A2:C2')->getFont()->setBold(true);
+        $spreadsheet->getActiveSheet()->getStyle('A2:C2')->getFont()->setSize(20);
+
+        $spreadsheet->setActiveSheetIndex(0)->setCellValue('A3', session('address'));
+        $spreadsheet->setActiveSheetIndex(0)->mergeCells('A3:F3');
+        $spreadsheet->getActiveSheet()->getStyle('A3:F3')->getBorders()
+            ->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+
+        $date_from = date_create($post['from']);
+        $new_date_from = date_format($date_from, "d-M-y");
+        $date_to = date_create($post['to']);
+        $new_date_to = date_format($date_to, "d-M-y");
+
+        $spreadsheet->setActiveSheetIndex(0)->setCellValue('A5', 'Balancesheet Report');
+        $spreadsheet->setActiveSheetIndex(0)->mergeCells('A5:C5');
+        $spreadsheet->getActiveSheet()->getStyle('A5:C5')->getFont()->setBold(true);
+        $spreadsheet->getActiveSheet()->getStyle('A5:C5')->getFont()->setSize(20);
+        $spreadsheet->setActiveSheetIndex(0)->setCellValue('A6', $new_date_from);
+        $spreadsheet->setActiveSheetIndex(0)->setCellValue('B6', 'to');
+        $spreadsheet->setActiveSheetIndex(0)->setCellValue('C6', $new_date_to);
+        $spreadsheet->getActiveSheet()->getStyle('A6:F6')->getBorders()
+            ->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+
+        $spreadsheet->setActiveSheetIndex(0)->setCellValue('A7', 'Particulars');
+        $spreadsheet->setActiveSheetIndex(0)->setCellValue('B7', session('name'));
+        $spreadsheet->setActiveSheetIndex(0)->setCellValue('C7', '');
+        $spreadsheet->setActiveSheetIndex(0)->setCellValue('D7', 'Particulars');
+        $spreadsheet->setActiveSheetIndex(0)->setCellValue('E7', session('name'));
+        $spreadsheet->setActiveSheetIndex(0)->setCellValue('F7', '');
+        $spreadsheet->getActiveSheet()->getStyle('A7:F7')->getFont()->setBold(true);
+        $spreadsheet->getActiveSheet()->getStyle('A7:F7')->getFont()->setSize(15);
+
+        $spreadsheet->setActiveSheetIndex(0)->setCellValue('A8', '');
+        $spreadsheet->setActiveSheetIndex(0)->setCellValue('B8', ' at ' . $new_date_from);
+        $spreadsheet->setActiveSheetIndex(0)->setCellValue('C8', '');
+        $spreadsheet->setActiveSheetIndex(0)->setCellValue('D8', '');
+        $spreadsheet->setActiveSheetIndex(0)->setCellValue('E8', ' at ' . $new_date_to);
+        $spreadsheet->setActiveSheetIndex(0)->setCellValue('F8', '');
+        $spreadsheet->getActiveSheet()->getStyle('A8:F8')->getBorders()
+            ->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+
+        $spreadsheet->getActiveSheet()->getStyle('C4:C8')->getBorders()->getRight()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+       
+        if(session('is_stock') == 1 ){
+            $closing_bal = @$manualy_closing_bal;
+        }else{
+            $closing_bal  = @$closing_bal;
+        }
+        $total = 0;
+        $i = 9;
+        foreach ($bl['capital'] as $key => $value) {
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('A' . $i, @$value['name']);
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('B' . $i, '');
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('C' . $i, @$bl['capital_total']);
+            $spreadsheet->getActiveSheet()->getStyle('C' . $i)->getBorders()
+                ->getTop()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+            $spreadsheet->getActiveSheet()->getStyle('C' . $i)->getBorders()
+                ->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+            $spreadsheet->getActiveSheet()->getStyle('A' . $i . ':C' . $i)->getFont()->setBold(true);
+            $spreadsheet->getActiveSheet()->getStyle('A' . $i . ':C' . $i)->getFont()->setSize(12);
+            $spreadsheet->getActiveSheet()->getStyle('C' . $i)->getNumberFormat()->setFormatCode('#,##0.00');
+            $spreadsheet->getActiveSheet()->getStyle('C' . $i)->getNumberFormat()->getFormatCode();
+            $i++;
+            if (!empty($value['account'])) {
+                foreach (@$value['account'] as $ac_key => $ac_value) {
+                    $spreadsheet->setActiveSheetIndex(0)->setCellValue('A' . $i, @$ac_key);
+                    $spreadsheet->setActiveSheetIndex(0)->setCellValue('B' . $i, number_format($ac_value['total'], 2));
+                    $spreadsheet->setActiveSheetIndex(0)->setCellValue('C' . $i, '');
+                    $spreadsheet->getActiveSheet()->getStyle('C' . $i)->getBorders()
+                        ->getRight()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+
+                    $spreadsheet->getActiveSheet()->getStyle('B' . $i)->getNumberFormat()->setFormatCode('#,##0.00');
+                    $spreadsheet->getActiveSheet()->getStyle('B' . $i)->getNumberFormat()->getFormatCode();
+                    $i++;
+                }
+            }
+            if (!empty($value['sub_categories'])) {
+                foreach (@$value['sub_categories'] as $sub_key => $sub_value) {
+                    $total = 0;
+                    $arr[$sub_key] = $sub_value;
+                    $total = subGrp_total($arr, 0);
+                    $spreadsheet->setActiveSheetIndex(0)->setCellValue('A' . $i, @$sub_value['name']);
+                    $spreadsheet->setActiveSheetIndex(0)->setCellValue('B' . $i, number_format($total, 2));
+                    $spreadsheet->setActiveSheetIndex(0)->setCellValue('C' . $i, '');
+                    $spreadsheet->getActiveSheet()->getStyle('C' . $i)->getBorders()
+                        ->getRight()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+                    $spreadsheet->getActiveSheet()->getStyle('B' . $i)->getNumberFormat()->setFormatCode('#,##0.00');
+                    $spreadsheet->getActiveSheet()->getStyle('B' . $i)->getNumberFormat()->getFormatCode();
+                    unset($arr);
+                    $i++;
+                }
+            }
+        }
+
+        $total = 0;
+        foreach ($bl['loan'] as $key => $value) {
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('A' . $i, @$value['name']);
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('B' . $i, '');
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('C' . $i, @$bl['capital_total']);
+            $spreadsheet->getActiveSheet()->getStyle('C' . $i)->getBorders()
+                ->getRight()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+            $spreadsheet->getActiveSheet()->getStyle('C' . $i)->getBorders()
+                ->getTop()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+            $spreadsheet->getActiveSheet()->getStyle('C' . $i)->getBorders()
+                ->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+            $spreadsheet->getActiveSheet()->getStyle('A' . $i . ':C' . $i)->getFont()->setBold(true);
+            $spreadsheet->getActiveSheet()->getStyle('A' . $i . ':C' . $i)->getFont()->setSize(12);
+            $spreadsheet->getActiveSheet()->getStyle('C' . $i)->getNumberFormat()->setFormatCode('#,##0.00');
+            $spreadsheet->getActiveSheet()->getStyle('C' . $i)->getNumberFormat()->getFormatCode();
+            $i++;
+            if (!empty($value['account'])) {
+                foreach (@$value['account'] as $ac_key => $ac_value) {
+                    $spreadsheet->setActiveSheetIndex(0)->setCellValue('A' . $i, @$ac_key);
+                    $spreadsheet->setActiveSheetIndex(0)->setCellValue('B' . $i, number_format($ac_value['total'], 2));
+                    $spreadsheet->setActiveSheetIndex(0)->setCellValue('C' . $i, '');
+                    $spreadsheet->getActiveSheet()->getStyle('C' . $i)->getBorders()
+                        ->getRight()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+                    $spreadsheet->getActiveSheet()->getStyle('B' . $i)->getNumberFormat()->setFormatCode('#,##0.00');
+                    $spreadsheet->getActiveSheet()->getStyle('B' . $i)->getNumberFormat()->getFormatCode();
+                    $i++;
+                }
+            }
+            if (!empty($value['sub_categories'])) {
+                foreach (@$value['sub_categories'] as $sub_key => $sub_value) {
+                    $total = 0;
+                    $arr[$sub_key] = $sub_value;
+                    $total = subGrp_total($arr, 0);
+                    $spreadsheet->setActiveSheetIndex(0)->setCellValue('A' . $i, @$sub_value['name']);
+                    $spreadsheet->setActiveSheetIndex(0)->setCellValue('B' . $i, number_format($total, 2));
+                    $spreadsheet->setActiveSheetIndex(0)->setCellValue('C' . $i, '');
+                    $spreadsheet->getActiveSheet()->getStyle('C' . $i)->getBorders()
+                        ->getRight()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+                    $spreadsheet->getActiveSheet()->getStyle('B' . $i)->getNumberFormat()->setFormatCode('#,##0.00');
+                    $spreadsheet->getActiveSheet()->getStyle('B' . $i)->getNumberFormat()->getFormatCode();
+                    $i++;
+                    unset($arr);
+                }
+            }
+        }
+        $total = 0;
+        foreach ($bl['current_lib'] as $key => $value) {
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('A' . $i, @$value['name']);
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('B' . $i, '');
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('C' . $i, number_format(@$bl['current_lib_total'], 2));
+            $spreadsheet->getActiveSheet()->getStyle('C' . $i)->getBorders()
+                ->getRight()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+            $spreadsheet->getActiveSheet()->getStyle('C' . $i)->getBorders()
+                ->getTop()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+            $spreadsheet->getActiveSheet()->getStyle('C' . $i)->getBorders()
+                ->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+            $spreadsheet->getActiveSheet()->getStyle('A' . $i . ':C' . $i)->getFont()->setBold(true);
+            $spreadsheet->getActiveSheet()->getStyle('A' . $i . ':C' . $i)->getFont()->setSize(12);
+            $spreadsheet->getActiveSheet()->getStyle('C' . $i)->getNumberFormat()->setFormatCode('#,##0.00');
+            $spreadsheet->getActiveSheet()->getStyle('C' . $i)->getNumberFormat()->getFormatCode();
+            $i++;
+            if (!empty($value['account'])) {
+                foreach (@$value['account'] as $ac_key => $ac_value) {
+                    $spreadsheet->setActiveSheetIndex(0)->setCellValue('A' . $i, @$ac_key);
+                    $spreadsheet->setActiveSheetIndex(0)->setCellValue('B' . $i, number_format($ac_value['total'], 2));
+                    $spreadsheet->setActiveSheetIndex(0)->setCellValue('C' . $i, '');
+                    $spreadsheet->getActiveSheet()->getStyle('B' . $i)->getNumberFormat()->setFormatCode('#,##0.00');
+                    $spreadsheet->getActiveSheet()->getStyle('B' . $i)->getNumberFormat()->getFormatCode();
+                    $i++;
+                }
+            }
+            if (!empty($value['sub_categories'])) {
+                foreach (@$value['sub_categories'] as $sub_key => $sub_value) {
+                    $total = 0;
+                    $arr[$sub_key] = $sub_value;
+                    $total = subGrp_total($arr, 0);
+                    $spreadsheet->setActiveSheetIndex(0)->setCellValue('A' . $i, @$sub_value['name']);
+                    $spreadsheet->setActiveSheetIndex(0)->setCellValue('B' . $i, number_format($total, 2));
+                    $spreadsheet->setActiveSheetIndex(0)->setCellValue('C' . $i, '');
+                    $spreadsheet->getActiveSheet()->getStyle('B' . $i)->getNumberFormat()->setFormatCode('#,##0.00');
+                    $spreadsheet->getActiveSheet()->getStyle('B' . $i)->getNumberFormat()->getFormatCode();
+                    $i++;
+                    unset($arr);
+                }
+            }
+        }
+        $j = 9;
+        $total = 0;
+        foreach ($bl['fixedassets'] as $key => $value) {
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('D' . $j, @$value['name']);
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('E' . $j, '');
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('F' . $j, number_format(@$bl['fixedassets_total'], 2));
+            $spreadsheet->getActiveSheet()->getStyle('F' . $j)->getBorders()
+                ->getTop()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+            $spreadsheet->getActiveSheet()->getStyle('F' . $j)->getBorders()
+                ->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+            $spreadsheet->getActiveSheet()->getStyle('D' . $j . ':F' . $j)->getFont()->setBold(true);
+            $spreadsheet->getActiveSheet()->getStyle('D' . $j . ':F' . $j)->getFont()->setSize(12);
+            $spreadsheet->getActiveSheet()->getStyle('F' . $j)->getNumberFormat()->setFormatCode('#,##0.00');
+            $spreadsheet->getActiveSheet()->getStyle('F' . $j)->getNumberFormat()->getFormatCode();
+            $j++;
+            if (!empty($value['account'])) {
+                foreach (@$value['account'] as $ac_key => $ac_value) {
+                    $spreadsheet->setActiveSheetIndex(0)->setCellValue('D' . $j, @$ac_key);
+                    $spreadsheet->setActiveSheetIndex(0)->setCellValue('E' . $j, number_format($ac_value['total'], 2));
+                    $spreadsheet->setActiveSheetIndex(0)->setCellValue('F' . $j, '');
+                    $spreadsheet->getActiveSheet()->getStyle('E' . $j)->getNumberFormat()->setFormatCode('#,##0.00');
+                    $spreadsheet->getActiveSheet()->getStyle('E' . $j)->getNumberFormat()->getFormatCode();
+                    $j++;
+                }
+            }
+            if (!empty($value['sub_categories'])) {
+                foreach (@$value['sub_categories'] as $sub_key => $sub_value) {
+                    $total = 0;
+                    $arr[$sub_key] = $sub_value;
+                    $total = subGrp_total($arr, 0);
+                    $spreadsheet->setActiveSheetIndex(0)->setCellValue('D' . $j, @$sub_value['name']);
+                    $spreadsheet->setActiveSheetIndex(0)->setCellValue('E' . $j, number_format($total, 2));
+                    $spreadsheet->setActiveSheetIndex(0)->setCellValue('F' . $j, '');
+                    $spreadsheet->getActiveSheet()->getStyle('E' . $j)->getNumberFormat()->setFormatCode('#,##0.00');
+                    $spreadsheet->getActiveSheet()->getStyle('E' . $j)->getNumberFormat()->getFormatCode();
+                    $j++;
+                    unset($arr);
+                }
+            }
+        }
+        $total = 0;
+        foreach ($bl['currentassets'] as $key => $value) {
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('D' . $j, @$value['name']);
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('E' . $j, '');
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('F' . $j, number_format(@$bl['currentassets_total'], 2));
+            $spreadsheet->getActiveSheet()->getStyle('F' . $j)->getBorders()
+                ->getTop()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+            $spreadsheet->getActiveSheet()->getStyle('F' . $j)->getBorders()
+                ->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+            $spreadsheet->getActiveSheet()->getStyle('D' . $j . ':F' . $j)->getFont()->setBold(true);
+            $spreadsheet->getActiveSheet()->getStyle('D' . $j . ':F' . $j)->getFont()->setSize(12);
+            $spreadsheet->getActiveSheet()->getStyle('F' . $j)->getNumberFormat()->setFormatCode('#,##0.00');
+            $spreadsheet->getActiveSheet()->getStyle('F' . $j)->getNumberFormat()->getFormatCode();
+            $j++;
+            if (!empty($value['account'])) {
+                foreach (@$value['account'] as $ac_key => $ac_value) {
+                    $spreadsheet->setActiveSheetIndex(0)->setCellValue('D' . $j, @$ac_key);
+                    $spreadsheet->setActiveSheetIndex(0)->setCellValue('E' . $j, number_format($ac_value['total'], 2));
+                    $spreadsheet->setActiveSheetIndex(0)->setCellValue('F' . $j, '');
+                    $spreadsheet->getActiveSheet()->getStyle('E' . $j)->getNumberFormat()->setFormatCode('#,##0.00');
+                    $spreadsheet->getActiveSheet()->getStyle('E' . $j)->getNumberFormat()->getFormatCode();
+                    $j++;
+                }
+            }
+            if (!empty($value['sub_categories'])) {
+                foreach (@$value['sub_categories'] as $sub_key => $sub_value) {
+                    $total = 0;
+                    $arr[$sub_key] = $sub_value;
+                    $total = subGrp_total($arr, 0);
+                    $spreadsheet->setActiveSheetIndex(0)->setCellValue('D' . $j, @$sub_value['name']);
+                    $spreadsheet->setActiveSheetIndex(0)->setCellValue('E' . $j, number_format($total, 2));
+                    $spreadsheet->setActiveSheetIndex(0)->setCellValue('F' . $j, '');
+                    $spreadsheet->getActiveSheet()->getStyle('E' . $j)->getNumberFormat()->setFormatCode('#,##0.00');
+                    $spreadsheet->getActiveSheet()->getStyle('E' . $j)->getNumberFormat()->getFormatCode();
+                    $j++;
+                    unset($arr);
+                }
+            }
+        }
+        $total = 0;
+        foreach ($bl['otherassets'] as $key => $value) {
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('D' . $j, @$value['name']);
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('E' . $j, '');
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('F' . $j, number_format(@$bl['otherassets_total'], 2));
+            $spreadsheet->getActiveSheet()->getStyle('F' . $j)->getBorders()
+                ->getTop()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+            $spreadsheet->getActiveSheet()->getStyle('F' . $j)->getBorders()
+                ->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+            $spreadsheet->getActiveSheet()->getStyle('D' . $j . ':F' . $j)->getFont()->setBold(true);
+            $spreadsheet->getActiveSheet()->getStyle('D' . $j . ':F' . $j)->getFont()->setSize(12);
+            $spreadsheet->getActiveSheet()->getStyle('F' . $j)->getNumberFormat()->setFormatCode('#,##0.00');
+            $spreadsheet->getActiveSheet()->getStyle('F' . $j)->getNumberFormat()->getFormatCode();
+            $j++;
+            if (!empty($value['account'])) {
+                foreach (@$value['account'] as $ac_key => $ac_value) {
+                    $spreadsheet->setActiveSheetIndex(0)->setCellValue('D' . $j, @$ac_key);
+                    $spreadsheet->setActiveSheetIndex(0)->setCellValue('E' . $j, number_format($ac_value['total'], 2));
+                    $spreadsheet->setActiveSheetIndex(0)->setCellValue('F' . $j, '');
+                    $spreadsheet->getActiveSheet()->getStyle('E' . $j)->getNumberFormat()->setFormatCode('#,##0.00');
+                    $spreadsheet->getActiveSheet()->getStyle('E' . $j)->getNumberFormat()->getFormatCode();
+                    $j++;
+                }
+            }
+            if (!empty($value['sub_categories'])) {
+                foreach (@$value['sub_categories'] as $sub_key => $sub_value) {
+                    $total = 0;
+                    $arr[$sub_key] = $sub_value;
+                    $total = subGrp_total($arr, 0);
+                    $spreadsheet->setActiveSheetIndex(0)->setCellValue('D' . $j, @$sub_value['name']);
+                    $spreadsheet->setActiveSheetIndex(0)->setCellValue('E' . $j, number_format($total, 2));
+                    $spreadsheet->setActiveSheetIndex(0)->setCellValue('F' . $j, '');
+                    $spreadsheet->getActiveSheet()->getStyle('E' . $j)->getNumberFormat()->setFormatCode('#,##0.00');
+                    $spreadsheet->getActiveSheet()->getStyle('E' . $j)->getNumberFormat()->getFormatCode();
+                    $j++;
+                    unset($arr);
+                }
+            }
+        }
+
+
+
+        $spreadsheet->getActiveSheet()->setTitle('Balancesheet report');
+        $spreadsheet->createSheet();
+
+        $spreadsheet->getActiveSheet()->setTitle('docs');
+
+        // ------------- End Summary For Advance Adjusted (11B) ------------- //
+
+        $spreadsheet->setActiveSheetIndex(0);
+        $writer = new Xlsx($spreadsheet);
+        $writer->save('php://output');
     }
    
 }

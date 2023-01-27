@@ -69,6 +69,7 @@ function sale_purchase_vouhcer($start_date = '', $end_date = '')
 
     return $result;
 }
+
 // update sub total and added amt  trupti 12-12-2022
 function trading_expense_data($id, $start_date = '', $end_date = '')
 {
@@ -107,8 +108,8 @@ function trading_expense_data($id, $start_date = '', $end_date = '')
     $builder->where('(pg.v_type="general" OR pg.v_type = "return")');
     $builder->where(array('gl.id' => $id));
     $builder->where(array('ac.is_delete' => '0'));
-    $builder->where(array('pg.is_delete' => '0'));
-    $builder->where(array('pg.is_cancle' => '0'));
+    $builder->where(array('pg.is_delete' => '0','pg.is_cancle' => '0'));
+    $builder->where(array('pp.is_delete' => '0'));
     $builder->where(array('DATE(pg.doc_date)  >= ' => $start_date));
     $builder->where(array('DATE(pg.doc_date)  <= ' => $end_date));
     $query = $builder->get();
@@ -127,6 +128,7 @@ function trading_expense_data($id, $start_date = '', $end_date = '')
     $builder->join('bank_tras bt', 'bt.particular = ac.id');
     $builder->where(array('gl.id' => $id));
     $builder->where(array('ac.is_delete' => '0'));
+    $builder->where(array('bt.is_delete' => '0'));
     $builder->where(array('DATE(bt.receipt_date)  >= ' => $start_date));
     $builder->where(array('DATE(bt.receipt_date)  <= ' => $end_date));
     $query = $builder->get();
@@ -149,12 +151,11 @@ function trading_expense_data($id, $start_date = '', $end_date = '')
     $builder->join('jv_particular jv', 'jv.particular = ac.id');
     $builder->where(array('gl.id' => $id));
     $builder->where(array('ac.is_delete' => '0'));
+    $builder->where(array('jv.is_delete' => '0'));
     $builder->where(array('DATE(jv.date)  >= ' => $start_date));
     $builder->where(array('DATE(jv.date)  <= ' => $end_date));
     $query = $builder->get();
     $jv_expens = $query->getResultArray();
-
-    $tot_pg_expens = array();
 
     foreach ($jv_expens as $row) {
         if ($row['dr_cr'] == 'cr') {
@@ -573,6 +574,7 @@ function Opening_bal($gl1, $start_date = '', $end_date = '')
 
     $gl_ids = gl_list([$gl_id['id']]);
     $gl_ids[] = $gl_id['id'];
+    
 
     $result = array();
     $opening_bal = 0;
@@ -952,30 +954,41 @@ function get_trading_income_account_wise($start_date, $end_date, $id)
     $pg_income = $query->getResultArray();
     // echo '<pre>';print_r($pg_income);
 
-    foreach ($pg_income as $row) {
+    // foreach ($pg_income as $row) {
 
-        $after_disc = 0;
+    //     $after_disc = 0;
 
-        if ($row['disc_type'] == 'Fixed') {
-            $row['pg_amount'] = (float) $row['pg_amount'] - (float) $row['discount'];
-            $after_disc = $row['pg_amount'];
-        } else {
-            $row['pg_amount'] = ((float) $row['pg_amount'] * ((float) $row['discount'] / 100));
-            $after_disc = $row['pg_amount'];
-        }
+    //     if ($row['disc_type'] == 'Fixed') {
+    //         $row['pg_amount'] = (float) $row['pg_amount'] - (float) $row['discount'];
+    //         $after_disc = $row['pg_amount'];
+    //     } else {
+    //         $row['pg_amount'] = ((float) $row['pg_amount'] * ((float) $row['discount'] / 100));
+    //         $after_disc = $row['pg_amount'];
+    //     }
 
        
-        if ($row['amty_type'] == 'Fixed') {
-            $row['pg_amount'] = (float) $row['pg_amount'] + (float) $row['amty'];
-        } else {
-            $row['pg_amount'] = (float) $row['pg_amount'] + ((float) $after_disc * ((float) $row['amty'] / 100));
-        }
+    //     if ($row['amty_type'] == 'Fixed') {
+    //         $row['pg_amount'] = (float) $row['pg_amount'] + (float) $row['amty'];
+    //     } else {
+    //         $row['pg_amount'] = (float) $row['pg_amount'] + ((float) $after_disc * ((float) $row['amty'] / 100));
+    //     }
 
-        $total = ((@$tot_income['general_sales'][$row['pg_type']]) ? $tot_income['general_sales'][$row['pg_type']] : 0) + $row['pg_amount'];
+    //     $total = ((@$tot_income['general_sales'][$row['pg_type']]) ? $tot_income['general_sales'][$row['pg_type']] : 0) + $row['pg_amount'];
+    //     $tot_income['general_sales'][$row['pg_type']] = $total;
+
+    //     $tot_income['general_sales']['total'] = (float) $tot_income['general_sales']['general'] - (float) @$tot_income['general_sales']['return'];
+    // }
+    foreach ($pg_income as $row) {
+
+        $row['pg_amount'] = (float) $row['sub_total'] + (float) $row['added_amt'];
+       
+        $total = (((float) @$tot_income['general_sales'][$row['pg_type']]) ? (float) $tot_income['general_sales'][$row['pg_type']] : 0) + (float) $row['pg_amount'];
+        
         $tot_income['general_sales'][$row['pg_type']] = $total;
-
-        $tot_income['general_sales']['total'] = (float) $tot_income['general_sales']['general'] - (float) @$tot_income['general_sales']['return'];
+        
+        $tot_income['general_sales']['total'] = (float)@$tot_income['general_sales']['general'] - (float)@$tot_income['general_sales']['return'];
     }
+    
     $bank_income = array();
 
     $builder = $db->table('bank_tras bt');

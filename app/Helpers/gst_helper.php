@@ -2364,6 +2364,7 @@ function get_b2b_b2c_detail($start_date = '', $end_date = ''){
     $builder->where(array('DATE(sa.invoice_date)  <= ' => $end_date));
     $query = $builder->get();
     $salesAcinvoice = $query->getResultArray();
+    
 
     $sales['data'] = array();
     $sales_b2cSmall['data'] = array();
@@ -2491,7 +2492,7 @@ function get_b2b_b2c_detail($start_date = '', $end_date = ''){
 
     foreach($salesAcinvoice as $row){
 
-        $gnrl_sale = $gmodel->get_array_table('sales_ACparticu', array('parent_id' => $row['id'], 'is_delete' => 0),'taxability,igst, amount as total');
+        $gnrl_sales = $gmodel->get_array_table('sales_ACparticu', array('parent_id' => $row['id'], 'is_delete' => 0),'taxability,igst, amount as total');
 
         $state = $gmodel->get_data_table('states',array('id'=>$row['acc_state']),'name');
         $row['state_name'] = @$state['name'];
@@ -2509,18 +2510,18 @@ function get_b2b_b2c_detail($start_date = '', $end_date = ''){
             foreach($sale as $row1){
                 if($row1['taxability'] != 'Nill' && $row1['taxability'] != 'Exempt'){
                     
-                    $gnrl_invtaxable +=  (float)$row1['total'];
-                    $gnrl_tot_igst +=  (float)$row1['total'] * (float)$row1['igst'] / 100;
-                    $gnrl_tot_cgst += (float)$gnrl_tot_igst / 2;
-                    $gnrl_tot_sgst += (float)$gnrl_tot_igst / 2;
+                    $gnrl_invtaxable +=  (float)@$row1['total'];
+                    $gnrl_tot_igst +=  (float)@$row1['total'] * (float)@$row1['igst'] / 100;
+                    $gnrl_tot_cgst += (float)@$gnrl_tot_igst / 2;
+                    $gnrl_tot_sgst += (float)@$gnrl_tot_igst / 2;
                     
                     $invoice_amt = $invtaxable + $tot_igst;  
     
-                    $taxable_ac_item_arr['taxable'] = $invtaxable; 
-                    $taxable_ac_item_arr['tot_igst'] = $tot_igst; 
-                    $taxable_ac_item_arr['tot_sgst'] = $tot_cgst; 
-                    $taxable_ac_item_arr['tot_cgst'] = $tot_sgst; 
-                    $taxable_ac_item_arr['tot_cgst'] = $invoice_amt;
+                    $taxable_ac_item_arr['taxable'] = @$invtaxable; 
+                    $taxable_ac_item_arr['tot_igst'] = @$tot_igst; 
+                    $taxable_ac_item_arr['tot_sgst'] = @$tot_cgst; 
+                    $taxable_ac_item_arr['tot_cgst'] = @$tot_sgst; 
+                    $taxable_ac_item_arr['tot_cgst'] = @$invoice_amt;
                     $i++;   
                 }
             }
@@ -2716,6 +2717,7 @@ function get_b2b_b2c_detail($start_date = '', $end_date = ''){
 
     $data['sale'] = $sales;
     $data['gnrl_sale'] = $gnrl_sale;
+    
 
     $data['sale_b2c_small'] = $sales_b2cSmall;
     $data['gnrl_sale_b2c_small'] = $gnrl_sales_b2cSmall;

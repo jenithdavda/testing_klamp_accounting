@@ -313,7 +313,7 @@
                                                     <?php
                                                     if ($row['is_expence'] == 0) {
                                                     ?>
-                                                        <td><?= $row['name'] ?>(<?= $row['hsn'] ?>)
+                                                        <td><?= $row['name'] ?>
                                                             <input type="hidden" name="pid[]" value="<?= $row['item_id'] ?>">
                                                             <input name="taxability[]" value="<?= $row['taxability'] ?>" type="hidden">
                                                             <input name="expence[]" value="<?= $row['is_expence'] ?>" type="hidden">
@@ -345,67 +345,32 @@
                                                     }
                                                     ?>
                                                     <td><input class="form-control input-sm" value="<?= $row['rate'] ?>" name="price[]" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" type="text"></td>
-                                                    <?php
-                                                    if ($row['taxability'] == "N/A") {
-                                                    ?>
-                                                        <td><input class="form-control input-sm" value="0" name="igst[]" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" onkeyup="calc_gst_per(this)" type="text" readonly>
-                                                            <input name="igst_amt[]" value="0" type="hidden">
-                                                            <b class="igst_amt"></b>
-                                                        </td>
 
-                                                        <td><input class="form-control input-sm" value="0" name="cgst[]" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" type="text" readonly>
-                                                            <input name="cgst_amt[]" value="0" type="hidden">
-                                                            <b class="cgst_amt"></b>
-                                                        </td>
+                                                    <td><input class="form-control input-sm" value="<?= $row['taxability'] == "N/A" ? 0 : $row['igst']; ?>" name="igst[]" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" onkeyup="calc_gst_per(this)" type="text" readonly>
+                                                        <input name="igst_amt[]" value="<?= $row['taxability'] == "N/A" ? 0 : $row['igst_amt']; ?>" type="hidden">
+                                                        <b class="igst_amt"></b>
+                                                    </td>
 
-                                                        <td><input class="form-control input-sm" value="0" name="sgst[]" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" type="text" readonly>
-                                                            <input name="sgst_amt[]" value="0" type="hidden">
-                                                            <b class="sgst_amt"></b>
-                                                        </td>
-                                                    <?php
-                                                    } else {
-                                                    ?>
-                                                        <td><input class="form-control input-sm" value="<?= $row['igst'] ?>" name="igst[]" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" onkeyup="calc_gst_per(this)" type="text">
-                                                            <input name="igst_amt[]" value="<?= $row['igst_amt'] ?>" type="hidden">
-                                                            <b class="igst_amt"></b>
-                                                        </td>
+                                                    <td><input class="form-control input-sm" value="<?= $row['taxability'] == "N/A" ? 0 : $row['cgst']; ?>" name="cgst[]" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" type="text" readonly>
+                                                        <input name="cgst_amt[]" value="<?= $row['taxability'] == "N/A" ? 0 : $row['cgst_amt']; ?>" type="hidden">
+                                                        <b class="cgst_amt"></b>
+                                                    </td>
 
-                                                        <td><input class="form-control input-sm" value="<?= $row['cgst'] ?>" name="cgst[]" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" type="text">
-                                                            <input name="cgst_amt[]" value="<?= $row['cgst_amt'] ?>" type="hidden">
-                                                            <b class="cgst_amt"></b>
-                                                        </td>
+                                                    <td><input class="form-control input-sm" value="<?= $row['taxability'] == "N/A" ? 0 : $row['sgst']; ?>" name="sgst[]" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" type="text" readonly>
+                                                        <input name="sgst_amt[]" value="<?= $row['taxability'] == "N/A" ? 0 : $row['sgst_amt']; ?>" type="hidden">
+                                                        <b class="sgst_amt"></b>
+                                                    </td>
 
-                                                        <td><input class="form-control input-sm" value="<?= $row['sgst'] ?>" name="sgst[]" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" type="text">
-                                                            <input name="sgst_amt[]" value="<?= $row['sgst_amt'] ?>" type="hidden">
-                                                            <b class="sgst_amt"></b>
-                                                        </td>
-                                                    <?php
-                                                    }
-                                                    ?>
-                                                    <?php
-                                                    if ($row['is_expence'] == 0) {
-                                                    ?>
-                                                        <td><input class="form-control input-sm" value="<?= $row['item_disc'] ?>" name="item_disc[]" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" type="text">
-                                                            <b class="itm_disc_amt"></b>
-                                                            <input type="hidden" name="item_discount_hidden[]" class="hidden_itm_disc_amt" value="<?= @$row['discount'] ?>">
-                                                            <input type="hidden" name="item_added_amt_hidden[]" class="hidden_added_amt" value="<?= $row['added_amt'] ?>">
-                                                            <input type="hidden" name="item_per[]" class="item_per" value="<?= $row['divide_disc_item_per'] ?>">
-                                                            <input type="hidden" name="divide_disc_amt[]" class="divide_disc_amt" value="<?= $row['divide_disc_item_amt'] ?>">
-                                                        </td>
-                                                        </td>
-                                                    <?php
-                                                    } else {
-                                                    ?>
-                                                        <td><input class="form-control input-sm" value="0" name="item_disc[]" type="hidden">
-                                                            <input type="hidden" name="item_discount_hidden[]" class="hidden_itm_disc_amt" value="<?= @$row['discount'] ?>">
-                                                            <input type="hidden" name="item_added_amt_hidden[]" class="hidden_added_amt" value="<?= $row['added_amt'] ?>">
-                                                            <input type="hidden" name="item_per[]" class="item_per" value="<?= $row['divide_disc_item_per'] ?>">
-                                                            <input type="hidden" name="divide_disc_amt[]" class="divide_disc_amt" value="<?= $row['divide_disc_item_amt'] ?>">
 
-                                                        </td>
-                                                    <?php
-                                                    }
-                                                    ?>
+                                                    <td><input class="form-control input-sm" value="<?= ($row['is_expence'] == 0) ? $row['item_disc'] : 0 ?>" name="item_disc[]" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" type="text">
+                                                        <b class="itm_disc_amt"></b>
+                                                        <input type="hidden" name="item_discount_hidden[]" class="hidden_itm_disc_amt" value="<?= @$row['discount'] ?>">
+                                                        <input type="hidden" name="item_added_amt_hidden[]" class="hidden_added_amt" value="<?= @$row['added_amt'] ?>">
+                                                        <input type="hidden" name="item_per[]" class="item_per" value="<?= @$row['divide_disc_item_per'] ?>">
+                                                        <input type="hidden" name="divide_disc_amt[]" class="divide_disc_amt" value="<?= @$row['divide_disc_item_amt'] ?>">
+                                                    </td>
+
+
                                                     <td><input class="form-control input-sm" name="subtotal[]" onchange="calculate()" value="<?= $sub_total ?>" type="text" readonly=""></td>
                                                     <td><input class="form-control input-sm" name="remark[]" value="<?= $row['remark'] ?>" placeholder="Remark" type="text">
 
@@ -951,8 +916,8 @@
         var discount_type = $('select[name=disc_type] option').filter(':selected').val();
         var amty_type = $('select[name=amty_type] option').filter(':selected').val();
         var cess_type = $('select[name=cess_type] option').filter(':selected').val();
-         // discount calculation modification update 16-01-2023
-         if (discount_type == '%') {
+        // discount calculation modification update 16-01-2023
+        if (discount_type == '%') {
             var disc = 0;
             var item_total = 0;
             for (var i = 0; i < pid.length; i++) {
@@ -984,7 +949,7 @@
                         }
                         //update item column 17-01-2023
                         var sub = qty[i] * price[i];
-                       // var disc_amt = sub * item_disc[i] / 100;
+                        // var disc_amt = sub * item_disc[i] / 100;
                         var item_per = (sub * 100) / item_total;
                         var divide_disc = (item_per / 100) * discount_amount;
                         // append discount amount here ......
@@ -1019,7 +984,7 @@
                             igst[i] = 0;
                         }
 
-                      
+
                         var abc = price[i];
                         igst_amt += abc * igst[i] / 100;
                         item_igst_amt = final_sub * igst[i] / 100;
@@ -1071,10 +1036,10 @@
                         var item_per = (sub * 100) / item_total;
                         var divide_disc = (item_per / 100) * discount;
 
-                       // var indexx = $(".hidden_discount").eq(i).val(divide_disc.toFixed(2));
+                        // var indexx = $(".hidden_discount").eq(i).val(divide_disc.toFixed(2));
                         $(".item_per").eq(i).val(item_per.toFixed(2));
                         $(".divide_disc_amt").eq(i).val(divide_disc.toFixed(2));
-                      
+
                         var abc = sub - divide_disc;
                         igst_amt += abc * igst[i] / 100;
                         item_igst_amt = abc * igst[i] / 100;
@@ -1102,7 +1067,7 @@
                         var sub = price[i];
                         var final_sub = price[i];
 
-                        var abc =price[i];
+                        var abc = price[i];
                         igst_amt += abc * igst[i] / 100;
 
                         item_igst_amt = final_sub * igst[i] / 100;
@@ -2012,12 +1977,12 @@
 
             }
             tds +=
-                    '<td><input class="form-control input-sm" name="item_disc[]" onchange="calculate()" value="0" type="text"><b class="itm_disc_amt"></b><input type="hidden" name="item_discount_hidden[]" class="hidden_itm_disc_amt"><input type="hidden" name="item_per[]" class="item_per"><input type="hidden" name="divide_disc_amt[]" class="divide_disc_amt"><input type="hidden" name="item_added_amt_hidden[]" class="hidden_added_amt"></td>';
-                tds +=
-                    '<td><input class="form-control input-sm" name="subtotal[]" onchange="calculate()" value="0" type="text" readonly></td>';
-                tds +=
-                    '<td><input class="form-control input-sm" name="remark[]" placeholder="Remark" type="text"></td>';
-                tds += '</tr>';
+                '<td><input class="form-control input-sm" name="item_disc[]" onchange="calculate()" value="0" type="text"><b class="itm_disc_amt"></b><input type="hidden" name="item_discount_hidden[]" class="hidden_itm_disc_amt"><input type="hidden" name="item_per[]" class="item_per"><input type="hidden" name="divide_disc_amt[]" class="divide_disc_amt"><input type="hidden" name="item_added_amt_hidden[]" class="hidden_added_amt"></td>';
+            tds +=
+                '<td><input class="form-control input-sm" name="subtotal[]" onchange="calculate()" value="0" type="text" readonly></td>';
+            tds +=
+                '<td><input class="form-control input-sm" name="remark[]" placeholder="Remark" type="text"></td>';
+            tds += '</tr>';
 
 
 
@@ -2087,12 +2052,12 @@
 
             }
             tds += '<td><input type="hidden" name="item_discount_hidden[]" class="hidden_itm_disc_amt"><input type="hidden" name="item_added_amt_hidden[]" class="hidden_added_amt"></td>';
-                tds +=
-                    '<td><input class="form-control input-sm" name="subtotal[]" onchange="calculate()" value="0" required="" type="text" readonly></td>';
+            tds +=
+                '<td><input class="form-control input-sm" name="subtotal[]" onchange="calculate()" value="0" required="" type="text" readonly></td>';
 
-                tds +=
-                    '<td><input class="form-control input-sm" name="remark[]" placeholder="Remark" type="text"></td>';
-                tds += '</tr>';
+            tds +=
+                '<td><input class="form-control input-sm" name="remark[]" placeholder="Remark" type="text"></td>';
+            tds += '</tr>';
 
             $('.tbody').append(tds);
             $('#code_new').val('');

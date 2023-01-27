@@ -18,7 +18,7 @@
             aria-label="Toggle navigation">
             <i class="fe fe-filter mr-1"></i> Filter <i class="fas fa-caret-down ml-1"></i>
         </a>
-        <a href="<?=url('Trading/Profit_loss_xls?from='.$start_date.'&to='.$end_date)?>"  class="btn ripple btn-primary"><i class="fe fe-external-link"></i>Excel Export</a>
+        <a href="<?=url('Profitloss/Profit_loss_xls?from='.$start_date.'&to='.$end_date)?>"  class="btn ripple btn-primary"><i class="fe fe-external-link"></i>Excel Export</a>
 
     </div>
 </div>

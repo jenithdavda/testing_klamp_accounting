@@ -13,9 +13,7 @@
         </div>
     </div>
     <div class="btn btn-list">
-        <button id="pdf" onclick="javascript:createPdf()" class="btn ripple btn-primary">
-            PDF
-        </button>
+       
 
         <a href="#" class="btn ripple btn-secondary navresponsive-toggler" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <i class="fe fe-filter mr-1"></i> Filter <i class="fas fa-caret-down ml-1"></i>

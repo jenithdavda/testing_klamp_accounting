@@ -928,11 +928,11 @@ public function insert_edit_uom($post)
         $exp_total = subGrp_total($exp,$init_total);
         $inc_total = subGrp_total($inc,$init_total);
         
-        $all_purchase = $trading['pur_total_rate'] + $trading['purchase_Gray_total_rate'] +$trading['purchase_Finish_total_rate'];
-        $all_purchase_return = $trading['Purret_total_rate'] + $trading['Retpurchase_Gray_total_rate'] + $trading['Retpurchase_Finish_total_rate'];
+        $all_purchase = $trading['pur_total_rate'];
+        $all_purchase_return = $trading['Purret_total_rate'];
                                             
-        $all_sale = $trading['sale_total_rate'] + $trading['sale_Gray_total_rate'] + $trading['sale_Finish_total_rate'];
-        $all_sale_return = $trading['Saleret_total_rate']  + $trading['Retsale_Gray_total_rate'] + $trading['Retsale_Finish_total_rate'];
+        $all_sale = $trading['sale_total_rate'];
+        $all_sale_return = $trading['Saleret_total_rate'];
 
 
         $income_total = ($all_sale - $all_sale_return) +  ($trading['opening_bal'] + ($all_purchase - $all_purchase_return) - ($all_sale - $all_sale_return)) +$inc_total;

@@ -190,6 +190,8 @@ class Profitloss extends BaseController{
         }
 
         $get = $this->request->getGet();
+       // echo '<pre>';Print_r($get);exit;
+        
 
         $inc[$get['id']] = trading_income_data($get['id'],$get['from'],$get['to']);
         
@@ -211,6 +213,8 @@ class Profitloss extends BaseController{
         
         $data['date']['from'] = $get['from'];
         $data['date']['to'] = $get['to'];
+        $data['ac_id'] = $get['id'];
+        $data['ac_name'] = $get['name'];
         $data['type'] = $get['type'];
         
         return view('trading/income/sub_group_detail',$data);
@@ -244,12 +248,33 @@ class Profitloss extends BaseController{
         
         $data['date']['from'] = $get['from'];
         $data['date']['to'] = $get['to'];
+        $data['ac_id'] = $get['id'];
+        $data['ac_name'] = $get['name'];
         $data['type'] = $get['type'];
 
         //$data['title'] =  "Trading Expence Sub Group";
         
         return view('trading/expence/sub_group_detail',$data);
 
+    }
+
+    public function Profit_loss_xls(){
+
+        if (!session('uid')) {
+            return redirect()->to(url('auth'));
+        } 
+        $post = $this->request->getGet();
+        if(!empty($post)){
+            $data = $this->model->profit_loss_xls_export_data($post);
+        }else{       
+            $post['from'] = session('financial_form'); 
+            $post['to'] = session('financial_to'); 
+            $data = $this->model->profit_loss_xls_export_data($post);   
+        }
+
+        return $this->response->setHeader('Contente-Disposition','attachment;filename=abc.xlsx')
+        ->setContentType('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+       
     }
     
     
