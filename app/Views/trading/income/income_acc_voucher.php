@@ -36,7 +36,7 @@
                                                 FROM:
                                             </div>
                                         </div>
-                                        <input class="form-control fc-datepicker" name="from" placeholder="DD-MM-YYYY" type="text">
+                                        <input class="form-control fc-datepicker" name="from" placeholder="YYYY-MM-DD" type="text">
                                     </div>
 
                                 </div>
@@ -50,7 +50,7 @@
                                                 TO:
                                             </div>
                                         </div>
-                                        <input class="form-control fc-datepicker" name="to" placeholder="DD-MM-YYYY" type="text">
+                                        <input class="form-control fc-datepicker" name="to" placeholder="YYYY-MM-DD" type="text">
                                         <input type="hidden" name="id" value="<?= @$id ?>">
                                         <input type="hidden" name="type" value="<?= @$type ?>">
                                     </div>
@@ -105,7 +105,7 @@
                         <tbody>
                         <?php
                             if (isset($general_sales['total'])) {
-                                if (@$general_sales['total'] != 0) {
+                                
                             ?>
                             <tr>
                                 <th scope="row">1</th>
@@ -113,10 +113,10 @@
                                 <td><?= @$general_sales['total'] ?></td>
                             </tr>
                             <?php
-                                }
+                                
                             }
                             if (isset($bank_trans['total'])) {
-                                if ($bank_trans['total'] != 0) {
+                               
                                 ?>
                             <tr>
                                 <th scope="row">2</th>
@@ -124,10 +124,10 @@
                                 <td><?= @$bank_trans['total'] ?></td>
                             </tr>
                             <?php
-                                }
+                                
                             }
                             if (isset($jv_parti['total'])) {
-                                if ($jv_parti['total'] != 0) {
+                                
                                 ?>
                             <tr>
                                 <th scope="row">3</th>
@@ -135,7 +135,7 @@
                                 <td><?= @$jv_parti['total'] ?></td>
                             </tr>
                             <?php
-                                }
+                                
                             }
                             ?>
 

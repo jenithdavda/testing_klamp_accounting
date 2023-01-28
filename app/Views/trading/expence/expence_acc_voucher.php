@@ -107,7 +107,7 @@
                         <tbody>
                             <?php
                             if (isset($general_purchase['total'])) {
-                                if (@$general_purchase['total'] != 0) {
+                               
                             ?>
                                     <tr>
                                         <th scope="row">1</th>
@@ -115,10 +115,10 @@
                                         <td><?= number_format(@$general_purchase['total'], 2) ?></td>
                                     </tr>
                                 <?php
-                                }
+                            
                             }
                             if (isset($bank_trans['total'])) {
-                                if ($bank_trans['total'] != 0) {
+                               
                                 ?>
                                     <tr>
                                         <th scope="row">2</th>
@@ -126,10 +126,10 @@
                                         <td><?= number_format(@$bank_trans['total'], 2) ?></td>
                                     </tr>
                                 <?php
-                                }
+                                
                             }
                             if (isset($jv_parti['total'])) {
-                                if ($jv_parti['total'] != 0) {
+                                
                                 ?>
 
                                     <tr>
@@ -138,7 +138,7 @@
                                         <td><?= number_format(@$jv_parti['total'], 2) ?></td>
                                     </tr>
                             <?php
-                                }
+                                
                             }
                             ?>
 

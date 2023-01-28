@@ -235,6 +235,11 @@ class SalesApendColumn extends BaseController{
            $msg = $this->model->update_sgst_amt();
            return $this->response->setJSON($msg);
     }
+    public function update_divide_discount()
+    {
+        $msg = $this->model->update_divide_discount();
+        return $this->response->setJSON($msg);
+    }
 
 
     

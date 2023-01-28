@@ -190,9 +190,7 @@ class Profitloss extends BaseController{
         }
 
         $get = $this->request->getGet();
-       // echo '<pre>';Print_r($get);exit;
-        
-
+      
         $inc[$get['id']] = trading_income_data($get['id'],$get['from'],$get['to']);
         
         $inc[$get['id']]['name'] = $get['name'];

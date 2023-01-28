@@ -1037,7 +1037,7 @@ class TestingModel extends Model
             $data[1] = $account_name['name'];
             $data[2] = 'Purchase';
             $data[3] = $row3['invoice_no'];
-            $data[4] =  number_format($row3['net_amount'], 2) . 'Dr';
+            $data[4] =  '+'. number_format($row3['net_amount'], 2);
             $total[0] = '';
             $total[1] = '';
             $total[2] = '';
@@ -1060,7 +1060,7 @@ class TestingModel extends Model
             foreach ($header as $key => $value) {
                 $taxes = json_decode($row3['taxes']);
                 if ($value == $row3['round']) {
-                    $data[$key] = number_format($row3['round_diff'], 2) . 'Dr';
+                    $data[$key] = number_format($row3['round_diff'], 2);
                     if (isset($total[$key])) {
                         $total[$key] += @$row3['round_diff'];
                     } else {
@@ -1069,7 +1069,7 @@ class TestingModel extends Model
                 }
                 if (in_array('igst', $taxes)) {
                     if ($value == $row3['igst_acc']) {
-                        $data[$key] = number_format($row3['tot_igst'], 2) . 'Dr';
+                        $data[$key] =  '+'.number_format($row3['tot_igst'], 2);
                         if (isset($total[$key])) {
                             $total[$key] += $row3['tot_igst'];
                         } else {
@@ -1080,7 +1080,7 @@ class TestingModel extends Model
                 if (in_array('cgst', $taxes) && in_array('sgst', $taxes)) {
 
                     if ($value == $row3['cgst_acc']) {
-                        $data[$key] = number_format($row3['tot_cgst'], 2) . 'Dr';
+                        $data[$key] =  '+'.number_format($row3['tot_cgst'], 2);
                         if (isset($total[$key])) {
                             $total[$key] += $row3['tot_cgst'];
                         } else {
@@ -1088,7 +1088,7 @@ class TestingModel extends Model
                         }
                     }
                     if ($value == $row3['sgst_acc']) {
-                        $data[$key] = number_format($row3['tot_sgst'], 2) . 'Dr';
+                        $data[$key] =  '+'.number_format($row3['tot_sgst'], 2);
                         if (isset($total[$key])) {
                             $total[$key] += $row3['tot_sgst'];
                         } else {
@@ -1098,7 +1098,7 @@ class TestingModel extends Model
                 }
                 foreach ($purchase_item_data_new as $rowpurchase_item) {
                     if ($value == $rowpurchase_item['item_id']) {
-                        $data[$key] = number_format($rowpurchase_item['rate'], 2) . 'Dr';
+                        $data[$key] = '+'.number_format($rowpurchase_item['rate'], 2);
                         if (isset($total[$key])) {
                             $total[$key] += $rowpurchase_item['rate'];
                         } else {
@@ -1116,11 +1116,11 @@ class TestingModel extends Model
             $data[1] = $account_name['name'];
             $data[2] = 'Purchase Return';
             $data[3] = $row3['return_no'];
-            $data[4] =  number_format($row3['net_amount'], 2) . 'Cr';
+            $data[4] =  '-'.number_format($row3['net_amount'], 2);
             if (isset($total[4])) {
-                $total[4] += $row3['net_amount'];
+                $total[4] -= $row3['net_amount'];
             } else {
-                $total[4] = $row3['net_amount'];
+                $total[4] = -$row3['net_amount'];
             }
 
             $builder = $db->table('purchase_item');
@@ -1132,49 +1132,49 @@ class TestingModel extends Model
             foreach ($header as $key => $value) {
                 $taxes = json_decode($row3['taxes']);
                 if ($value == $row3['round']) {
-                    $data[$key] = number_format($row3['round_diff'], 2) . 'Cr';
+                    $data[$key] =  number_format($row3['round_diff'], 2);
                     if (isset($total[$key])) {
-                        $total[$key] += $row3['round_diff'];
+                        $total[$key] -= $row3['round_diff'];
                     } else {
-                        $total[$key] = $row3['round_diff'];
+                        $total[$key] = -$row3['round_diff'];
                     }
                 }
                 if (in_array('igst', $taxes)) {
                     if ($value == $row3['igst_acc']) {
-                        $data[$key] = number_format($row3['tot_igst'], 2) . 'Cr';
+                        $data[$key] = '-'.number_format($row3['tot_igst'], 2);
                         if (isset($total[$key])) {
-                            $total[$key] += $row3['tot_igst'];
+                            $total[$key] -= $row3['tot_igst'];
                         } else {
-                            $total[$key] = $row3['tot_igst'];
+                            $total[$key] = -$row3['tot_igst'];
                         }
                     }
                 }
                 if (in_array('cgst', $taxes) && in_array('sgst', $taxes)) {
 
                     if ($value == $row3['cgst_acc']) {
-                        $data[$key] = number_format($row3['tot_cgst'], 2) . 'Cr';
+                        $data[$key] = '-'.number_format($row3['tot_cgst'], 2);
                         if (isset($total[$key])) {
-                            $total[$key] += $row3['tot_cgst'];
+                            $total[$key] -= $row3['tot_cgst'];
                         } else {
-                            $total[$key] = $row3['tot_cgst'];
+                            $total[$key] = -$row3['tot_cgst'];
                         }
                     }
                     if ($value == $row3['sgst_acc']) {
-                        $data[$key] = number_format($row3['tot_sgst'], 2) . 'Cr';
+                        $data[$key] ='-'. number_format($row3['tot_sgst'], 2);
                         if (isset($total[$key])) {
-                            $total[$key] += $row3['tot_sgst'];
+                            $total[$key] -= $row3['tot_sgst'];
                         } else {
-                            $total[$key] = $row3['tot_sgst'];
+                            $total[$key] = -$row3['tot_sgst'];
                         }
                     }
                 }
                 foreach ($purchase_item_data_new as $rowpurchase_item) {
                     if ($value == $rowpurchase_item['item_id']) {
-                        $data[$key] = number_format($rowpurchase_item['rate'], 2) . 'Cr';
+                        $data[$key] = '-'.number_format($rowpurchase_item['rate'], 2);
                         if (isset($total[$key])) {
-                            $total[$key] += $rowpurchase_item['rate'];
+                            $total[$key] -= $rowpurchase_item['rate'];
                         } else {
-                            $total[$key] = $rowpurchase_item['rate'];
+                            $total[$key] = -$rowpurchase_item['rate'];
                         }
                     }
                 }
@@ -1189,15 +1189,27 @@ class TestingModel extends Model
             $data[2] = 'Purchase General';
             $data[3] = $row3['invoice_no'];
             if ($row3['v_type'] == 'general') {
-                $data[4] = number_format($row3['net_amount'], 2) . 'Dr';
+                $data[4] = '+'.number_format($row3['net_amount'], 2);
             } else {
-                $data[4] = number_format($row3['net_amount'], 2) . 'Cr';
+                $data[4] = '-'.number_format($row3['net_amount'], 2);
             }
 
             if (isset($total[4])) {
-                $total[4] += $row3['net_amount'];
+                if ($row3['v_type'] == 'general') {
+                    $total[4] += $row3['net_amount'];
+                }
+                else
+                {
+                    $total[4] -= $row3['net_amount'];
+                }
             } else {
-                $total[4] = $row3['net_amount'];
+                if ($row3['v_type'] == 'general') {
+                    $total[4] = $row3['net_amount'];
+                }
+                else
+                {
+                    $total[4] = -$row3['net_amount'];
+                }
             }
 
             $builder = $db->table('purchase_particu');
@@ -1210,29 +1222,57 @@ class TestingModel extends Model
                 $taxes = json_decode($row3['taxes']);
                 if ($value == $row3['round']) {
                     if ($row3['v_type'] == 'general') {
-                        $data[$key] = number_format($row3['round_diff'], 2) . 'Dr';
+                        $data[$key] = number_format($row3['round_diff'], 2);
                     } else {
-                        $data[$key] = number_format($row3['round_diff'], 2) . 'Cr';
+                        $data[$key] = number_format($row3['round_diff'], 2);
                     }
 
                     if (isset($total[$key])) {
-                        $total[$key] += $row3['round_diff'];
+                        if ($row3['v_type'] == 'general') {
+                            $total[$key] += $row3['round_diff'];
+                        }
+                        else
+                        {
+                            $total[$key] -= $row3['round_diff'];
+                        }
+                       
                     } else {
-                        $total[$key] = $row3['round_diff'];
+                        if ($row3['v_type'] == 'general') {
+                            $total[$key] = $row3['round_diff'];
+                        }
+                        else
+                        {
+                            $total[$key] = -$row3['round_diff'];
+                        }
+                        
                     }
                 }
                 if (in_array('igst', $taxes)) {
                     if ($value == $row3['igst_acc']) {
                         if ($row3['v_type'] == 'general') {
-                            $data[$key] = number_format($row3['tot_igst'], 2) . 'Dr';
+                            $data[$key] = '+'.number_format($row3['tot_igst'], 2);
                         } else {
-                            $data[$key] = number_format($row3['tot_igst'], 2) . 'Cr';
+                            $data[$key] = '-'.number_format($row3['tot_igst'], 2);
                         }
 
                         if (isset($total[$key])) {
-                            $total[$key] += $row3['tot_igst'];
+                            if ($row3['v_type'] == 'general') {
+                                $total[$key] += $row3['tot_igst'];
+                            }
+                            else
+                            {
+                                $total[$key] -= $row3['tot_igst'];
+                            }
+                           
                         } else {
-                            $total[$key] = $row3['tot_igst'];
+                            if ($row3['v_type'] == 'general') {
+                                $total[$key] = $row3['tot_igst'];
+                            }
+                            else
+                            {
+                                $total[$key] = -$row3['tot_igst'];
+                            }
+                            
                         }
                     }
                 }
@@ -1240,42 +1280,86 @@ class TestingModel extends Model
 
                     if ($value == $row3['cgst_acc']) {
                         if ($row3['v_type'] == 'general') {
-                            $data[$key] = number_format($row3['tot_cgst'], 2) . 'Dr';
+                            $data[$key] = '+'.number_format($row3['tot_cgst'], 2);
                         } else {
-                            $data[$key] = number_format($row3['tot_cgst'], 2) . 'Cr';
+                            $data[$key] = '-'.number_format($row3['tot_cgst'], 2);
                         }
 
                         if (isset($total[$key])) {
-                            $total[$key] += $row3['tot_cgst'];
+                            if ($row3['v_type'] == 'general') {
+                                $total[$key] += $row3['tot_cgst'];
+                            }
+                            else
+                            {
+                                $total[$key] -= $row3['tot_cgst'];
+                            }
+                           
                         } else {
-                            $total[$key] = $row3['tot_cgst'];
+                            if ($row3['v_type'] == 'general') {
+                                $total[$key] = $row3['tot_cgst'];
+                            }
+                            else
+                            {
+                                $total[$key] = -$row3['tot_cgst'];
+                            }
+                           
                         }
                     }
                     if ($value == $row3['sgst_acc']) {
                         if ($row3['v_type'] == 'general') {
-                            $data[$key] = number_format($row3['tot_sgst'], 2) . 'Dr';
+                            $data[$key] = '+'.number_format($row3['tot_sgst'], 2);
                         } else {
-                            $data[$key] = number_format($row3['tot_sgst'], 2) . 'Cr';
+                            $data[$key] = '-'.number_format($row3['tot_sgst'], 2);
                         }
                         if (isset($total[$key])) {
-                            $total[$key] += $row3['tot_sgst'];
+                            if ($row3['v_type'] == 'general') {
+                                $total[$key] += $row3['tot_sgst'];
+                            }
+                            else
+                            {
+                                $total[$key] -= $row3['tot_sgst'];
+                            }
+                           
                         } else {
-                            $total[$key] = $row3['tot_sgst'];
+                            if ($row3['v_type'] == 'general') {
+                                $total[$key] = $row3['tot_sgst'];
+                            }
+                            else
+                            {
+                                $total[$key] = -$row3['tot_sgst'];
+                            }
+                           
+                           
                         }
                     }
                 }
                 foreach ($purchase_item_data_new as $rowpurchase_item) {
                     if ($value == $rowpurchase_item['account']) {
                         if ($row3['v_type'] == 'general') {
-                            $data[$key] = number_format($rowpurchase_item['amount'], 2) . 'Dr';
+                            $data[$key] = '+'.number_format($rowpurchase_item['amount'], 2) ;
                         } else {
-                            $data[$key] = number_format($rowpurchase_item['amount'], 2) . 'Cr';
+                            $data[$key] = '-'.number_format($rowpurchase_item['amount'], 2);
                         }
 
                         if (isset($total[$key])) {
-                            $total[$key] += $rowpurchase_item['amount'];
+                            if ($row3['v_type'] == 'general') {
+                                $total[$key] += $rowpurchase_item['amount'];
+                            }
+                            else
+                            {
+                                $total[$key] -= $rowpurchase_item['amount'];
+                            }
+                           
+                           
                         } else {
-                            $total[$key] = $rowpurchase_item['amount'];
+                            if ($row3['v_type'] == 'general') {
+                                $total[$key] = $rowpurchase_item['amount'];
+                            }
+                            else
+                            {
+                                $total[$key] = -$rowpurchase_item['amount'];
+                            }
+                           
                         }
                     }
                 }
@@ -1292,28 +1376,55 @@ class TestingModel extends Model
             $data[2] = $row3['mode'] . ' ' . $row3['payment_type'] . ' Transaction';
             $data[3] = $row3['narration'];
             if ($row3['mode'] == 'Payment') {
-                $data[4] = number_format($row3['amount'], 2) . 'Dr';
+                $data[4] = '+'.number_format($row3['amount'], 2) ;
             } else {
-                $data[4] = number_format($row3['amount'], 2) . 'Cr';
+                $data[4] = '-'.number_format($row3['amount'], 2);
             }
 
             if (isset($total[4])) {
-                $total[4] += $row3['amount'];
+                if ($row3['mode'] == 'Payment') {
+                    $total[4] += $row3['amount'];
+                }
+                else
+                {
+                    $total[4] -= $row3['amount'];
+                }
             } else {
-                $total[4] = $row3['amount'];
+                if ($row3['mode'] == 'Payment') {
+                    $total[4] = $row3['amount'];
+                }
+                else
+                {
+                    $total[4] = -$row3['amount'];
+                }
+                
             }
             foreach ($header as $key => $value) {
                 if ($value == $row3['account']) {
 
                     if ($row3['mode'] == 'Payment') {
-                        $data[4] = number_format($row3['amount'], 2) . 'Dr';
+                        $data[4] =  '+'.number_format($row3['amount'], 2);
                     } else {
-                        $data[4] = number_format($row3['amount'], 2) . 'Cr';
+                        $data[4] = '-'.number_format($row3['amount'], 2);
                     }
                     if (isset($total[$key])) {
-                        $total[$key] += $row3['amount'];
+                        if ($row3['mode'] == 'Payment') {
+                            $total[$key] += $row3['amount'];
+                        }
+                        else
+                        {
+                            $total[$key] -= $row3['amount'];
+                        }
+                        
                     } else {
-                        $total[$key] = $row3['amount'];
+                        if ($row3['mode'] == 'Payment') {
+                            $total[$key] = $row3['amount'];
+                        }
+                        else
+                        {
+                            $total[$key] = -$row3['amount'];
+                        }
+                        
                     }
                 }
             }
@@ -1330,14 +1441,27 @@ class TestingModel extends Model
             $data[2] = 'JV Voucher';
             $data[3] = $row3['jv_id'];
             if ($row3['dr_cr'] == 'dr') {
-                $data[4] = number_format($row3['amount'], 2) . 'Dr';
+                $data[4] = '+'.number_format($row3['amount'], 2);
             } else {
-                $data[4] = number_format($row3['amount'], 2) . 'Cr';
+                $data[4] = '-'.number_format($row3['amount'], 2);
             }
             if (isset($total[4])) {
-                $total[4] += $row3['amount'];
+                if ($row3['dr_cr'] == 'dr') {
+                   $total[4] += $row3['amount'];
+                }
+                else
+                {
+                    $total[4] -= $row3['amount'];
+                }
             } else {
-                $total[4] = $row3['amount'];
+                if ($row3['dr_cr'] == 'dr') {
+                    $total[4] = $row3['amount'];
+                 }
+                 else
+                 {
+                    $total[4] = -$row3['amount'];
+                 }
+                
             }
 
             $builder = $db->table('jv_particular');
@@ -1349,14 +1473,28 @@ class TestingModel extends Model
                 foreach ($jv_particular_data_new as $rowjv_item) {
                     if ($value == $rowjv_item['particular']) {
                         if ($rowjv_item['dr_cr'] == 'dr') {
-                            $data[$key] = number_format($rowjv_item['amount'], 2) . 'Dr';
+                            $data[$key] = '+'.number_format($rowjv_item['amount'], 2);
                         } else {
-                            $data[$key] = number_format($rowjv_item['amount'], 2). 'Cr';
+                            $data[$key] = '-'.number_format($rowjv_item['amount'], 2);
                         }
                         if (isset($total[$key])) {
-                            $total[$key] += $rowjv_item['amount'];
+                            if ($row3['dr_cr'] == 'dr') {
+                                $total[$key] += $rowjv_item['amount'];
+                             }
+                             else
+                             {
+                                $total[$key] -= $rowjv_item['amount'];
+                             }
+                           
                         } else {
-                            $total[$key] = $rowjv_item['amount'];
+                            if ($row3['dr_cr'] == 'dr') {
+                                $total[$key] = $rowjv_item['amount'];
+                             }
+                             else
+                             {
+                                $total[$key] = -$rowjv_item['amount'];
+                             }
+                            
                         }
                     }
                 }

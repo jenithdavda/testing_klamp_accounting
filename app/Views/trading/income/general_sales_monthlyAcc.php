@@ -36,7 +36,7 @@
                                                 FROM:
                                             </div>
                                         </div>
-                                        <input class="form-control fc-datepicker" name="from" placeholder="DD-MM-YYYY" type="text">
+                                        <input class="form-control fc-datepicker" name="from" placeholder="YYYY-MM-DD" type="text">
                                     </div>
 
                                 </div>
@@ -50,7 +50,7 @@
                                                 TO:
                                             </div>
                                         </div>
-                                        <input class="form-control fc-datepicker" name="to" placeholder="DD-MM-YYYY" type="text">
+                                        <input class="form-control fc-datepicker" name="to" placeholder="YYYY-MM-DD" type="text">
                                         <input type="hidden" name="id" value="<?= @$ac_id ?>">
                                         <input type="hidden" name="type" value="<?= @$type ?>">
                                     </div>
