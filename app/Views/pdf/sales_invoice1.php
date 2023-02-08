@@ -173,15 +173,17 @@
               if($salesinvoice['discount'] > 0){
                   
               }
+
                 foreach($item as $row)
                 {
-                    
                     $total_qty +=$row['qty'];
-                    $sub = $row['qty'] * $row['rate'];
-                    $disc_amt = $sub * $row['item_disc'] / 100;
+                    
+                    
                     if($row['is_expence'] == 1){
                         $final_sub = $row['rate'];
                     }else{
+                        $sub = $row['qty'] * $row['rate'];
+                        $disc_amt = $sub * $row['item_disc'] / 100;
                         $final_sub = $sub - $disc_amt;                        
                     }
             
@@ -250,26 +252,25 @@
                     $total_add=0;
                 
                     for ($i = 0; $i < count($item); $i++) {
-                        if($item[$i]['is_expence'] == 1){
-                            $sub = $item[$i]['rate'];
-                        }else{
-                            $sub = $item[$i]['qty'] * $item[$i]['rate'];
-                        }
+                        
+                        $sub = $item[$i]['qty'] * $item[$i]['rate'];
                 
                         if ($salesinvoice['discount'] > 0) {
-                            $discount_amt = $item[$i]['discount'];
-                            $final_sub = $sub - $item[$i]['discount'];
+                            $discount_amt = $sub * $disc_avg_per;
+                            $final_sub = $sub - $discount_amt;
+                            $add_amt = $sub * $add_amt_per;
                         } else {
                             $discount_amt = $sub * $item[$i]['item_disc'] / 100;
                             $final_sub = $sub - $discount_amt;
+                            $add_amt = $final_sub * $add_amt_per;
                         }
                 
-                        $final_tot = $final_sub + (float)$item[$i]['added_amt'];    
+                        $final_tot = $final_sub + $add_amt;    
                         $igst_amt += $final_tot * $item[$i]['igst'] / 100;    
                         $total += $final_tot;
             
-                        $total_discount += $discount_amt; 
-                        $total_add += (float)$item[$i]['added_amt']; 
+                        $total_discount +=$discount_amt; 
+                        $total_add +=$add_amt; 
                 
                     }
                     
@@ -465,16 +466,16 @@
                                     $item_disc = $total_taxable * ($row['item_disc']/100) ;
                                 }
                                 
-                                $total_taxable = $total_taxable - $item_disc - $row['discount']; 
+                                $total_taxable = $total_taxable - $item_disc; 
                             
                                 $arr[$row['hsn']]['taxable'] = (@$arr[$row['hsn']]['taxable'] ? @$arr[$row['hsn']]['taxable'] : 0) + $total_taxable;
                                 $arr[$row['hsn']]['igst'] = $row['igst'];
                                 $arr[$row['hsn']]['cgst'] = $row['cgst'];
                                 $arr[$row['hsn']]['sgst'] = $row['sgst'];
                         
-                                $arr[$row['hsn']]['igst_amount'] =  (@$arr[$row['hsn']]['igst_amount'] ? $arr[$row['hsn']]['igst_amount'] : 0) + (float)$row['igst_amt'];
-                                $arr[$row['hsn']]['cgst_amount'] = (@$arr[$row['hsn']]['cgst_amount'] ? $arr[$row['hsn']]['cgst_amount'] : 0) + (float)$row['cgst_amt'];
-                                $arr[$row['hsn']]['sgst_amount'] = (@$arr[$row['hsn']]['sgst_amount'] ? $arr[$row['hsn']]['sgst_amount'] : 0) + (float)$row['sgst_amt'];
+                                $arr[$row['hsn']]['igst_amount'] =  (@$arr[$row['hsn']]['igst_amount'] ? $arr[$row['hsn']]['igst_amount'] : 0) + @$total_taxable * $arr[$row['hsn']]['igst']/100;
+                                $arr[$row['hsn']]['cgst_amount'] = (@$arr[$row['hsn']]['cgst_amount'] ? $arr[$row['hsn']]['cgst_amount'] : 0) + @$total_taxable * $arr[$row['hsn']]['cgst']/100;
+                                $arr[$row['hsn']]['sgst_amount'] = (@$arr[$row['hsn']]['sgst_amount'] ? $arr[$row['hsn']]['sgst_amount'] : 0) + @$total_taxable * $arr[$row['hsn']]['sgst']/100;
                             
                                 $total_igst +=  $arr[$row['hsn']]['igst_amount'];
                                 $total_cgst +=   $arr[$row['hsn']]['cgst_amount'];
@@ -482,7 +483,7 @@
 
                                 $total_taxable = 0;
                                
-                                $sub = $row['qty'] * $row['rate'] - $item_disc - $row['discount'];
+                                $sub = $row['qty'] * $row['rate'] - $item_disc;
                                 $total_sub += $sub;
 
                             }else{

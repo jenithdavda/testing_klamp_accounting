@@ -1586,5 +1586,339 @@ class TradingModel extends Model
          $writer = new Xlsx($spreadsheet);
          $writer->save('php://output');
      }
+     public function sales_item_xls_export_data($post)
+     {
+         
+         $data = $this->salesItem_voucher_wise_data($post);
+         
+         $spreadsheet = new Spreadsheet();
+         $sheet = $spreadsheet->getActiveSheet();
+ 
+         $spreadsheet->setActiveSheetIndex(0)->setCellValue('A2', session('name'));
+         $spreadsheet->setActiveSheetIndex(0)->mergeCells('A2:C2');
+         $spreadsheet->getActiveSheet()->getStyle('A2:C2')->getFont()->setBold(true);
+         $spreadsheet->getActiveSheet()->getStyle('A2:C2')->getFont()->setSize(20);
+ 
+         $spreadsheet->setActiveSheetIndex(0)->setCellValue('A3', session('address'));
+         $spreadsheet->setActiveSheetIndex(0)->mergeCells('A3:F3');
+         $spreadsheet->getActiveSheet()->getStyle('A3:F3')->getBorders()
+             ->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+ 
+         $date_from = date_create($post['from']);
+         $new_date_from = date_format($date_from, "d-M-y");
+         $date_to = date_create($post['to']);
+         $new_date_to = date_format($date_to, "d-M-y");
+ 
+         $spreadsheet->setActiveSheetIndex(0)->setCellValue('A5', 'Sales Item voucher');
+         $spreadsheet->setActiveSheetIndex(0)->mergeCells('A5:C5');
+         $spreadsheet->getActiveSheet()->getStyle('A5:C5')->getFont()->setBold(true);
+         $spreadsheet->getActiveSheet()->getStyle('A5:C5')->getFont()->setSize(20);
+         $spreadsheet->setActiveSheetIndex(0)->setCellValue('A6', $new_date_from);
+         $spreadsheet->setActiveSheetIndex(0)->setCellValue('B6', 'to');
+         $spreadsheet->setActiveSheetIndex(0)->setCellValue('C6', $new_date_to);
+         $spreadsheet->getActiveSheet()->getStyle('A7:F7')->getBorders()
+             ->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+
+
+        $spreadsheet->setActiveSheetIndex(0)->setCellValue('A8', 'Date');
+        $spreadsheet->setActiveSheetIndex(0)->setCellValue('B8', 'Custom Inv No');
+        $spreadsheet->setActiveSheetIndex(0)->setCellValue('C8', 'Party_name');
+        $spreadsheet->setActiveSheetIndex(0)->setCellValue('D8', 'Voucher Type');
+        $spreadsheet->setActiveSheetIndex(0)->setCellValue('E8', 'Voucher No');
+        $spreadsheet->setActiveSheetIndex(0)->setCellValue('F8', 'Debit');
+        $spreadsheet->getActiveSheet()->getStyle('A8:E8')->getBorders()
+        ->getTop()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+        $spreadsheet->getActiveSheet()->getStyle('A8:E8')->getBorders()
+        ->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+        // $spreadsheet->setActiveSheetIndex(0)->setCellValue('G8', 'Credit');
+        //echo '<pre>';Print_r($data);exit;
+        
+         $i = 9;
+         foreach ($data['sales'] as $row) { 
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('A'.$i, user_date($row['date']));
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('B'.$i, $row['custom_inv_no']);
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('C'.$i, $row['party_name']);
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('D'.$i, 'Sales Item');
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('E'.$i, $row['voucher_id']);
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('F'.$i, $row['taxable']);
+          $i++;
+         }
+         $spreadsheet->setActiveSheetIndex(0)->setCellValue('A'.$i, 'total');
+         $spreadsheet->setActiveSheetIndex(0)->setCellValue('B'.$i, '');
+         $spreadsheet->setActiveSheetIndex(0)->setCellValue('C'.$i, '');
+         $spreadsheet->setActiveSheetIndex(0)->setCellValue('D'.$i, '');
+         $spreadsheet->setActiveSheetIndex(0)->setCellValue('E'.$i, '');
+         $spreadsheet->setActiveSheetIndex(0)->setCellValue('F'.$i, number_format($data['total']['sales_total'],2));
+         $spreadsheet->getActiveSheet()->getStyle('A'.$i)->getFont()->setBold(true);
+         $spreadsheet->getActiveSheet()->getStyle('A'.$i)->getFont()->setSize(16);
+         $spreadsheet->getActiveSheet()->getStyle('F'.$i)->getFont()->setBold(true);
+         $spreadsheet->getActiveSheet()->getStyle('F'.$i)->getFont()->setSize(16);
+         $spreadsheet->getActiveSheet()->getStyle('A'.$i.':F'.$i)->getBorders()
+         ->getTop()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+         $spreadsheet->getActiveSheet()->getStyle('A'.$i.':F'.$i)->getBorders()
+         ->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+        
+         $spreadsheet->getActiveSheet()->setTitle('Sales Item VOucher');
+         $spreadsheet->createSheet();
+ 
+         $spreadsheet->getActiveSheet()->setTitle('docs');
+ 
+         // ------------- End Summary For Advance Adjusted (11B) ------------- //
+ 
+         $spreadsheet->setActiveSheetIndex(0);
+         $writer = new Xlsx($spreadsheet);
+         $writer->save('php://output');
+     }
+     public function sales_return_item_xls_export_data($post)
+     {
+         
+         $data = $this->salesReturnItem_voucher_wise_data($post);
+         //echo '<pre>';Print_r($data);exit;
+         
+         $spreadsheet = new Spreadsheet();
+         $sheet = $spreadsheet->getActiveSheet();
+ 
+         $spreadsheet->setActiveSheetIndex(0)->setCellValue('A2', session('name'));
+         $spreadsheet->setActiveSheetIndex(0)->mergeCells('A2:C2');
+         $spreadsheet->getActiveSheet()->getStyle('A2:C2')->getFont()->setBold(true);
+         $spreadsheet->getActiveSheet()->getStyle('A2:C2')->getFont()->setSize(20);
+ 
+         $spreadsheet->setActiveSheetIndex(0)->setCellValue('A3', session('address'));
+         $spreadsheet->setActiveSheetIndex(0)->mergeCells('A3:F3');
+         $spreadsheet->getActiveSheet()->getStyle('A3:F3')->getBorders()
+             ->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+ 
+         $date_from = date_create($post['from']);
+         $new_date_from = date_format($date_from, "d-M-y");
+         $date_to = date_create($post['to']);
+         $new_date_to = date_format($date_to, "d-M-y");
+ 
+         $spreadsheet->setActiveSheetIndex(0)->setCellValue('A5', 'Sales Return Item voucher');
+         $spreadsheet->setActiveSheetIndex(0)->mergeCells('A5:C5');
+         $spreadsheet->getActiveSheet()->getStyle('A5:C5')->getFont()->setBold(true);
+         $spreadsheet->getActiveSheet()->getStyle('A5:C5')->getFont()->setSize(20);
+         $spreadsheet->setActiveSheetIndex(0)->setCellValue('A6', $new_date_from);
+         $spreadsheet->setActiveSheetIndex(0)->setCellValue('B6', 'to');
+         $spreadsheet->setActiveSheetIndex(0)->setCellValue('C6', $new_date_to);
+         $spreadsheet->getActiveSheet()->getStyle('A7:E7')->getBorders()
+             ->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+
+
+        $spreadsheet->setActiveSheetIndex(0)->setCellValue('A8', 'Date');
+        //$spreadsheet->setActiveSheetIndex(0)->setCellValue('B8', 'Custom Inv No');
+        $spreadsheet->setActiveSheetIndex(0)->setCellValue('B8', 'Party_name');
+        $spreadsheet->setActiveSheetIndex(0)->setCellValue('C8', 'Voucher Type');
+        $spreadsheet->setActiveSheetIndex(0)->setCellValue('D8', 'Voucher No');
+        $spreadsheet->setActiveSheetIndex(0)->setCellValue('E8', 'Debit');
+        $spreadsheet->getActiveSheet()->getStyle('A8:E8')->getBorders()
+        ->getTop()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+        $spreadsheet->getActiveSheet()->getStyle('A8:E8')->getBorders()
+        ->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+        // $spreadsheet->setActiveSheetIndex(0)->setCellValue('G8', 'Credit');
+        //echo '<pre>';Print_r($data);exit;
+        
+         $i = 9;
+         foreach ($data['sales'] as $row) { 
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('A'.$i, user_date($row['date']));
+            // $spreadsheet->setActiveSheetIndex(0)->setCellValue('B'.$i, $row['supply']);
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('B'.$i, $row['party_name']);
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('C'.$i, 'Sales Return Item');
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('D'.$i, $row['voucher_id']);
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('E'.$i, $row['taxable']);
+          $i++;
+         }
+         $spreadsheet->setActiveSheetIndex(0)->setCellValue('A'.$i, 'total');
+         $spreadsheet->setActiveSheetIndex(0)->setCellValue('B'.$i, '');
+         $spreadsheet->setActiveSheetIndex(0)->setCellValue('C'.$i, '');
+         $spreadsheet->setActiveSheetIndex(0)->setCellValue('D'.$i, '');
+        
+         $spreadsheet->setActiveSheetIndex(0)->setCellValue('E'.$i, number_format($data['total']['sales_total'],2));
+         $spreadsheet->getActiveSheet()->getStyle('A'.$i)->getFont()->setBold(true);
+         $spreadsheet->getActiveSheet()->getStyle('A'.$i)->getFont()->setSize(16);
+         $spreadsheet->getActiveSheet()->getStyle('F'.$i)->getFont()->setBold(true);
+         $spreadsheet->getActiveSheet()->getStyle('F'.$i)->getFont()->setSize(16);
+         $spreadsheet->getActiveSheet()->getStyle('A'.$i.':F'.$i)->getBorders()
+         ->getTop()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+         $spreadsheet->getActiveSheet()->getStyle('A'.$i.':F'.$i)->getBorders()
+         ->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+        
+         $spreadsheet->getActiveSheet()->setTitle('Sales Return Item Voucher');
+         $spreadsheet->createSheet();
+ 
+         $spreadsheet->getActiveSheet()->setTitle('docs');
+ 
+         // ------------- End Summary For Advance Adjusted (11B) ------------- //
+ 
+         $spreadsheet->setActiveSheetIndex(0);
+         $writer = new Xlsx($spreadsheet);
+         $writer->save('php://output');
+     }
+     public function purchase_item_xls_export_data($post)
+     {
+         
+         $data = $this->purchaseItem_voucher_wise_data($post);
+         
+         $spreadsheet = new Spreadsheet();
+         $sheet = $spreadsheet->getActiveSheet();
+ 
+         $spreadsheet->setActiveSheetIndex(0)->setCellValue('A2', session('name'));
+         $spreadsheet->setActiveSheetIndex(0)->mergeCells('A2:C2');
+         $spreadsheet->getActiveSheet()->getStyle('A2:C2')->getFont()->setBold(true);
+         $spreadsheet->getActiveSheet()->getStyle('A2:C2')->getFont()->setSize(20);
+ 
+         $spreadsheet->setActiveSheetIndex(0)->setCellValue('A3', session('address'));
+         $spreadsheet->setActiveSheetIndex(0)->mergeCells('A3:F3');
+         $spreadsheet->getActiveSheet()->getStyle('A3:F3')->getBorders()
+             ->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+ 
+         $date_from = date_create($post['from']);
+         $new_date_from = date_format($date_from, "d-M-y");
+         $date_to = date_create($post['to']);
+         $new_date_to = date_format($date_to, "d-M-y");
+ 
+         $spreadsheet->setActiveSheetIndex(0)->setCellValue('A5', 'Purchase Item voucher');
+         $spreadsheet->setActiveSheetIndex(0)->mergeCells('A5:C5');
+         $spreadsheet->getActiveSheet()->getStyle('A5:C5')->getFont()->setBold(true);
+         $spreadsheet->getActiveSheet()->getStyle('A5:C5')->getFont()->setSize(20);
+         $spreadsheet->setActiveSheetIndex(0)->setCellValue('A6', $new_date_from);
+         $spreadsheet->setActiveSheetIndex(0)->setCellValue('B6', 'to');
+         $spreadsheet->setActiveSheetIndex(0)->setCellValue('C6', $new_date_to);
+         $spreadsheet->getActiveSheet()->getStyle('A7:F7')->getBorders()
+             ->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+
+
+        $spreadsheet->setActiveSheetIndex(0)->setCellValue('A8', 'Date');
+        $spreadsheet->setActiveSheetIndex(0)->setCellValue('B8', 'Custom Inv No');
+        $spreadsheet->setActiveSheetIndex(0)->setCellValue('C8', 'Party_name');
+        $spreadsheet->setActiveSheetIndex(0)->setCellValue('D8', 'Voucher Type');
+        $spreadsheet->setActiveSheetIndex(0)->setCellValue('E8', 'Voucher No');
+        $spreadsheet->setActiveSheetIndex(0)->setCellValue('F8', 'Debit');
+        // $spreadsheet->setActiveSheetIndex(0)->setCellValue('G8', 'Credit');
+        $spreadsheet->getActiveSheet()->getStyle('A8:F8')->getBorders()
+        ->getTop()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+        $spreadsheet->getActiveSheet()->getStyle('A8:F8')->getBorders()
+        ->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+        //echo '<pre>';Print_r($data);exit;
+        
+         $i = 9;
+         foreach ($data['purchase'] as $row) { 
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('A'.$i, user_date($row['date']));
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('B'.$i, $row['custom_inv_no']);
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('C'.$i, $row['party_name']);
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('D'.$i, 'Sales Item');
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('E'.$i, $row['voucher_id']);
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('F'.$i, $row['taxable']);
+          $i++;
+         }
+         $spreadsheet->setActiveSheetIndex(0)->setCellValue('A'.$i, 'total');
+         $spreadsheet->setActiveSheetIndex(0)->setCellValue('B'.$i, '');
+         $spreadsheet->setActiveSheetIndex(0)->setCellValue('C'.$i, '');
+         $spreadsheet->setActiveSheetIndex(0)->setCellValue('D'.$i, '');
+         $spreadsheet->setActiveSheetIndex(0)->setCellValue('E'.$i, '');
+         $spreadsheet->setActiveSheetIndex(0)->setCellValue('F'.$i, number_format($data['total']['purchase_total'],2));
+         $spreadsheet->getActiveSheet()->getStyle('A'.$i)->getFont()->setBold(true);
+         $spreadsheet->getActiveSheet()->getStyle('A'.$i)->getFont()->setSize(16);
+         $spreadsheet->getActiveSheet()->getStyle('F'.$i)->getFont()->setBold(true);
+         $spreadsheet->getActiveSheet()->getStyle('F'.$i)->getFont()->setSize(16);
+         $spreadsheet->getActiveSheet()->getStyle('A'.$i.':F'.$i)->getBorders()
+         ->getTop()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+         $spreadsheet->getActiveSheet()->getStyle('A'.$i.':F'.$i)->getBorders()
+         ->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+        
+         $spreadsheet->getActiveSheet()->setTitle('Purchase Item Voucher');
+         $spreadsheet->createSheet();
+ 
+         $spreadsheet->getActiveSheet()->setTitle('docs');
+ 
+         // ------------- End Summary For Advance Adjusted (11B) ------------- //
+ 
+         $spreadsheet->setActiveSheetIndex(0);
+         $writer = new Xlsx($spreadsheet);
+         $writer->save('php://output');
+     }
+     public function purchase_return_item_xls_export_data($post)
+     {
+         
+         $data = $this->purchaseReturnItem_voucher_wise_data($post);
+         
+         $spreadsheet = new Spreadsheet();
+         $sheet = $spreadsheet->getActiveSheet();
+ 
+         $spreadsheet->setActiveSheetIndex(0)->setCellValue('A2', session('name'));
+         $spreadsheet->setActiveSheetIndex(0)->mergeCells('A2:C2');
+         $spreadsheet->getActiveSheet()->getStyle('A2:C2')->getFont()->setBold(true);
+         $spreadsheet->getActiveSheet()->getStyle('A2:C2')->getFont()->setSize(20);
+ 
+         $spreadsheet->setActiveSheetIndex(0)->setCellValue('A3', session('address'));
+         $spreadsheet->setActiveSheetIndex(0)->mergeCells('A3:F3');
+         $spreadsheet->getActiveSheet()->getStyle('A3:F3')->getBorders()
+             ->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+ 
+         $date_from = date_create($post['from']);
+         $new_date_from = date_format($date_from, "d-M-y");
+         $date_to = date_create($post['to']);
+         $new_date_to = date_format($date_to, "d-M-y");
+ 
+         $spreadsheet->setActiveSheetIndex(0)->setCellValue('A5', 'Purchase Item voucher');
+         $spreadsheet->setActiveSheetIndex(0)->mergeCells('A5:C5');
+         $spreadsheet->getActiveSheet()->getStyle('A5:C5')->getFont()->setBold(true);
+         $spreadsheet->getActiveSheet()->getStyle('A5:C5')->getFont()->setSize(20);
+         $spreadsheet->setActiveSheetIndex(0)->setCellValue('A6', $new_date_from);
+         $spreadsheet->setActiveSheetIndex(0)->setCellValue('B6', 'to');
+         $spreadsheet->setActiveSheetIndex(0)->setCellValue('C6', $new_date_to);
+         $spreadsheet->getActiveSheet()->getStyle('A7:F7')->getBorders()
+             ->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+
+
+        $spreadsheet->setActiveSheetIndex(0)->setCellValue('A8', 'Date');
+        $spreadsheet->setActiveSheetIndex(0)->setCellValue('B8', 'Custom Inv No');
+        $spreadsheet->setActiveSheetIndex(0)->setCellValue('C8', 'Party_name');
+        $spreadsheet->setActiveSheetIndex(0)->setCellValue('D8', 'Voucher Type');
+        $spreadsheet->setActiveSheetIndex(0)->setCellValue('E8', 'Voucher No');
+        $spreadsheet->setActiveSheetIndex(0)->setCellValue('F8', 'Debit');
+        // $spreadsheet->setActiveSheetIndex(0)->setCellValue('G8', 'Credit');
+        $spreadsheet->getActiveSheet()->getStyle('A8:F8')->getBorders()
+        ->getTop()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+        $spreadsheet->getActiveSheet()->getStyle('A8:F8')->getBorders()
+        ->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+        //echo '<pre>';Print_r($data);exit;
+        
+         $i = 9;
+         foreach ($data['purchase'] as $row) { 
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('A'.$i, user_date($row['date']));
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('B'.$i, $row['custom_inv_no']);
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('C'.$i, $row['party_name']);
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('D'.$i, 'Sales Item');
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('E'.$i, $row['voucher_id']);
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('F'.$i, $row['taxable']);
+          $i++;
+         }
+         $spreadsheet->setActiveSheetIndex(0)->setCellValue('A'.$i, 'total');
+         $spreadsheet->setActiveSheetIndex(0)->setCellValue('B'.$i, '');
+         $spreadsheet->setActiveSheetIndex(0)->setCellValue('C'.$i, '');
+         $spreadsheet->setActiveSheetIndex(0)->setCellValue('D'.$i, '');
+         $spreadsheet->setActiveSheetIndex(0)->setCellValue('E'.$i, '');
+         $spreadsheet->setActiveSheetIndex(0)->setCellValue('F'.$i, number_format($data['total']['purchase_total'],2));
+         $spreadsheet->getActiveSheet()->getStyle('A'.$i)->getFont()->setBold(true);
+         $spreadsheet->getActiveSheet()->getStyle('A'.$i)->getFont()->setSize(16);
+         $spreadsheet->getActiveSheet()->getStyle('F'.$i)->getFont()->setBold(true);
+         $spreadsheet->getActiveSheet()->getStyle('F'.$i)->getFont()->setSize(16);
+         $spreadsheet->getActiveSheet()->getStyle('A'.$i.':F'.$i)->getBorders()
+         ->getTop()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+         $spreadsheet->getActiveSheet()->getStyle('A'.$i.':F'.$i)->getBorders()
+         ->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+        
+         $spreadsheet->getActiveSheet()->setTitle('Purchase Item Voucher');
+         $spreadsheet->createSheet();
+ 
+         $spreadsheet->getActiveSheet()->setTitle('docs');
+ 
+         // ------------- End Summary For Advance Adjusted (11B) ------------- //
+ 
+         $spreadsheet->setActiveSheetIndex(0);
+         $writer = new Xlsx($spreadsheet);
+         $writer->save('php://output');
+     }
+
 
 }

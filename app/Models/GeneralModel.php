@@ -175,6 +175,7 @@ class GeneralModel extends Model
         
         return $result;
     }
+   
 
     public function get_saleInv_id($table = '')
     {
@@ -608,6 +609,53 @@ class GeneralModel extends Model
         $result_array = $result->getResultArray();
         return $result_array;
 
+    }
+    public function get_max_customInvno($post = '')
+    {
+        //print_r($post);exit;
+        $time = strtotime($post['date']);
+        $month = date("m", $time);
+        $year = date("y", $time);
+        $year1 = date("Y", $time);
+
+        $start = strtotime("{$year1}-{$month}-01");
+        $end = strtotime('-1 second', strtotime('+1 month', $start));
+
+        $start_date = date('Y-m-d', $start);
+        $end_date = date('Y-m-d', $end);
+
+        $db = $this->db;
+        $db->setDatabase(session('DataSource')); 
+        $builder_pt_voucher = $db->table('platform_voucher');
+        $select = 'MAX(voucher) as max_id';
+        $builder_pt_voucher->select($select);
+        $builder_pt_voucher->where(array('is_delete' => '0', 'platform_id' => 1, 'type' => $post['type']));
+        $builder_pt_voucher->where(array('DATE(invoice_date)  >= ' => $start_date));
+        $builder_pt_voucher->where(array('DATE(invoice_date)  <= ' => $end_date));
+        $query = $builder_pt_voucher->get();
+        $getdata = $query->getRow();
+        //print_r($getdata);exit;
+        if (!empty($getdata)) {
+            $max_voucher = $getdata->max_id;
+            $plateform_data  = $this->get_data_table('platform_voucher', array('voucher' => $max_voucher), 'custom_inv_no');
+           if (!empty($plateform_data)) {
+                $string = $plateform_data['custom_inv_no'];
+                $outputArr = preg_split("/\//", $string);
+                $count = count($outputArr);
+                $last_array = $outputArr[$count - 1];
+                $int_var = (int)filter_var($last_array, FILTER_SANITIZE_NUMBER_INT);
+                $new_num = $int_var + 1;
+                $s_number = str_pad($new_num, 4, "0", STR_PAD_LEFT);
+            } else {
+                $s_number = str_pad(0001, 4, "0", STR_PAD_LEFT);
+            }
+              
+        } else {
+            $s_number = str_pad(0001, 4, "0", STR_PAD_LEFT);
+        }
+        $result = 'AI/' . $month . $year . '/' . $s_number;
+        
+        return $result;
     }
   
 }

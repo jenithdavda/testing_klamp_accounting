@@ -1532,7 +1532,7 @@ class SalesModel extends Model
 
         if (!empty($result_array1)) {
             if ($result_array1->id != $post['id']) {
-                $msg = array('st' => 'fail', 'msg' => "Invoice Number Already Exist!!!");
+                $msg = array('st' => 'fail', 'msg' => "Custom Invoice Number Already Exist!!!");
                 return $msg;
             }
         }
@@ -2151,6 +2151,19 @@ class SalesModel extends Model
                 $item_builder = $db->table('sales_item');
                 $result1 = $item_builder->insertBatch($itemdata);
 
+                $platform_data = array(
+                    'voucher' => $id,
+                    'type' => "invoice",
+                    'platform_id' => 1,
+                    'custom_inv_no' => $post['custom_inv_no'],
+                    'invoice_date' => db_date(@$post['invoice_date']),
+                    'database_name' => @$post['database'],
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'created_by' => 0,
+                );
+                $platform_builder = $db->table('platform_voucher');
+                $sstatus = $platform_builder->Insert($platform_data);
+
                 if ($result &&  $result1) {
                     $msg = array('st' => 'success', 'msg' => "Your Details Added Successfully!!!");
                     // return view('master/account_view');
@@ -2358,6 +2371,21 @@ class SalesModel extends Model
         $builder->limit(1);
         $result = $builder->get();
         $result_array = $result->getRow();
+
+        $builder = $db->table('sales_return');
+        $builder->select('*');
+        $builder->where(array("supp_inv" => $post['supp_inv'], "is_delete" => 0, "is_cancle" => 0));
+        $builder->limit(1);
+        $result1 = $builder->get();
+        $result_array1 = $result1->getRow();
+        $msg = array();
+
+        if (!empty($result_array1)) {
+            if ($result_array1->id != $post['id']) {
+                $msg = array('st' => 'fail', 'msg' => "Supply Invoice Number Already Exist!!!");
+                return $msg;
+            }
+        }
 
         $pid = $post['pid'];
         $qty = $post['qty'];
@@ -2862,11 +2890,6 @@ class SalesModel extends Model
                     }
                 }
                 // exit;
-
-
-
-                $builder = $db->table('sales_return');
-
                 if ($result) {
                     $msg = array('st' => 'success', 'msg' => "Your Details updated Successfully!!!");
                 } else {
@@ -2959,6 +2982,20 @@ class SalesModel extends Model
                 //print_r($itemdata);exit;
                 $item_builder = $db->table('sales_item');
                 $result1 = $item_builder->insertBatch($itemdata);
+
+                $builder = $db->table('sales_return');
+                $platform_data = array(
+                    'voucher' => $id,
+                    'type' => "return",
+                    'platform_id' => 1,
+                    'custom_inv_no' => $post['supp_inv'],
+                    'invoice_date' => db_date(@$post['return_date']),
+                    'database_name' => @$post['database'],
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'created_by' => 0,
+                );
+                $platform_builder = $db->table('platform_voucher');
+                $sstatus = $platform_builder->Insert($platform_data);
 
                 if ($result &&  $result1) {
                     $msg = array('st' => 'success', 'msg' => "Your Details Added Successfully!!!");

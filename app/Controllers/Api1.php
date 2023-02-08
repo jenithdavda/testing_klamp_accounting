@@ -252,111 +252,6 @@ class Api extends BaseController{
         return $this->response->setJSON($response);
     }
 
-  // colorsoul api
-    public function Ace_add_sales_invoice(){
-        $header = $this->request->getHeader('Authorization');
-        $post_json = $this->request->getJSON();
-        $post =json_decode(json_encode($post_json), true);;
-        
-        if(@$header->getValue() == '4ccda7514adc0f13595a585205fb9761') {
-            if(!empty($post)){
-                $post['voucher_type'] = "51";
-                $post['round'] = "6";
-                $response = $this->model->ace_insert_edit_sales_invoice($post);
-            }else{
-                $response = array('st' => 'fail', 'msg' => 'Data is Empty','id' =>'');
-            }
-        } else {
-            $response = array('st' => 'fail', 'msg' => 'You are not Authorization','id'=>'');
-        }
-        
-        return $this->response->setJSON($response);
-    }
-    public function Ace_pos_add_sales_invoice(){
-
-        $header = $this->request->getHeader('Authorization');
-        $post_json = $this->request->getJSON();
-        $post =json_decode(json_encode($post_json), true);;
-        // print_r($post);exit;
-        
-        if (@$header->getValue() == '4ccda7514adc0f13595a585205fb9761') {
-            if(!empty($post)){
-                $post['voucher_type'] = "51";
-                $post['round'] = "6";
-                $response = $this->model->ace_pos_insert_edit_sales_invoice($post);
-            }else{
-                $response = array('st' => 'fail', 'msg' => 'Data is Empty','id' =>'');
-            }
-        } else {
-            $response = array('st' => 'fail', 'msg' => 'You are not Authorization','id'=>'');
-        }
-
-        return $this->response->setJSON($response);
-    }
-    public function Ace_add_sales_return(){
-
-        $header = $this->request->getHeader('Authorization');
-        $post_json = $this->request->getJSON();
-        $post =json_decode(json_encode($post_json), true);;
-      
-        if (@$header->getValue() == '4ccda7514adc0f13595a585205fb9761') {
-            if(!empty($post)){
-                $post['voucher_type'] = "52";
-                $post['round'] = "6";
-                $response = $this->model->ace_insert_edit_sales_return($post);
-            }else{
-                $response = array('st' => 'fail', 'msg' => 'Data is Empty','id' =>'');
-            }
-        } else {
-            $response = array('st' => 'fail', 'msg' => 'You are not Authorization','id'=>'');
-        }
-
-        return $this->response->setJSON($response);
-    }
-
-    // ecom api
-    public function Ecom_mtr_add_sales_invoice()
-    {
-        $header = $this->request->getHeader('Authorization');
-        $post_json = $this->request->getJSON();
-        $post =json_decode(json_encode($post_json), true);;
-        
-        if(@$header->getValue() == '4ccda7514adc0f13595a585205fb9761') {
-            if(!empty($post)){
-                $post['voucher_type'] = "51";
-                $post['round'] = "6";
-                $response = $this->model->ecom_mtr_insert_edit_sale_invoice($post);
-            }else{
-                $response = array('st' => 'fail', 'msg' => 'Data is Empty','id' =>'');
-            }
-        } else {
-            $response = array('st' => 'fail', 'msg' => 'You are not Authorization','id'=>'');
-        }
-        
-        return $this->response->setJSON($response);
-    }
-    public function Ecom_mtr_add_sales_return()
-    {
-        $header = $this->request->getHeader('Authorization');
-        $post_json = $this->request->getJSON();
-        $post =json_decode(json_encode($post_json), true);;
-        
-        if(@$header->getValue() == '4ccda7514adc0f13595a585205fb9761') {
-            if(!empty($post)){
-                $post['voucher_type'] = "52";
-                $post['round'] = "6";
-                $response = $this->model->ecom_mtr_insert_edit_sale_return($post);
-            }else{
-                $response = array('st' => 'fail', 'msg' => 'Data is Empty','id' =>'');
-            }
-        } else {
-            $response = array('st' => 'fail', 'msg' => 'You are not Authorization','id'=>'');
-        }
-        
-        return $this->response->setJSON($response);
-    }
-
-   //start not usable
     public function add_sale_challan(){
 
         $header = $this->request->getHeader('Authorization');
@@ -377,6 +272,113 @@ class Api extends BaseController{
 
         return $this->response->setJSON($response);
     }
+
+    public function add_sale_invoice(){
+
+        $header = $this->request->getHeader('Authorization');
+        $post_json = $this->request->getJSON();
+        $post =json_decode(json_encode($post_json), true);;
+        // print_r($post);exit;
+        
+        if (@$header->getValue() == '4ccda7514adc0f13595a585205fb9761') {
+            if(!empty($post)){
+                $post['voucher_type'] = "51";
+                $post['round'] = "6";
+                $response = $this->model->insert_edit_sale_invoice($post);
+            }else{
+                $response = array('st' => 'fail', 'msg' => 'Data is Empty','id' =>'');
+            }
+        } else {
+            $response = array('st' => 'fail', 'msg' => 'You are not Authorization','id'=>'');
+        }
+
+        return $this->response->setJSON($response);
+    }
+
+    public function add_sale_return(){
+
+        $header = $this->request->getHeader('Authorization');
+        $post_json = $this->request->getJSON();
+        $post =json_decode(json_encode($post_json), true);;
+      
+        if (@$header->getValue() == '4ccda7514adc0f13595a585205fb9761') {
+            if(!empty($post)){
+                $post['voucher_type'] = "52";
+                $post['round'] = "6";
+                $response = $this->model->insert_edit_sale_return($post);
+            }else{
+                $response = array('st' => 'fail', 'msg' => 'Data is Empty','id' =>'');
+            }
+        } else {
+            $response = array('st' => 'fail', 'msg' => 'You are not Authorization','id'=>'');
+        }
+
+        return $this->response->setJSON($response);
+    }
+
+    public function ecom_add_sale_invoice()
+    {
+        $header = $this->request->getHeader('Authorization');
+        $post_json = $this->request->getJSON();
+        $post =json_decode(json_encode($post_json), true);;
+        
+        if(@$header->getValue() == '4ccda7514adc0f13595a585205fb9761') {
+            if(!empty($post)){
+                $post['voucher_type'] = "51";
+                $post['round'] = "6";
+                $response = $this->model->ecom_insert_edit_sale_invoice($post);
+            }else{
+                $response = array('st' => 'fail', 'msg' => 'Data is Empty','id' =>'');
+            }
+        } else {
+            $response = array('st' => 'fail', 'msg' => 'You are not Authorization','id'=>'');
+        }
+        
+        return $this->response->setJSON($response);
+    }
+
+    public function ecom_hsn_add_sale_invoice()
+    {
+        $header = $this->request->getHeader('Authorization');
+        $post_json = $this->request->getJSON();
+        $post =json_decode(json_encode($post_json), true);;
+        
+        if(@$header->getValue() == '4ccda7514adc0f13595a585205fb9761') {
+            if(!empty($post)){
+                $post['voucher_type'] = "51";
+                $post['round'] = "6";
+                $response = $this->model->ecom_hsn_insert_edit_sale_invoice($post);
+            }else{
+                $response = array('st' => 'fail', 'msg' => 'Data is Empty','id' =>'');
+            }
+        } else {
+            $response = array('st' => 'fail', 'msg' => 'You are not Authorization','id'=>'');
+        }
+        
+        return $this->response->setJSON($response);
+    }
+
+    public function ecom_hsn_add_sale_return()
+    {
+        $header = $this->request->getHeader('Authorization');
+        $post_json = $this->request->getJSON();
+        $post =json_decode(json_encode($post_json), true);;
+        
+        if(@$header->getValue() == '4ccda7514adc0f13595a585205fb9761') {
+            if(!empty($post)){
+                $post['voucher_type'] = "52";
+                $post['round'] = "6";
+                $response = $this->model->ecom_hsn_insert_edit_sale_return($post);
+            }else{
+                $response = array('st' => 'fail', 'msg' => 'Data is Empty','id' =>'');
+            }
+        } else {
+            $response = array('st' => 'fail', 'msg' => 'You are not Authorization','id'=>'');
+        }
+        
+        return $this->response->setJSON($response);
+    }
+
     public function add_purchase_challan(){
 
         $header = $this->request->getHeader('Authorization');
@@ -398,6 +400,7 @@ class Api extends BaseController{
 
         return $this->response->setJSON($response);
     }
+
     public function add_purchase_invoice(){
 
         $header = $this->request->getHeader('Authorization');
@@ -419,6 +422,7 @@ class Api extends BaseController{
 
         return $this->response->setJSON($response);
     }
+
     public function ecom_add_purchase_invoice()
     {
         $header = $this->request->getHeader('Authorization');
@@ -439,7 +443,7 @@ class Api extends BaseController{
         
         return $this->response->setJSON($response);
     }
-    //end not usable
+
     public function add_custom_jv(){
 
         $header = $this->request->getHeader('Authorization');
@@ -460,6 +464,7 @@ class Api extends BaseController{
 
         return $this->response->setJSON($response);
     }
+
     public function update(){
 
         $header = $this->request->getHeader('Authorization');

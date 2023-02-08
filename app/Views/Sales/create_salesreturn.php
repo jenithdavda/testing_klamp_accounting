@@ -63,11 +63,11 @@
 
                             <div class="col-lg-3 form-group">
                                 <label class="form-label">Return Date: <span class="tx-danger">*</span></label>
-                                <input class="form-control fc-datepicker" placeholder="YYYY-MM-DD" type="text" name="return_date" value="<?= @$s_return['return_date'] ? $s_return['return_date'] : date('Y-m-d'); ?>">
+                                <input class="form-control fc-datepicker" placeholder="YYYY-MM-DD" type="text" name="return_date" value="<?= @$s_return['return_date'] ? $s_return['return_date'] : date('Y-m-d'); ?>"  onchange="get_max_customInvno(this.value)" onkeyup="get_max_customInvno(this.value)">
                             </div>
                             <div class="col-lg-3 form-group">
                                 <label class="form-label">Supplier Invoice No:</label>
-                                <input class="form-control" type="text" placeholder="Enter Supplier Invoice" name="supp_inv" value="<?= @$s_return['supp_inv'] ? $s_return['supp_inv'] : ''; ?>">
+                                <input class="form-control" type="text" placeholder="Enter Supplier Invoice" id="supp_inv" name="supp_inv" value="<?= @$s_return['supp_inv'] ? $s_return['supp_inv'] : @$supp_inv_no; ?>">
                             </div>
 
 
@@ -2205,5 +2205,22 @@
             $('#code_new').val('');
         }
     }
+    function get_max_customInvno(date)
+    {
+       
+        $.ajax({
+                url: PATH + "Sales/Getdata/get_max_customInvno",
+                type: "post",
+                data: {date:date,type:'return'},
+                success: function(data){
+                    $("#supp_inv").val(data.invoice);
+                },
+                error: function(err){
+                    console.log("error");
+                    console.log(err);
+                },
+            });
+    }
+   
 </script>
 <?= $this->endSection() ?>

@@ -219,6 +219,41 @@ class PurchaseApendColumn extends BaseController{
            return $this->response->setJSON($msg);
     }
 
+
+    public function update_divide_discount_purchase_invoice()
+    {
+        $msg = $this->model->update_divide_discount_purchase_invoice();
+        return $this->response->setJSON($msg);
+    }
+    public function update_net_amount_purchase_invoice()
+    {
+        $msg = $this->model->update_net_amount_purchase_invoice();
+        return $this->response->setJSON($msg);
+    }
+
+    public function update_divide_discount_purchase_challan()
+    {
+        $msg = $this->model->update_divide_discount_purchase_challan();
+        return $this->response->setJSON($msg);
+    }
+    public function update_net_amount_puchase_challan()
+    {
+        $msg = $this->model->update_net_amount_purchase_challan();
+        return $this->response->setJSON($msg);
+    }
+
+    public function update_divide_discount_purchase_return()
+    {
+        $msg = $this->model->update_divide_discount_purchase_return();
+        return $this->response->setJSON($msg);
+    }
+    public function update_net_amount_purchase_return()
+    {
+        $msg = $this->model->update_net_amount_purchase_return();
+        return $this->response->setJSON($msg);
+    }
+
+
     
    
       

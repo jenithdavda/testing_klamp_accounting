@@ -326,6 +326,11 @@ class Sales extends BaseController{
 
         $getId = $this->gmodel->get_saleInv_id('sales_invoice');
         $data['current_id'] = $getId + 1;
+        $c_data['type'] = 'invoice';
+        $c_data['date'] = date('Y-m-d');
+        $cutom_inv_no = $this->gmodel->get_max_customInvno($c_data);
+        //print_r($plateform_data);exit;
+        $data['custom_inv_no'] = @$cutom_inv_no;
         $data['id'] = $id;
         $data['title'] = "Add SalesInvoice";
 
@@ -356,6 +361,11 @@ class Sales extends BaseController{
         $data['tax'] = $tax;
         $getId = $this->gmodel->get_return_id('sales_return');
         $data['current_id'] = $getId + 1;
+        $c_data['type'] = 'return';
+        $c_data['date'] = date('Y-m-d');
+        $supp_inv_no = $this->gmodel->get_max_customInvno($c_data);
+        //print_r($plateform_data);exit;
+        $data['supp_inv_no'] = @$supp_inv_no;
         $data['id'] = $id;
         $data['title']="Sales Return";
         
@@ -549,6 +559,16 @@ class Sales extends BaseController{
             $result = $this->model->get_Salegeneral_databyid($post);
             return $this->response->setJSON($result);
         }
+        if ($method == 'get_max_customInvno') {
+            $post = $this->request->getPost();
+             //print_r($post);exit;
+            $result = $this->gmodel->get_max_customInvno($post);
+            //print_r($result);exit;
+            return $this->response->setJSON(array("st" => "success", "invoice" => $result));
+
+            //return $result;
+        }
+        
     }
     public function item_taxability()
     {

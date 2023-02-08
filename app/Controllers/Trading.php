@@ -281,7 +281,9 @@ class Trading extends BaseController{
         {
             $get['page']=1;
         }
-        $data = $this->model->purchaseItem_voucher_wise_data($get);        
+        $data = $this->model->purchaseItem_voucher_wise_data($get); 
+      
+               
 
         $data['title'] = "Purchase Report Voucher Wise";
         return view('trading/trading/purchaseItem_voucher',$data);
@@ -337,7 +339,8 @@ class Trading extends BaseController{
             $get['page']=1;
         }
         $data = $this->model->purchaseReturnItem_voucher_wise_data($get);        
-
+        //echo '<pre>';Print_r($data);exit;
+        
         $data['title'] = "Purchase Return Report Voucher Wise";
         return view('trading/trading/purchaseReturnItem_voucher',$data);
     }
@@ -635,6 +638,62 @@ class Trading extends BaseController{
             $post['from'] = session('financial_form'); 
             $post['to'] = session('financial_to'); 
             $data = $this->model->trading_xls_export_data($post);   
+        }
+
+        return $this->response->setHeader('Contente-Disposition','attachment;filename=abc.xlsx')
+        ->setContentType('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+       
+    }
+    public function sales_item_xls(){
+
+        if (!session('uid')) {
+            return redirect()->to(url('auth'));
+        } 
+        $post = $this->request->getGet();
+        if(!empty($post)){
+            $data = $this->model->sales_item_xls_export_data($post);
+        }
+
+        return $this->response->setHeader('Contente-Disposition','attachment;filename=abc.xlsx')
+        ->setContentType('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+       
+    }
+    public function sales_return_item_xls(){
+
+        if (!session('uid')) {
+            return redirect()->to(url('auth'));
+        } 
+        $post = $this->request->getGet();
+        if(!empty($post)){
+            $data = $this->model->sales_return_item_xls_export_data($post);
+        }
+
+        return $this->response->setHeader('Contente-Disposition','attachment;filename=abc.xlsx')
+        ->setContentType('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+       
+    }
+    public function purchase_item_xls(){
+
+        if (!session('uid')) {
+            return redirect()->to(url('auth'));
+        } 
+        $post = $this->request->getGet();
+        if(!empty($post)){
+            $data = $this->model->purchase_item_xls_export_data($post);
+        }
+
+        return $this->response->setHeader('Contente-Disposition','attachment;filename=abc.xlsx')
+        ->setContentType('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+       
+    }
+    public function purchase_return_item_xls(){
+
+        if (!session('uid')) {
+            return redirect()->to(url('auth'));
+        } 
+        $post = $this->request->getGet();
+        if(!empty($post)){
+            $data = $this->model->purchase_return_item_xls_export_data($post);
         }
 
         return $this->response->setHeader('Contente-Disposition','attachment;filename=abc.xlsx')

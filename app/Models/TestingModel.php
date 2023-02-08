@@ -820,8 +820,1304 @@ class TestingModel extends Model
         exit;
     }
 
+    // public function tds_report_data($post)
+    // {
+    //     $start = strtotime("{$post['year']}-{$post['month']}-01");
+    //     $end = strtotime('-1 second', strtotime('+1 month', $start));
+    //     $start_date = date('Y-m-d', $start);
+    //     $end_date = date('Y-m-d', $end);
+    //     $party_id = $post['account_id'];
 
+    //     $db = $this->db;
+    //     $db->setDatabase(session('DataSource'));
+    //     $builder = $db->table('purchase_invoice');
+    //     $builder->select('*');
+    //     $builder->where(array('is_delete' => 0, 'is_cancle' => 0));
+    //     $builder->where(array('account' => $party_id));
+    //     $builder->where(array('DATE(invoice_date)  >= ' => $start_date));
+    //     $builder->where(array('DATE(invoice_date)  <= ' => $end_date));
+    //     $query = $builder->get();
+    //     $purchase_invoice = $query->getResultArray();
+
+    //     $account_id = array();
+    //     $purchase_item_data = array();
+    //     foreach ($purchase_invoice as $row) {
+    //         // if (!in_array($row['account'], $account_id)) {
+    //         //     $account_id[] = $row['account'];
+    //         // }
+    //         if (!in_array($row['round'], $account_id)) {
+    //             $account_id[] = $row['round'];
+    //         }
+    //         $taxes = json_decode($row['taxes']);
+    //         if (in_array('igst', $taxes)) {
+    //             if (!in_array($row['igst_acc'], $account_id)) {
+    //                 $account_id[] = $row['igst_acc'];
+    //             }
+    //         } else {
+    //             if (!in_array($row['cgst_acc'], $account_id)) {
+    //                 $account_id[] = $row['cgst_acc'];
+    //             }
+    //             if (!in_array($row['sgst_acc'], $account_id)) {
+    //                 $account_id[] = $row['sgst_acc'];
+    //             }
+    //         }
+    //         $builder = $db->table('purchase_item');
+    //         $builder->select('*');
+    //         $builder->where(array('is_delete' => 0, 'parent_id' => $row['id'], 'type' => 'invoice', 'is_expence' => 1));
+    //         $query = $builder->get();
+    //         $purchase_item_data = $query->getResultArray();
+    //         if (!empty($purchase_item_data)) {
+    //             foreach ($purchase_item_data as $row1) {
+    //                 if (!in_array($row1['item_id'], $account_id)) {
+    //                     $account_id[] = $row1['item_id'];
+    //                 }
+    //             }
+    //         }
+    //     }
+    //     $builder = $db->table('purchase_return');
+    //     $builder->select('*');
+    //     $builder->where(array('is_delete' => 0, 'is_cancle' => 0));
+    //     $builder->where(array('account' => $party_id));
+    //     $builder->where(array('DATE(return_date)  >= ' => $start_date));
+    //     $builder->where(array('DATE(return_date)  <= ' => $end_date));
+    //     $query = $builder->get();
+    //     $purchase_return = $query->getResultArray();
+
+    //     foreach ($purchase_return as $row) {
+    //         // if (!in_array($row['account'], $account_id)) {
+    //         //     $account_id[] = $row['account'];
+    //         // }
+    //         if (!in_array($row['round'], $account_id)) {
+    //             $account_id[] = $row['round'];
+    //         }
+    //         $taxes = json_decode($row['taxes']);
+    //         if (in_array('igst', $taxes)) {
+    //             if (!in_array($row['igst_acc'], $account_id)) {
+    //                 $account_id[] = $row['igst_acc'];
+    //             }
+    //         } else {
+    //             if (!in_array($row['cgst_acc'], $account_id)) {
+    //                 $account_id[] = $row['cgst_acc'];
+    //             }
+    //             if (!in_array($row['sgst_acc'], $account_id)) {
+    //                 $account_id[] = $row['sgst_acc'];
+    //             }
+    //         }
+    //         $builder = $db->table('purchase_item');
+    //         $builder->select('*');
+    //         $builder->where(array('is_delete' => 0, 'parent_id' => $row['id'], 'type' => 'return', 'is_expence' => 1));
+    //         $query = $builder->get();
+    //         $purchase_ret_item_data = $query->getResultArray();
+    //         if (!empty($purchase_ret_item_data)) {
+    //             foreach ($purchase_ret_item_data as $row1) {
+    //                 if (!in_array($row1['item_id'], $account_id)) {
+    //                     $account_id[] = $row1['item_id'];
+    //                 }
+    //             }
+    //         }
+    //     }
+
+    //     $builder = $db->table('purchase_general');
+    //     $builder->select('*');
+    //     $builder->where(array('is_delete' => 0, 'is_cancle' => 0));
+    //     $builder->where(array('party_account' => $party_id));
+    //     $builder->where(array('DATE(doc_date)  >= ' => $start_date));
+    //     $builder->where(array('DATE(doc_date)  <= ' => $end_date));
+    //     $query = $builder->get();
+    //     $purchase_general = $query->getResultArray();
+
+    //     foreach ($purchase_general as $row) {
+    //         // if (!in_array($row['account'], $account_id)) {
+    //         //     $account_id[] = $row['account'];
+    //         // }
+    //         if (!in_array($row['round'], $account_id)) {
+    //             $account_id[] = $row['round'];
+    //         }
+    //         $taxes = json_decode($row['taxes']);
+    //         if (in_array('igst', $taxes)) {
+    //             if (!in_array($row['igst_acc'], $account_id)) {
+    //                 $account_id[] = $row['igst_acc'];
+    //             }
+    //         } else {
+    //             if (!in_array($row['cgst_acc'], $account_id)) {
+    //                 $account_id[] = $row['cgst_acc'];
+    //             }
+    //             if (!in_array($row['sgst_acc'], $account_id)) {
+    //                 $account_id[] = $row['sgst_acc'];
+    //             }
+    //         }
+    //         $builder = $db->table('purchase_particu');
+    //         $builder->select('*');
+    //         $builder->where(array('is_delete' => 0, 'parent_id' => $row['id']));
+    //         $query = $builder->get();
+    //         $purchase_gen_item_data = $query->getResultArray();
+    //         if (!empty($purchase_gen_item_data)) {
+    //             foreach ($purchase_gen_item_data as $row1) {
+    //                 if (!in_array($row1['account'], $account_id)) {
+    //                     $account_id[] = $row1['account'];
+    //                 }
+    //             }
+    //         }
+    //     }
+
+    //     $builder = $db->table('bank_tras');
+    //     $builder->select('*');
+    //     $builder->where(array('is_delete' => 0));
+    //     $builder->where(array('particular' => $party_id));
+    //     $builder->where(array('DATE(receipt_date)  >= ' => $start_date));
+    //     $builder->where(array('DATE(receipt_date)  <= ' => $end_date));
+    //     $query = $builder->get();
+    //     $bank_trans = $query->getResultArray();
+    //     foreach ($bank_trans as $row) {
+    //         if (!in_array($row['account'], $account_id)) {
+    //             $account_id[] = $row['account'];
+    //         }
+    //     }
+
+    //     $builder = $db->table('jv_particular');
+    //     $builder->select('*');
+    //     $builder->where(array('is_delete' => 0));
+    //     $builder->where(array('particular' => $party_id));
+    //     $builder->where(array('DATE(date)  >= ' => $start_date));
+    //     $builder->where(array('DATE(date)  <= ' => $end_date));
+    //     $query = $builder->get();
+    //     $jv_data = $query->getResultArray();
+    //     //echo '<pre>';Print_r($jv_data);exit;
+    //     //echo '<pre>';Print_r($account_id);exit;
+    //     foreach ($jv_data as $row) {
+    //         $builder = $db->table('jv_particular');
+    //         $builder->select('*');
+    //         $builder->where(array('is_delete' => 0, 'jv_id' => $row['jv_id'], 'particular!=' => $row['particular']));
+    //         $query = $builder->get();
+    //         $jv_data_list = $query->getResultArray();
+    //         //echo '<pre>';Print_r($jv_data_list);
+    //         foreach ($jv_data_list as $row1) {
+    //             if (!in_array($row['particular'], $account_id)) {
+    //                 $account_id[] = $row1['particular'];
+    //             }
+    //         }
+    //     }
+    //     // exit;
+
+    //     $gmodel = new GeneralModel();
+    //     $header = array();
+    //     $header1 = array();
+    //     $header[0] = 'Date';
+    //     $header[1] = 'Particulars';
+    //     $header[2] = 'Voucher Type';
+    //     $header[3] = 'Narration';
+    //     $header[4] = 'Gross Total';
+    //     $i = 5;
+    //     foreach ($account_id as $row) {
+    //         $header[$i] = $row;
+    //         $i++;
+    //     }
+    //     $i = 5;
+    //     $header1[0] = 'Date';
+    //     $header1[1] = 'Particulars';
+    //     $header1[2] = 'Voucher Type';
+    //     $header1[3] = 'Narration';
+    //     $header1[4] = 'Gross Total';
+    //     $account_name = array();
+    //     foreach ($account_id as $row) {
+    //         $account  = $gmodel->get_data_table("account", array('id' => $row), 'name');
+    //         $header1[$i] = $account['name'];
+    //         $account_name[] = $account['name'];
+    //         $i++;
+    //     }
+    //     $invoice_list = array();
+    //     $total = array();
+    //     $total[0] = '';
+    //     $total[1] = '';
+    //     $total[2] = '';
+    //     $total[3] = '';
+
+    //     foreach ($purchase_invoice as $row3) {
+
+    //         $data = array();
+    //         $account_name  = $gmodel->get_data_table("account", array('id' => $row3['account']), 'name');
+    //         $data[0] = user_date($row3['invoice_date']);
+    //         $data[1] = '<a href="' . url('purchase/add_purchaseinvoice/') . $row3['id'] . '">' . $account_name['name'] . '</a>';
+    //         $data[2] = 'Purchase Invoice';
+    //         $data[3] = $row3['supply_inv'];
+    //         $data[4] = number_format($row3['net_amount'], 2, ".", "");
+
+
+    //         if (isset($total[4])) {
+    //             $total[4] = @$total[4]  + (float) @$row3['net_amount'];
+    //         } else {
+    //             $total[4] = $row3['net_amount'];
+    //         }
+
+    //         $purchase_item_data_new = array();
+
+    //         $builder = $db->table('purchase_item');
+    //         $builder->select('*');
+    //         $builder->where(array('is_delete' => 0, 'parent_id' => $row3['id'], 'type' => 'invoice', 'is_expence' => 1));
+    //         $query = $builder->get();
+    //         $purchase_item_data_new = $query->getResultArray();
+
+    //         foreach ($header as $key => $value) {
+    //             $taxes = json_decode($row3['taxes']);
+    //             if ($value == $row3['round']) {
+    //                 $data[$key] = number_format($row3['round_diff'], 2, ".", "");
+    //                 if (isset($total[$key])) {
+    //                     $total[$key] += @$row3['round_diff'];
+    //                 } else {
+    //                     $total[$key] = $row3['round_diff'];
+    //                 }
+    //             }
+    //             if (in_array('igst', $taxes)) {
+    //                 if ($value == $row3['igst_acc']) {
+    //                     $data[$key] =  number_format($row3['tot_igst'], 2, ".", "");
+    //                     if (isset($total[$key])) {
+    //                         $total[$key] += $row3['tot_igst'];
+    //                     } else {
+    //                         $total[$key] = $row3['tot_igst'];
+    //                     }
+    //                 }
+    //             }
+    //             if (in_array('cgst', $taxes) && in_array('sgst', $taxes)) {
+
+    //                 if ($value == $row3['cgst_acc']) {
+    //                     $data[$key] =  number_format($row3['tot_cgst'], 2, ".", "");
+    //                     if (isset($total[$key])) {
+    //                         $total[$key] += $row3['tot_cgst'];
+    //                     } else {
+    //                         $total[$key] = $row3['tot_cgst'];
+    //                     }
+    //                 }
+    //                 if ($value == $row3['sgst_acc']) {
+    //                     $data[$key] =  number_format($row3['tot_sgst'], 2, ".", "");
+    //                     if (isset($total[$key])) {
+    //                         $total[$key] += $row3['tot_sgst'];
+    //                     } else {
+    //                         $total[$key] = $row3['tot_sgst'];
+    //                     }
+    //                 }
+    //             }
+    //             foreach ($purchase_item_data_new as $rowpurchase_item) {
+    //                 if ($value == $rowpurchase_item['item_id']) {
+    //                     $data[$key] = number_format($rowpurchase_item['rate'], 2, ".", "");
+    //                     if (isset($total[$key])) {
+    //                         $total[$key] += $rowpurchase_item['rate'];
+    //                     } else {
+    //                         $total[$key] = $rowpurchase_item['rate'];
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //         $invoice_list[] = $data;
+    //     }
+    //     foreach ($purchase_return as $row3) {
+    //         $data = array();
+    //         $account_name  = $gmodel->get_data_table("account", array('id' => $row3['account']), 'name');
+    //         $data[0] = user_date($row3['return_date']);
+    //         $data[1] = '<a href="' . url('purchase/add_purchasereturn/') . $row3['id'] . '">' . $account_name['name'] . '</a>';
+    //         $data[2] = 'Purchase Return';
+    //         $data[3] = $row3['other'];
+    //         $data[4] =  '-' . number_format($row3['net_amount'], 2, ".", "");
+    //         if (isset($total[4])) {
+    //             $total[4] -= $row3['net_amount'];
+    //         } else {
+    //             $total[4] = -$row3['net_amount'];
+    //         }
+
+    //         $builder = $db->table('purchase_item');
+    //         $builder->select('*');
+    //         $builder->where(array('is_delete' => 0, 'parent_id' => $row3['id'], 'type' => 'return', 'is_expence' => 1));
+    //         $query = $builder->get();
+    //         $purchase_item_data_new = $query->getResultArray();
+
+    //         foreach ($header as $key => $value) {
+    //             $taxes = json_decode($row3['taxes']);
+    //             if ($value == $row3['round']) {
+    //                 $data[$key] =  number_format($row3['round_diff'], 2, ".", "");
+    //                 if (isset($total[$key])) {
+    //                     $total[$key] -= $row3['round_diff'];
+    //                 } else {
+    //                     $total[$key] = -$row3['round_diff'];
+    //                 }
+    //             }
+    //             if (in_array('igst', $taxes)) {
+    //                 if ($value == $row3['igst_acc']) {
+    //                     $data[$key] = '-' . number_format($row3['tot_igst'], 2, ".", "");
+    //                     if (isset($total[$key])) {
+    //                         $total[$key] -= $row3['tot_igst'];
+    //                     } else {
+    //                         $total[$key] = -$row3['tot_igst'];
+    //                     }
+    //                 }
+    //             }
+    //             if (in_array('cgst', $taxes) && in_array('sgst', $taxes)) {
+
+    //                 if ($value == $row3['cgst_acc']) {
+    //                     $data[$key] = '-' . number_format($row3['tot_cgst'], 2, ".", "");
+    //                     if (isset($total[$key])) {
+    //                         $total[$key] -= $row3['tot_cgst'];
+    //                     } else {
+    //                         $total[$key] = -$row3['tot_cgst'];
+    //                     }
+    //                 }
+    //                 if ($value == $row3['sgst_acc']) {
+    //                     $data[$key] = '-' . number_format($row3['tot_sgst'], 2, ".", "");
+    //                     if (isset($total[$key])) {
+    //                         $total[$key] -= $row3['tot_sgst'];
+    //                     } else {
+    //                         $total[$key] = -$row3['tot_sgst'];
+    //                     }
+    //                 }
+    //             }
+    //             foreach ($purchase_item_data_new as $rowpurchase_item) {
+    //                 if ($value == $rowpurchase_item['item_id']) {
+    //                     $data[$key] = '-' . number_format($rowpurchase_item['rate'], 2, ".", "");
+    //                     if (isset($total[$key])) {
+    //                         $total[$key] -= $rowpurchase_item['rate'];
+    //                     } else {
+    //                         $total[$key] = -$rowpurchase_item['rate'];
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //         $invoice_list[] = $data;
+    //     }
+    //     foreach ($purchase_general as $row3) {
+    //         $data = array();
+    //         $account_name  = $gmodel->get_data_table("account", array('id' => $row3['party_account']), 'name');
+    //         $data[0] = user_date($row3['doc_date']);
+    //         //$data[1] = $account_name['name'];
+
+    //         if ($row3['v_type'] == 'general') {
+    //             $data[1] = '<a href="' . url('purchase/add_general_pur/general/') . $row3['id'] . '">' . $account_name['name'] . '</a>';
+    //             $data[2] = 'Purchase General';
+    //             $data[3] = $row3['supp_inv'];
+    //             $data[4] = number_format($row3['net_amount'], 2, ".", "");
+    //         } else {
+    //             $data[1] = '<a href="' . url('purchase/add_general_pur/return/') . $row3['id'] . '">' . $account_name['name'] . '</a>';
+    //             $data[2] = 'Purchase General Return';
+    //             $data[3] = $row3['supp_inv'];
+    //             $data[4] = '-' . number_format($row3['net_amount'], 2, ".", "");
+    //         }
+
+    //         if (isset($total[4])) {
+    //             if ($row3['v_type'] == 'general') {
+    //                 $total[4] += $row3['net_amount'];
+    //             } else {
+    //                 $total[4] -= $row3['net_amount'];
+    //             }
+    //         } else {
+    //             if ($row3['v_type'] == 'general') {
+    //                 $total[4] = $row3['net_amount'];
+    //             } else {
+    //                 $total[4] = -$row3['net_amount'];
+    //             }
+    //         }
+
+    //         $builder = $db->table('purchase_particu');
+    //         $builder->select('*');
+    //         $builder->where(array('is_delete' => 0, 'parent_id' => $row3['id']));
+    //         $query = $builder->get();
+    //         $purchase_item_data_new = $query->getResultArray();
+
+    //         foreach ($header as $key => $value) {
+    //             $taxes = json_decode($row3['taxes']);
+    //             if ($value == $row3['round']) {
+    //                 if ($row3['v_type'] == 'general') {
+    //                     $data[$key] = number_format($row3['round_diff'], 2, ".", "");
+    //                 } else {
+    //                     $data[$key] = number_format($row3['round_diff'], 2, ".", "");
+    //                 }
+
+    //                 if (isset($total[$key])) {
+    //                     if ($row3['v_type'] == 'general') {
+    //                         $total[$key] += $row3['round_diff'];
+    //                     } else {
+    //                         $total[$key] -= $row3['round_diff'];
+    //                     }
+    //                 } else {
+    //                     if ($row3['v_type'] == 'general') {
+    //                         $total[$key] = $row3['round_diff'];
+    //                     } else {
+    //                         $total[$key] = -$row3['round_diff'];
+    //                     }
+    //                 }
+    //             }
+    //             if (in_array('igst', $taxes)) {
+    //                 if ($value == $row3['igst_acc']) {
+    //                     if ($row3['v_type'] == 'general') {
+    //                         $data[$key] = number_format($row3['tot_igst'], 2, ".", "");
+    //                     } else {
+    //                         $data[$key] = '-' . number_format($row3['tot_igst'], 2, ".", "");
+    //                     }
+
+    //                     if (isset($total[$key])) {
+    //                         if ($row3['v_type'] == 'general') {
+    //                             $total[$key] += $row3['tot_igst'];
+    //                         } else {
+    //                             $total[$key] -= $row3['tot_igst'];
+    //                         }
+    //                     } else {
+    //                         if ($row3['v_type'] == 'general') {
+    //                             $total[$key] = $row3['tot_igst'];
+    //                         } else {
+    //                             $total[$key] = -$row3['tot_igst'];
+    //                         }
+    //                     }
+    //                 }
+    //             }
+    //             if (in_array('cgst', $taxes) && in_array('sgst', $taxes)) {
+
+    //                 if ($value == $row3['cgst_acc']) {
+    //                     if ($row3['v_type'] == 'general') {
+    //                         $data[$key] = number_format($row3['tot_cgst'], 2, ".", "");
+    //                     } else {
+    //                         $data[$key] = '-' . number_format($row3['tot_cgst'], 2, ".", "");
+    //                     }
+
+    //                     if (isset($total[$key])) {
+    //                         if ($row3['v_type'] == 'general') {
+    //                             $total[$key] += $row3['tot_cgst'];
+    //                         } else {
+    //                             $total[$key] -= $row3['tot_cgst'];
+    //                         }
+    //                     } else {
+    //                         if ($row3['v_type'] == 'general') {
+    //                             $total[$key] = $row3['tot_cgst'];
+    //                         } else {
+    //                             $total[$key] = -$row3['tot_cgst'];
+    //                         }
+    //                     }
+    //                 }
+    //                 if ($value == $row3['sgst_acc']) {
+    //                     if ($row3['v_type'] == 'general') {
+    //                         $data[$key] = number_format($row3['tot_sgst'], 2, ".", "");
+    //                     } else {
+    //                         $data[$key] = '-' . number_format($row3['tot_sgst'], 2, ".", "");
+    //                     }
+    //                     if (isset($total[$key])) {
+    //                         if ($row3['v_type'] == 'general') {
+    //                             $total[$key] += $row3['tot_sgst'];
+    //                         } else {
+    //                             $total[$key] -= $row3['tot_sgst'];
+    //                         }
+    //                     } else {
+    //                         if ($row3['v_type'] == 'general') {
+    //                             $total[$key] = $row3['tot_sgst'];
+    //                         } else {
+    //                             $total[$key] = -$row3['tot_sgst'];
+    //                         }
+    //                     }
+    //                 }
+    //             }
+    //             foreach ($purchase_item_data_new as $rowpurchase_item) {
+    //                 if ($value == $rowpurchase_item['account']) {
+    //                     if ($row3['v_type'] == 'general') {
+    //                         $data[$key] = number_format($rowpurchase_item['amount'], 2, ".", "");
+    //                     } else {
+    //                         $data[$key] = '-' . number_format($rowpurchase_item['amount'], 2, ".", "");
+    //                     }
+
+    //                     if (isset($total[$key])) {
+    //                         if ($row3['v_type'] == 'general') {
+    //                             $total[$key] += $rowpurchase_item['amount'];
+    //                         } else {
+    //                             $total[$key] -= $rowpurchase_item['amount'];
+    //                         }
+    //                     } else {
+    //                         if ($row3['v_type'] == 'general') {
+    //                             $total[$key] = $rowpurchase_item['amount'];
+    //                         } else {
+    //                             $total[$key] = -$rowpurchase_item['amount'];
+    //                         }
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //         $invoice_list[] = $data;
+    //     }
+    //     //echo '<pre>';Print_r($bank_trans);exit;
+
+    //     foreach ($bank_trans as $row3) {
+    //         $data = array();
+    //         $account_name  = $gmodel->get_data_table("account", array('id' => $row3['particular']), 'name');
+    //         $data[0] = user_date($row3['receipt_date']);
+    //         if ($row3['payment_type'] == 'bank') {
+    //             $data[1] = '<a href="' . url('Bank/add_banktrans/') . $row3['id'] . '">' . $account_name['name'] . '</a>';
+    //         } else {
+    //             $data[1] = '<a href="' . url('Bank/add_cashtrans/') . $row3['id'] . '">' . $account_name['name'] . '</a>';
+    //         }
+    //         $data[2] = $row3['mode'] . ' ' . $row3['payment_type'] . ' Transaction';
+    //         $data[3] = '';
+    //         //$data[3] = $row3['narration'];
+    //         if ($row3['mode'] == 'Payment') {
+    //             $data[4] = '-' . number_format($row3['amount'], 2, ".", "");
+    //         } else {
+    //             $data[4] = number_format($row3['amount'], 2, ".", "");
+    //         }
+
+    //         if (isset($total[4])) {
+    //             if ($row3['mode'] == 'Payment') {
+    //                 $total[4] -= $row3['amount'];
+    //             } else {
+    //                 $total[4] += $row3['amount'];
+    //             }
+    //         } else {
+    //             if ($row3['mode'] == 'Payment') {
+    //                 $total[4] = -$row3['amount'];
+    //             } else {
+    //                 $total[4] = $row3['amount'];
+    //             }
+    //         }
+    //         foreach ($header as $key => $value) {
+    //             // echo '<pre>val';Print_r($value);
+    //             // echo '<pre>acc';Print_r($row3['account']);
+
+    //             if ($value == $row3['account']) {
+
+    //                 if ($row3['mode'] == 'Payment') {
+    //                     $data[$key] =  '-' . number_format($row3['amount'], 2, ".", "");
+    //                 } else {
+    //                     $data[$key] = number_format($row3['amount'], 2, ".", "");
+    //                 }
+    //                 if (isset($total[$key])) {
+    //                     if ($row3['mode'] == 'Payment') {
+    //                         $total[$key] -= $row3['amount'];
+    //                     } else {
+    //                         $total[$key] += $row3['amount'];
+    //                     }
+    //                 } else {
+    //                     if ($row3['mode'] == 'Payment') {
+    //                         $total[$key] = -$row3['amount'];
+    //                     } else {
+    //                         $total[$key] = $row3['amount'];
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //         // exit;
+    //         $invoice_list[] = $data;
+    //     }
+    //     //echo '<pre>';Print_r($header);exit;
+    //     //echo '<pre>';Print_r($invoice_list);exit;
+    //     //echo '<pre>';Print_r($header);exit;
+
+    //     foreach ($jv_data as $row3) {
+    //         $data = array();
+    //         $account_name  = $gmodel->get_data_table("account", array('id' => $row3['particular']), 'name');
+    //         $data[0] = user_date($row3['date']);
+    //         $data[1] = '<a href="' . url('Bank/add_jvparticular/') . $row3['jv_id'] . '">' . $account_name['name'] . '</a>';
+    //         $data[2] = 'JV Voucher';
+    //         // $data[2] = 'JV Voucher('.$row3['dr_cr'].')';
+    //         $data[3] = '';
+    //         //$data[3] = $row3['jv_id'];
+    //         if ($row3['dr_cr'] == 'dr') {
+    //             $data[4] = '-' . number_format($row3['amount'], 2, ".", "");
+    //         } else {
+    //             $data[4] = number_format($row3['amount'], 2, ".", "");
+    //         }
+    //         if (isset($total[4])) {
+    //             if ($row3['dr_cr'] == 'dr') {
+    //                 $total[4] -= $row3['amount'];
+    //             } else {
+    //                 $total[4] += $row3['amount'];
+    //             }
+    //         } else {
+    //             if ($row3['dr_cr'] == 'dr') {
+    //                 $total[4] = -$row3['amount'];
+    //             } else {
+    //                 $total[4] = $row3['amount'];
+    //             }
+    //         }
+
+    //         $builder = $db->table('jv_particular');
+    //         $builder->select('*');
+    //         $builder->where(array('is_delete' => 0, 'jv_id' => $row3['jv_id'], 'particular!=' => $row3['particular']));
+    //         $query = $builder->get();
+    //         $jv_particular_data_new = $query->getResultArray();
+    //         foreach ($header as $key => $value) {
+    //             foreach ($jv_particular_data_new as $rowjv_item) {
+    //                 if ($value == $rowjv_item['particular']) {
+    //                     if ($row3['dr_cr'] == 'dr') {
+    //                         $data[$key] = '-' . number_format($rowjv_item['amount'], 2, ".", "");
+    //                     } else {
+    //                         $data[$key] = number_format($rowjv_item['amount'], 2, ".", "");
+    //                     }
+    //                     if (isset($total[$key])) {
+    //                         if ($row3['dr_cr'] == 'dr') {
+    //                             $total[$key] -= $rowjv_item['amount'];
+    //                         } else {
+    //                             $total[$key] += $rowjv_item['amount'];
+    //                         }
+    //                     } else {
+    //                         if ($row3['dr_cr'] == 'dr') {
+    //                             $total[$key] = -$rowjv_item['amount'];
+    //                         } else {
+    //                             $total[$key] = $rowjv_item['amount'];
+    //                         }
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //         $invoice_list[] = $data;
+    //     }
+    //     $result['header'] = $header;
+    //     $result['header_account_name'] = $header1;
+    //     $result['invoice_list'] = $invoice_list;
+    //     $result['total'] = $total;
+    //     //exit;
+    //     //echo '<pre>';Print_r($invoice_list);exit;
+
+    //     return $result;
+    // }
     public function tds_report_data($post)
+    {
+        $start = strtotime("{$post['year']}-{$post['month']}-01");
+        $end = strtotime('-1 second', strtotime('+1 month', $start));
+        $start_date = date('Y-m-d', $start);
+        $end_date = date('Y-m-d', $end);
+        $party_id = $post['account_id'];
+
+        $db = $this->db;
+        $db->setDatabase(session('DataSource'));
+        $builder = $db->table('purchase_invoice');
+        $builder->select('*');
+        $builder->where(array('is_delete' => 0, 'is_cancle' => 0));
+        $builder->where(array('account' => $party_id));
+        $builder->where(array('DATE(invoice_date)  >= ' => $start_date));
+        $builder->where(array('DATE(invoice_date)  <= ' => $end_date));
+        $query = $builder->get();
+        $purchase_invoice = $query->getResultArray();
+
+        $account_id = array();
+        $purchase_item_data = array();
+        foreach ($purchase_invoice as $row  ) {
+            // if (!in_array($row['account'], $account_id)) {
+            //     $account_id[] = $row['account'];
+            // }
+            if (!in_array($row['round'], $account_id)) {
+                $account_id[] = $row['round'];
+            }
+            $taxes = json_decode($row['taxes']);
+            if (in_array('igst', $taxes)) {
+                if (!in_array($row['igst_acc'], $account_id)) {
+                    $account_id[] = $row['igst_acc'];
+                }
+            } else {
+                if (!in_array($row['cgst_acc'], $account_id)) {
+                    $account_id[] = $row['cgst_acc'];
+                }
+                if (!in_array($row['sgst_acc'], $account_id)) {
+                    $account_id[] = $row['sgst_acc'];
+                }
+            }
+            $builder = $db->table('purchase_item');
+            $builder->select('*');
+            $builder->where(array('is_delete' => 0, 'parent_id' => $row['id'], 'type' => 'invoice', 'is_expence' => 1));
+            $query = $builder->get();
+            $purchase_item_data = $query->getResultArray();
+            if (!empty($purchase_item_data)) {
+                foreach ($purchase_item_data as $row1) {
+                    if (!in_array($row1['item_id'], $account_id)) {
+                        $account_id[] = $row1['item_id'];
+                    }
+                }
+            }
+        }
+        $builder = $db->table('purchase_return');
+        $builder->select('*');
+        $builder->where(array('is_delete' => 0, 'is_cancle' => 0));
+        $builder->where(array('account' => $party_id));
+        $builder->where(array('DATE(return_date)  >= ' => $start_date));
+        $builder->where(array('DATE(return_date)  <= ' => $end_date));
+        $query = $builder->get();
+        $purchase_return = $query->getResultArray();
+
+        foreach ($purchase_return as $row) {
+            // if (!in_array($row['account'], $account_id)) {
+            //     $account_id[] = $row['account'];
+            // }
+            if (!in_array($row['round'], $account_id)) {
+                $account_id[] = $row['round'];
+            }
+            $taxes = json_decode($row['taxes']);
+            if (in_array('igst', $taxes)) {
+                if (!in_array($row['igst_acc'], $account_id)) {
+                    $account_id[] = $row['igst_acc'];
+                }
+            } else {
+                if (!in_array($row['cgst_acc'], $account_id)) {
+                    $account_id[] = $row['cgst_acc'];
+                }
+                if (!in_array($row['sgst_acc'], $account_id)) {
+                    $account_id[] = $row['sgst_acc'];
+                }
+            }
+            $builder = $db->table('purchase_item');
+            $builder->select('*');
+            $builder->where(array('is_delete' => 0, 'parent_id' => $row['id'], 'type' => 'return', 'is_expence' => 1));
+            $query = $builder->get();
+            $purchase_ret_item_data = $query->getResultArray();
+            if (!empty($purchase_ret_item_data)) {
+                foreach ($purchase_ret_item_data as $row1) {
+                    if (!in_array($row1['item_id'], $account_id)) {
+                        $account_id[] = $row1['item_id'];
+                    }
+                }
+            }
+        }
+
+        $builder = $db->table('purchase_general');
+        $builder->select('*');
+        $builder->where(array('is_delete' => 0, 'is_cancle' => 0));
+        $builder->where(array('party_account' => $party_id));
+        $builder->where(array('DATE(doc_date)  >= ' => $start_date));
+        $builder->where(array('DATE(doc_date)  <= ' => $end_date));
+        $query = $builder->get();
+        $purchase_general = $query->getResultArray();
+
+        foreach ($purchase_general as $row) {
+            // if (!in_array($row['account'], $account_id)) {
+            //     $account_id[] = $row['account'];
+            // }
+            if (!in_array($row['round'], $account_id)) {
+                $account_id[] = $row['round'];
+            }
+            $taxes = json_decode($row['taxes']);
+            if (in_array('igst', $taxes)) {
+                if (!in_array($row['igst_acc'], $account_id)) {
+                    $account_id[] = $row['igst_acc'];
+                }
+            } else {
+                if (!in_array($row['cgst_acc'], $account_id)) {
+                    $account_id[] = $row['cgst_acc'];
+                }
+                if (!in_array($row['sgst_acc'], $account_id)) {
+                    $account_id[] = $row['sgst_acc'];
+                }
+            }
+            $builder = $db->table('purchase_particu');
+            $builder->select('*');
+            $builder->where(array('is_delete' => 0, 'parent_id' => $row['id']));
+            $query = $builder->get();
+            $purchase_gen_item_data = $query->getResultArray();
+            if (!empty($purchase_gen_item_data)) {
+                foreach ($purchase_gen_item_data as $row1) {
+                    if (!in_array($row1['account'], $account_id)) {
+                        $account_id[] = $row1['account'];
+                    }
+                }
+            }
+        }
+
+        $builder = $db->table('bank_tras');
+        $builder->select('*');
+        $builder->where(array('is_delete' => 0));
+        $builder->where(array('particular' => $party_id));
+        $builder->where(array('DATE(receipt_date)  >= ' => $start_date));
+        $builder->where(array('DATE(receipt_date)  <= ' => $end_date));
+        $query = $builder->get();
+        $bank_trans = $query->getResultArray();
+        foreach ($bank_trans as $row) {
+            if (!in_array($row['account'], $account_id)) {
+                $account_id[] = $row['account'];
+            }
+        }
+
+        $builder = $db->table('jv_particular');
+        $builder->select('*');
+        $builder->where(array('is_delete' => 0));
+        $builder->where(array('particular' => $party_id));
+        $builder->where(array('DATE(date)  >= ' => $start_date));
+        $builder->where(array('DATE(date)  <= ' => $end_date));
+        $query = $builder->get();
+        $jv_data = $query->getResultArray();
+        foreach ($jv_data as $row) {
+            $builder = $db->table('jv_particular');
+            $builder->select('*');
+            $builder->where(array('is_delete' => 0, 'jv_id' => $row['jv_id'], 'particular!=' => $row['particular']));
+            $query = $builder->get();
+            $jv_data_list = $query->getResultArray();
+            foreach ($jv_data_list as $row1) {
+                if (!in_array($row1['particular'], $account_id)) {
+                    $account_id[] = $row1['particular'];
+                }
+            }
+        }
+
+        $gmodel = new GeneralModel();
+        $header = array();
+        $header1 = array();
+        $header[0] = 'Date';
+        $header[1] = 'Particulars';
+        $header[2] = 'Voucher Type';
+        $header[3] = 'Narration';
+        $header[4] = 'Gross Total';
+        $i = 5;
+        foreach ($account_id as $row) {
+            $header[$i] = $row;
+            $i++;
+        }
+        $i = 5;
+        $header1[0] = 'Date';
+        $header1[1] = 'Particulars';
+        $header1[2] = 'Voucher Type';
+        $header1[3] = 'Narration';
+        $header1[4] = 'Gross Total';
+        $account_name = array();
+        foreach ($account_id as $row) {
+            $account  = $gmodel->get_data_table("account", array('id' => $row), 'name');
+            $header1[$i] = $account['name'];
+            $account_name[] = $account['name'];
+            $i++;
+        }
+        $invoice_list = array();
+        $total = array();
+        $total[0] = '';
+        $total[1] = '';
+        $total[2] = '';
+        $total[3] = '';
+
+        foreach ($purchase_invoice as $row3) {
+
+            $data = array();
+            $account_name  = $gmodel->get_data_table("account", array('id' => $row3['account']), 'name');
+            $data[0] = user_date($row3['invoice_date']);
+            $data[1] = '<a href="' . url('purchase/add_purchaseinvoice/') . $row3['id'] . '">' . $account_name['name'] . '</a>';
+            $data[2] = 'Purchase Invoice';
+            $data[3] = $row3['supply_inv'];
+            $data[4] = number_format($row3['net_amount'], 2, ".", "");
+
+
+            if (isset($total[4])) {
+                $total[4] = @$total[4]  + (float) @$row3['net_amount'];
+            } else {
+                $total[4] = $row3['net_amount'];
+            }
+
+            $purchase_item_data_new = array();
+
+            $builder = $db->table('purchase_item');
+            $builder->select('*');
+            $builder->where(array('is_delete' => 0, 'parent_id' => $row3['id'], 'type' => 'invoice', 'is_expence' => 1));
+            $query = $builder->get();
+            $purchase_item_data_new = $query->getResultArray();
+
+            foreach ($header as $key => $value) {
+                $taxes = json_decode($row3['taxes']);
+                if ($value == $row3['round']) {
+                    $data[$key] = number_format($row3['round_diff'], 2, ".", "");
+                    if (isset($total[$key])) {
+                        $total[$key] += @$row3['round_diff'];
+                    } else {
+                        $total[$key] = $row3['round_diff'];
+                    }
+                }
+                if (in_array('igst', $taxes)) {
+                    if ($value == $row3['igst_acc']) {
+                        $data[$key] =  number_format($row3['tot_igst'], 2, ".", "");
+                        if (isset($total[$key])) {
+                            $total[$key] += $row3['tot_igst'];
+                        } else {
+                            $total[$key] = $row3['tot_igst'];
+                        }
+                    }
+                }
+                if (in_array('cgst', $taxes) && in_array('sgst', $taxes)) {
+
+                    if ($value == $row3['cgst_acc']) {
+                        $data[$key] =  number_format($row3['tot_cgst'], 2, ".", "");
+                        if (isset($total[$key])) {
+                            $total[$key] += $row3['tot_cgst'];
+                        } else {
+                            $total[$key] = $row3['tot_cgst'];
+                        }
+                    }
+                    if ($value == $row3['sgst_acc']) {
+                        $data[$key] =  number_format($row3['tot_sgst'], 2, ".", "");
+                        if (isset($total[$key])) {
+                            $total[$key] += $row3['tot_sgst'];
+                        } else {
+                            $total[$key] = $row3['tot_sgst'];
+                        }
+                    }
+                }
+                foreach ($purchase_item_data_new as $rowpurchase_item) {
+                    if ($value == $rowpurchase_item['item_id']) {
+                        $data[$key] = number_format($rowpurchase_item['rate'], 2, ".", "");
+                        if (isset($total[$key])) {
+                            $total[$key] += $rowpurchase_item['rate'];
+                        } else {
+                            $total[$key] = $rowpurchase_item['rate'];
+                        }
+                    }
+                }
+            }
+            $invoice_list[] = $data;
+        }
+        foreach ($purchase_return as $row3) {
+            $data = array();
+            $account_name  = $gmodel->get_data_table("account", array('id' => $row3['account']), 'name');
+            $data[0] = user_date($row3['return_date']);
+            $data[1] = '<a href="' . url('purchase/add_purchasereturn/') . $row3['id'] . '">' . $account_name['name'] . '</a>';
+            $data[2] = 'Purchase Return';
+            $data[3] = $row3['other'];
+            $data[4] =  '-' . number_format($row3['net_amount'], 2, ".", "");
+            if (isset($total[4])) {
+                $total[4] -= $row3['net_amount'];
+            } else {
+                $total[4] = -$row3['net_amount'];
+            }
+
+            $builder = $db->table('purchase_item');
+            $builder->select('*');
+            $builder->where(array('is_delete' => 0, 'parent_id' => $row3['id'], 'type' => 'return', 'is_expence' => 1));
+            $query = $builder->get();
+            $purchase_item_data_new = $query->getResultArray();
+
+            foreach ($header as $key => $value) {
+                $taxes = json_decode($row3['taxes']);
+                if ($value == $row3['round']) {
+                    $data[$key] =  number_format($row3['round_diff'], 2, ".", "");
+                    if (isset($total[$key])) {
+                        $total[$key] -= $row3['round_diff'];
+                    } else {
+                        $total[$key] = -$row3['round_diff'];
+                    }
+                }
+                if (in_array('igst', $taxes)) {
+                    if ($value == $row3['igst_acc']) {
+                        $data[$key] = '-' . number_format($row3['tot_igst'], 2, ".", "");
+                        if (isset($total[$key])) {
+                            $total[$key] -= $row3['tot_igst'];
+                        } else {
+                            $total[$key] = -$row3['tot_igst'];
+                        }
+                    }
+                }
+                if (in_array('cgst', $taxes) && in_array('sgst', $taxes)) {
+
+                    if ($value == $row3['cgst_acc']) {
+                        $data[$key] = '-' . number_format($row3['tot_cgst'], 2, ".", "");
+                        if (isset($total[$key])) {
+                            $total[$key] -= $row3['tot_cgst'];
+                        } else {
+                            $total[$key] = -$row3['tot_cgst'];
+                        }
+                    }
+                    if ($value == $row3['sgst_acc']) {
+                        $data[$key] = '-' . number_format($row3['tot_sgst'], 2, ".", "");
+                        if (isset($total[$key])) {
+                            $total[$key] -= $row3['tot_sgst'];
+                        } else {
+                            $total[$key] = -$row3['tot_sgst'];
+                        }
+                    }
+                }
+                foreach ($purchase_item_data_new as $rowpurchase_item) {
+                    if ($value == $rowpurchase_item['item_id']) {
+                        $data[$key] = '-' . number_format($rowpurchase_item['rate'], 2, ".", "");
+                        if (isset($total[$key])) {
+                            $total[$key] -= $rowpurchase_item['rate'];
+                        } else {
+                            $total[$key] = -$rowpurchase_item['rate'];
+                        }
+                    }
+                }
+            }
+            $invoice_list[] = $data;
+        }
+        foreach ($purchase_general as $row3) {
+            $data = array();
+            $account_name  = $gmodel->get_data_table("account", array('id' => $row3['party_account']), 'name');
+            $data[0] = user_date($row3['doc_date']);
+            //$data[1] = $account_name['name'];
+
+            if ($row3['v_type'] == 'general') {
+                $data[1] = '<a href="' . url('purchase/add_general_pur/general/') . $row3['id'] . '">' . $account_name['name'] . '</a>';
+                $data[2] = 'Purchase General';
+                $data[3] = $row3['supp_inv'];
+                $data[4] = number_format($row3['net_amount'], 2, ".", "");
+            } else {
+                $data[1] = '<a href="' . url('purchase/add_general_pur/return/') . $row3['id'] . '">' . $account_name['name'] . '</a>';
+                $data[2] = 'Purchase General Return';
+                $data[3] = $row3['supp_inv'];
+                $data[4] = '-' . number_format($row3['net_amount'], 2, ".", "");
+            }
+
+            if (isset($total[4])) {
+                if ($row3['v_type'] == 'general') {
+                    $total[4] += $row3['net_amount'];
+                } else {
+                    $total[4] -= $row3['net_amount'];
+                }
+            } else {
+                if ($row3['v_type'] == 'general') {
+                    $total[4] = $row3['net_amount'];
+                } else {
+                    $total[4] = -$row3['net_amount'];
+                }
+            }
+
+            $builder = $db->table('purchase_particu');
+            $builder->select('*');
+            $builder->where(array('is_delete' => 0, 'parent_id' => $row3['id']));
+            $query = $builder->get();
+            $purchase_item_data_new = $query->getResultArray();
+
+            foreach ($header as $key => $value) {
+                $taxes = json_decode($row3['taxes']);
+                if ($value == $row3['round']) {
+                    if ($row3['v_type'] == 'general') {
+                        $data[$key] = number_format($row3['round_diff'], 2, ".", "");
+                    } else {
+                        $data[$key] = number_format($row3['round_diff'], 2, ".", "");
+                    }
+
+                    if (isset($total[$key])) {
+                        if ($row3['v_type'] == 'general') {
+                            $total[$key] += $row3['round_diff'];
+                        } else {
+                            $total[$key] -= $row3['round_diff'];
+                        }
+                    } else {
+                        if ($row3['v_type'] == 'general') {
+                            $total[$key] = $row3['round_diff'];
+                        } else {
+                            $total[$key] = -$row3['round_diff'];
+                        }
+                    }
+                }
+                if (in_array('igst', $taxes)) {
+                    if ($value == $row3['igst_acc']) {
+                        if ($row3['v_type'] == 'general') {
+                            $data[$key] = number_format($row3['tot_igst'], 2, ".", "");
+                        } else {
+                            $data[$key] = '-' . number_format($row3['tot_igst'], 2, ".", "");
+                        }
+
+                        if (isset($total[$key])) {
+                            if ($row3['v_type'] == 'general') {
+                                $total[$key] += $row3['tot_igst'];
+                            } else {
+                                $total[$key] -= $row3['tot_igst'];
+                            }
+                        } else {
+                            if ($row3['v_type'] == 'general') {
+                                $total[$key] = $row3['tot_igst'];
+                            } else {
+                                $total[$key] = -$row3['tot_igst'];
+                            }
+                        }
+                    }
+                }
+                if (in_array('cgst', $taxes) && in_array('sgst', $taxes)) {
+
+                    if ($value == $row3['cgst_acc']) {
+                        if ($row3['v_type'] == 'general') {
+                            $data[$key] = number_format($row3['tot_cgst'], 2, ".", "");
+                        } else {
+                            $data[$key] = '-' . number_format($row3['tot_cgst'], 2, ".", "");
+                        }
+
+                        if (isset($total[$key])) {
+                            if ($row3['v_type'] == 'general') {
+                                $total[$key] += $row3['tot_cgst'];
+                            } else {
+                                $total[$key] -= $row3['tot_cgst'];
+                            }
+                        } else {
+                            if ($row3['v_type'] == 'general') {
+                                $total[$key] = $row3['tot_cgst'];
+                            } else {
+                                $total[$key] = -$row3['tot_cgst'];
+                            }
+                        }
+                    }
+                    if ($value == $row3['sgst_acc']) {
+                        if ($row3['v_type'] == 'general') {
+                            $data[$key] = number_format($row3['tot_sgst'], 2, ".", "");
+                        } else {
+                            $data[$key] = '-' . number_format($row3['tot_sgst'], 2, ".", "");
+                        }
+                        if (isset($total[$key])) {
+                            if ($row3['v_type'] == 'general') {
+                                $total[$key] += $row3['tot_sgst'];
+                            } else {
+                                $total[$key] -= $row3['tot_sgst'];
+                            }
+                        } else {
+                            if ($row3['v_type'] == 'general') {
+                                $total[$key] = $row3['tot_sgst'];
+                            } else {
+                                $total[$key] = -$row3['tot_sgst'];
+                            }
+                        }
+                    }
+                }
+                foreach ($purchase_item_data_new as $rowpurchase_item) {
+                    if ($value == $rowpurchase_item['account']) {
+                        if ($row3['v_type'] == 'general') {
+                            $data[$key] = number_format($rowpurchase_item['amount'], 2, ".", "");
+                        } else {
+                            $data[$key] = '-' . number_format($rowpurchase_item['amount'], 2, ".", "");
+                        }
+
+                        if (isset($total[$key])) {
+                            if ($row3['v_type'] == 'general') {
+                                $total[$key] += $rowpurchase_item['amount'];
+                            } else {
+                                $total[$key] -= $rowpurchase_item['amount'];
+                            }
+                        } else {
+                            if ($row3['v_type'] == 'general') {
+                                $total[$key] = $rowpurchase_item['amount'];
+                            } else {
+                                $total[$key] = -$rowpurchase_item['amount'];
+                            }
+                        }
+                    }
+                }
+            }
+            $invoice_list[] = $data;
+        }
+        //echo '<pre>';Print_r($bank_trans);exit;
+
+        foreach ($bank_trans as $row3) {
+            $data = array();
+            $account_name  = $gmodel->get_data_table("account", array('id' => $row3['particular']), 'name');
+            $data[0] = user_date($row3['receipt_date']);
+            if ($row3['payment_type'] == 'bank') {
+                $data[1] = '<a href="' . url('Bank/add_banktrans/') . $row3['id'] . '">' . $account_name['name'] . '</a>';
+            } else {
+                $data[1] = '<a href="' . url('Bank/add_cashtrans/') . $row3['id'] . '">' . $account_name['name'] . '</a>';
+            }
+            $data[2] = $row3['mode'] . ' ' . $row3['payment_type'] . ' Transaction';
+            $data[3] = '';
+            //$data[3] = $row3['narration'];
+            if ($row3['mode'] == 'Payment') {
+                $data[4] = '-' . number_format($row3['amount'], 2, ".", "");
+            } else {
+                $data[4] = number_format($row3['amount'], 2, ".", "");
+            }
+
+            if (isset($total[4])) {
+                if ($row3['mode'] == 'Payment') {
+                    $total[4] -= $row3['amount'];
+                } else {
+                    $total[4] += $row3['amount'];
+                }
+            } else {
+                if ($row3['mode'] == 'Payment') {
+                    $total[4] = -$row3['amount'];
+                } else {
+                    $total[4] = $row3['amount'];
+                }
+            }
+            foreach ($header as $key => $value) {
+                // echo '<pre>val';Print_r($value);
+                // echo '<pre>acc';Print_r($row3['account']);
+
+                if ($value == $row3['account']) {
+
+                    if ($row3['mode'] == 'Payment') {
+                        $data[$key] =  '-' . number_format($row3['amount'], 2, ".", "");
+                    } else {
+                        $data[$key] = number_format($row3['amount'], 2, ".", "");
+                    }
+                    if (isset($total[$key])) {
+                        if ($row3['mode'] == 'Payment') {
+                            $total[$key] -= $row3['amount'];
+                        } else {
+                            $total[$key] += $row3['amount'];
+                        }
+                    } else {
+                        if ($row3['mode'] == 'Payment') {
+                            $total[$key] = -$row3['amount'];
+                        } else {
+                            $total[$key] = $row3['amount'];
+                        }
+                    }
+                }
+            }
+            // exit;
+            $invoice_list[] = $data;
+        }
+        //echo '<pre>';Print_r($header);exit;
+        //echo '<pre>';Print_r($invoice_list);exit;
+        //echo '<pre>';Print_r($header);exit;
+
+        foreach ($jv_data as $row3) {
+            $data = array();
+            $account_name  = $gmodel->get_data_table("account", array('id' => $row3['particular']), 'name');
+            $data[0] = user_date($row3['date']);
+            $data[1] = '<a href="' . url('Bank/add_jvparticular/') . $row3['jv_id'] . '">' . $account_name['name'] . '</a>';
+            $data[2] = 'JV Voucher';
+            // $data[2] = 'JV Voucher('.$row3['dr_cr'].')';
+            $data[3] = '';
+            //$data[3] = $row3['jv_id'];
+            if ($row3['dr_cr'] == 'dr') {
+                $data[4] = '-' . number_format($row3['amount'], 2, ".", "");
+            } else {
+                $data[4] = number_format($row3['amount'], 2, ".", "");
+            }
+            if (isset($total[4])) {
+                if ($row3['dr_cr'] == 'dr') {
+                    $total[4] -= $row3['amount'];
+                } else {
+                    $total[4] += $row3['amount'];
+                }
+            } else {
+                if ($row3['dr_cr'] == 'dr') {
+                    $total[4] = -$row3['amount'];
+                } else {
+                    $total[4] = $row3['amount'];
+                }
+            }
+
+            $builder = $db->table('jv_particular');
+            $builder->select('*');
+            $builder->where(array('is_delete' => 0, 'jv_id' => $row3['jv_id'], 'particular!=' => $row3['particular']));
+            $query = $builder->get();
+            $jv_particular_data_new = $query->getResultArray();
+            
+
+            foreach ($header as $key => $value) {
+                foreach ($jv_particular_data_new as $rowjv_item) {
+
+                    if ($value == $rowjv_item['particular']) {
+                        if ($rowjv_item['dr_cr'] == 'dr') {
+                            $data[$key] = '-' . number_format($rowjv_item['amount'], 2, ".", "");
+                        } else {
+                            $data[$key] = number_format($rowjv_item['amount'], 2, ".", "");
+                        }
+                        if (isset($total[$key])) {
+                            if ($rowjv_item['dr_cr'] == 'dr') {
+                                $total[$key] -= $rowjv_item['amount'];
+                            } else {
+                                $total[$key] += $rowjv_item['amount'];
+                            }
+                        } else {
+                            if ($rowjv_item['dr_cr'] == 'dr') {
+                                $total[$key] = -$rowjv_item['amount'];
+                            } else {
+                                $total[$key] = $rowjv_item['amount'];
+                            }
+                        }
+                    }
+                }
+            }
+            $invoice_list[] = $data;
+        }
+        $result['header'] = $header;
+        $result['header_account_name'] = $header1;
+        $result['invoice_list'] = $invoice_list;
+        $result['total'] = $total;
+        //exit;
+        //echo '<pre>';Print_r($invoice_list);exit;
+
+        return $result;
+    }
+    public function tds_report_data_excel($post)
     {
         $start = strtotime("{$post['year']}-{$post['month']}-01");
         $end = strtotime('-1 second', strtotime('+1 month', $start));
@@ -1006,7 +2302,7 @@ class TestingModel extends Model
         $header[0] = 'Date';
         $header[1] = 'Particulars';
         $header[2] = 'Voucher Type';
-        $header[3] = 'Invoice No.';
+        $header[3] = 'Narration';
         $header[4] = 'Gross Total';
         $i = 5;
         foreach ($account_id as $row) {
@@ -1017,7 +2313,7 @@ class TestingModel extends Model
         $header1[0] = 'Date';
         $header1[1] = 'Particulars';
         $header1[2] = 'Voucher Type';
-        $header1[3] = 'Invoice No.';
+        $header1[3] = 'Narration';
         $header1[4] = 'Gross Total';
         $account_name = array();
         foreach ($account_id as $row) {
@@ -1028,6 +2324,10 @@ class TestingModel extends Model
         }
         $invoice_list = array();
         $total = array();
+        $total[0] = '';
+        $total[1] = '';
+        $total[2] = '';
+        $total[3] = '';
 
         foreach ($purchase_invoice as $row3) {
 
@@ -1035,13 +2335,10 @@ class TestingModel extends Model
             $account_name  = $gmodel->get_data_table("account", array('id' => $row3['account']), 'name');
             $data[0] = user_date($row3['invoice_date']);
             $data[1] = $account_name['name'];
-            $data[2] = 'Purchase';
-            $data[3] = $row3['invoice_no'];
-            $data[4] =  '+'. number_format($row3['net_amount'], 2);
-            $total[0] = '';
-            $total[1] = '';
-            $total[2] = '';
-            $total[3] = '';
+            $data[2] = 'Purchase Invoice';
+            $data[3] = $row3['supply_inv'];
+            $data[4] = number_format($row3['net_amount'], 2, ".", "");
+
 
             if (isset($total[4])) {
                 $total[4] = @$total[4]  + (float) @$row3['net_amount'];
@@ -1060,7 +2357,7 @@ class TestingModel extends Model
             foreach ($header as $key => $value) {
                 $taxes = json_decode($row3['taxes']);
                 if ($value == $row3['round']) {
-                    $data[$key] = number_format($row3['round_diff'], 2);
+                    $data[$key] = number_format($row3['round_diff'], 2, ".", "");
                     if (isset($total[$key])) {
                         $total[$key] += @$row3['round_diff'];
                     } else {
@@ -1069,7 +2366,7 @@ class TestingModel extends Model
                 }
                 if (in_array('igst', $taxes)) {
                     if ($value == $row3['igst_acc']) {
-                        $data[$key] =  '+'.number_format($row3['tot_igst'], 2);
+                        $data[$key] =  number_format($row3['tot_igst'], 2, ".", "");
                         if (isset($total[$key])) {
                             $total[$key] += $row3['tot_igst'];
                         } else {
@@ -1080,7 +2377,7 @@ class TestingModel extends Model
                 if (in_array('cgst', $taxes) && in_array('sgst', $taxes)) {
 
                     if ($value == $row3['cgst_acc']) {
-                        $data[$key] =  '+'.number_format($row3['tot_cgst'], 2);
+                        $data[$key] =  number_format($row3['tot_cgst'], 2, ".", "");
                         if (isset($total[$key])) {
                             $total[$key] += $row3['tot_cgst'];
                         } else {
@@ -1088,7 +2385,7 @@ class TestingModel extends Model
                         }
                     }
                     if ($value == $row3['sgst_acc']) {
-                        $data[$key] =  '+'.number_format($row3['tot_sgst'], 2);
+                        $data[$key] =  number_format($row3['tot_sgst'], 2, ".", "");
                         if (isset($total[$key])) {
                             $total[$key] += $row3['tot_sgst'];
                         } else {
@@ -1098,7 +2395,7 @@ class TestingModel extends Model
                 }
                 foreach ($purchase_item_data_new as $rowpurchase_item) {
                     if ($value == $rowpurchase_item['item_id']) {
-                        $data[$key] = '+'.number_format($rowpurchase_item['rate'], 2);
+                        $data[$key] = number_format($rowpurchase_item['rate'], 2, ".", "");
                         if (isset($total[$key])) {
                             $total[$key] += $rowpurchase_item['rate'];
                         } else {
@@ -1115,8 +2412,8 @@ class TestingModel extends Model
             $data[0] = user_date($row3['return_date']);
             $data[1] = $account_name['name'];
             $data[2] = 'Purchase Return';
-            $data[3] = $row3['return_no'];
-            $data[4] =  '-'.number_format($row3['net_amount'], 2);
+            $data[3] = $row3['other'];
+            $data[4] =  '-' . number_format($row3['net_amount'], 2, ".", "");
             if (isset($total[4])) {
                 $total[4] -= $row3['net_amount'];
             } else {
@@ -1132,7 +2429,7 @@ class TestingModel extends Model
             foreach ($header as $key => $value) {
                 $taxes = json_decode($row3['taxes']);
                 if ($value == $row3['round']) {
-                    $data[$key] =  number_format($row3['round_diff'], 2);
+                    $data[$key] =  number_format($row3['round_diff'], 2, ".", "");
                     if (isset($total[$key])) {
                         $total[$key] -= $row3['round_diff'];
                     } else {
@@ -1141,7 +2438,7 @@ class TestingModel extends Model
                 }
                 if (in_array('igst', $taxes)) {
                     if ($value == $row3['igst_acc']) {
-                        $data[$key] = '-'.number_format($row3['tot_igst'], 2);
+                        $data[$key] = '-' . number_format($row3['tot_igst'], 2, ".", "");
                         if (isset($total[$key])) {
                             $total[$key] -= $row3['tot_igst'];
                         } else {
@@ -1152,7 +2449,7 @@ class TestingModel extends Model
                 if (in_array('cgst', $taxes) && in_array('sgst', $taxes)) {
 
                     if ($value == $row3['cgst_acc']) {
-                        $data[$key] = '-'.number_format($row3['tot_cgst'], 2);
+                        $data[$key] = '-' . number_format($row3['tot_cgst'], 2, ".", "");
                         if (isset($total[$key])) {
                             $total[$key] -= $row3['tot_cgst'];
                         } else {
@@ -1160,7 +2457,7 @@ class TestingModel extends Model
                         }
                     }
                     if ($value == $row3['sgst_acc']) {
-                        $data[$key] ='-'. number_format($row3['tot_sgst'], 2);
+                        $data[$key] = '-' . number_format($row3['tot_sgst'], 2, ".", "");
                         if (isset($total[$key])) {
                             $total[$key] -= $row3['tot_sgst'];
                         } else {
@@ -1170,7 +2467,7 @@ class TestingModel extends Model
                 }
                 foreach ($purchase_item_data_new as $rowpurchase_item) {
                     if ($value == $rowpurchase_item['item_id']) {
-                        $data[$key] = '-'.number_format($rowpurchase_item['rate'], 2);
+                        $data[$key] = '-' . number_format($rowpurchase_item['rate'], 2, ".", "");
                         if (isset($total[$key])) {
                             $total[$key] -= $rowpurchase_item['rate'];
                         } else {
@@ -1186,28 +2483,27 @@ class TestingModel extends Model
             $account_name  = $gmodel->get_data_table("account", array('id' => $row3['party_account']), 'name');
             $data[0] = user_date($row3['doc_date']);
             $data[1] = $account_name['name'];
-            $data[2] = 'Purchase General';
-            $data[3] = $row3['invoice_no'];
+
             if ($row3['v_type'] == 'general') {
-                $data[4] = '+'.number_format($row3['net_amount'], 2);
+                $data[2] = 'Purchase General';
+                $data[3] = $row3['supp_inv'];
+                $data[4] = number_format($row3['net_amount'], 2, ".", "");
             } else {
-                $data[4] = '-'.number_format($row3['net_amount'], 2);
+                $data[2] = 'Purchase General Return';
+                $data[3] = $row3['supp_inv'];
+                $data[4] = '-' . number_format($row3['net_amount'], 2, ".", "");
             }
 
             if (isset($total[4])) {
                 if ($row3['v_type'] == 'general') {
                     $total[4] += $row3['net_amount'];
-                }
-                else
-                {
+                } else {
                     $total[4] -= $row3['net_amount'];
                 }
             } else {
                 if ($row3['v_type'] == 'general') {
                     $total[4] = $row3['net_amount'];
-                }
-                else
-                {
+                } else {
                     $total[4] = -$row3['net_amount'];
                 }
             }
@@ -1222,57 +2518,45 @@ class TestingModel extends Model
                 $taxes = json_decode($row3['taxes']);
                 if ($value == $row3['round']) {
                     if ($row3['v_type'] == 'general') {
-                        $data[$key] = number_format($row3['round_diff'], 2);
+                        $data[$key] = number_format($row3['round_diff'], 2, ".", "");
                     } else {
-                        $data[$key] = number_format($row3['round_diff'], 2);
+                        $data[$key] = number_format($row3['round_diff'], 2, ".", "");
                     }
 
                     if (isset($total[$key])) {
                         if ($row3['v_type'] == 'general') {
                             $total[$key] += $row3['round_diff'];
-                        }
-                        else
-                        {
+                        } else {
                             $total[$key] -= $row3['round_diff'];
                         }
-                       
                     } else {
                         if ($row3['v_type'] == 'general') {
                             $total[$key] = $row3['round_diff'];
-                        }
-                        else
-                        {
+                        } else {
                             $total[$key] = -$row3['round_diff'];
                         }
-                        
                     }
                 }
                 if (in_array('igst', $taxes)) {
                     if ($value == $row3['igst_acc']) {
                         if ($row3['v_type'] == 'general') {
-                            $data[$key] = '+'.number_format($row3['tot_igst'], 2);
+                            $data[$key] = number_format($row3['tot_igst'], 2, ".", "");
                         } else {
-                            $data[$key] = '-'.number_format($row3['tot_igst'], 2);
+                            $data[$key] = '-' . number_format($row3['tot_igst'], 2, ".", "");
                         }
 
                         if (isset($total[$key])) {
                             if ($row3['v_type'] == 'general') {
                                 $total[$key] += $row3['tot_igst'];
-                            }
-                            else
-                            {
+                            } else {
                                 $total[$key] -= $row3['tot_igst'];
                             }
-                           
                         } else {
                             if ($row3['v_type'] == 'general') {
                                 $total[$key] = $row3['tot_igst'];
-                            }
-                            else
-                            {
+                            } else {
                                 $total[$key] = -$row3['tot_igst'];
                             }
-                            
                         }
                     }
                 }
@@ -1280,86 +2564,66 @@ class TestingModel extends Model
 
                     if ($value == $row3['cgst_acc']) {
                         if ($row3['v_type'] == 'general') {
-                            $data[$key] = '+'.number_format($row3['tot_cgst'], 2);
+                            $data[$key] = number_format($row3['tot_cgst'], 2, ".", "");
                         } else {
-                            $data[$key] = '-'.number_format($row3['tot_cgst'], 2);
+                            $data[$key] = '-' . number_format($row3['tot_cgst'], 2, ".", "");
                         }
 
                         if (isset($total[$key])) {
                             if ($row3['v_type'] == 'general') {
                                 $total[$key] += $row3['tot_cgst'];
-                            }
-                            else
-                            {
+                            } else {
                                 $total[$key] -= $row3['tot_cgst'];
                             }
-                           
                         } else {
                             if ($row3['v_type'] == 'general') {
                                 $total[$key] = $row3['tot_cgst'];
-                            }
-                            else
-                            {
+                            } else {
                                 $total[$key] = -$row3['tot_cgst'];
                             }
-                           
                         }
                     }
                     if ($value == $row3['sgst_acc']) {
                         if ($row3['v_type'] == 'general') {
-                            $data[$key] = '+'.number_format($row3['tot_sgst'], 2);
+                            $data[$key] = number_format($row3['tot_sgst'], 2, ".", "");
                         } else {
-                            $data[$key] = '-'.number_format($row3['tot_sgst'], 2);
+                            $data[$key] = '-' . number_format($row3['tot_sgst'], 2, ".", "");
                         }
                         if (isset($total[$key])) {
                             if ($row3['v_type'] == 'general') {
                                 $total[$key] += $row3['tot_sgst'];
-                            }
-                            else
-                            {
+                            } else {
                                 $total[$key] -= $row3['tot_sgst'];
                             }
-                           
                         } else {
                             if ($row3['v_type'] == 'general') {
                                 $total[$key] = $row3['tot_sgst'];
-                            }
-                            else
-                            {
+                            } else {
                                 $total[$key] = -$row3['tot_sgst'];
                             }
-                           
-                           
                         }
                     }
                 }
                 foreach ($purchase_item_data_new as $rowpurchase_item) {
                     if ($value == $rowpurchase_item['account']) {
                         if ($row3['v_type'] == 'general') {
-                            $data[$key] = '+'.number_format($rowpurchase_item['amount'], 2) ;
+                            $data[$key] = number_format($rowpurchase_item['amount'], 2, ".", "");
                         } else {
-                            $data[$key] = '-'.number_format($rowpurchase_item['amount'], 2);
+                            $data[$key] = '-' . number_format($rowpurchase_item['amount'], 2, ".", "");
                         }
 
                         if (isset($total[$key])) {
                             if ($row3['v_type'] == 'general') {
                                 $total[$key] += $rowpurchase_item['amount'];
-                            }
-                            else
-                            {
+                            } else {
                                 $total[$key] -= $rowpurchase_item['amount'];
                             }
-                           
-                           
                         } else {
                             if ($row3['v_type'] == 'general') {
                                 $total[$key] = $rowpurchase_item['amount'];
-                            }
-                            else
-                            {
+                            } else {
                                 $total[$key] = -$rowpurchase_item['amount'];
                             }
-                           
                         }
                     }
                 }
@@ -1374,63 +2638,58 @@ class TestingModel extends Model
             $data[0] = user_date($row3['receipt_date']);
             $data[1] = $account_name['name'];
             $data[2] = $row3['mode'] . ' ' . $row3['payment_type'] . ' Transaction';
-            $data[3] = $row3['narration'];
+            $data[3] = '';
+            //$data[3] = $row3['narration'];
             if ($row3['mode'] == 'Payment') {
-                $data[4] = '+'.number_format($row3['amount'], 2) ;
+                $data[4] = '-' . number_format($row3['amount'], 2, ".", "");
             } else {
-                $data[4] = '-'.number_format($row3['amount'], 2);
+                $data[4] = number_format($row3['amount'], 2, ".", "");
             }
 
             if (isset($total[4])) {
                 if ($row3['mode'] == 'Payment') {
-                    $total[4] += $row3['amount'];
-                }
-                else
-                {
                     $total[4] -= $row3['amount'];
+                } else {
+                    $total[4] += $row3['amount'];
                 }
             } else {
                 if ($row3['mode'] == 'Payment') {
+                    $total[4] = -$row3['amount'];
+                } else {
                     $total[4] = $row3['amount'];
                 }
-                else
-                {
-                    $total[4] = -$row3['amount'];
-                }
-                
             }
             foreach ($header as $key => $value) {
+                // echo '<pre>val';Print_r($value);
+                // echo '<pre>acc';Print_r($row3['account']);
+
                 if ($value == $row3['account']) {
 
                     if ($row3['mode'] == 'Payment') {
-                        $data[4] =  '+'.number_format($row3['amount'], 2);
+                        $data[$key] =  '-' . number_format($row3['amount'], 2, ".", "");
                     } else {
-                        $data[4] = '-'.number_format($row3['amount'], 2);
+                        $data[$key] = number_format($row3['amount'], 2, ".", "");
                     }
                     if (isset($total[$key])) {
                         if ($row3['mode'] == 'Payment') {
+                            $total[$key] -= $row3['amount'];
+                        } else {
                             $total[$key] += $row3['amount'];
                         }
-                        else
-                        {
-                            $total[$key] -= $row3['amount'];
-                        }
-                        
                     } else {
                         if ($row3['mode'] == 'Payment') {
+                            $total[$key] = -$row3['amount'];
+                        } else {
                             $total[$key] = $row3['amount'];
                         }
-                        else
-                        {
-                            $total[$key] = -$row3['amount'];
-                        }
-                        
                     }
                 }
             }
+            // exit;
             $invoice_list[] = $data;
         }
-        //echo '<pre>';Print_r($jv_data);exit;
+        //echo '<pre>';Print_r($header);exit;
+        //echo '<pre>';Print_r($invoice_list);exit;
         //echo '<pre>';Print_r($header);exit;
 
         foreach ($jv_data as $row3) {
@@ -1439,29 +2698,26 @@ class TestingModel extends Model
             $data[0] = user_date($row3['date']);
             $data[1] = $account_name['name'];
             $data[2] = 'JV Voucher';
-            $data[3] = $row3['jv_id'];
+            // $data[2] = 'JV Voucher('.$row3['dr_cr'].')';
+            $data[3] = '';
+            //$data[3] = $row3['jv_id'];
             if ($row3['dr_cr'] == 'dr') {
-                $data[4] = '+'.number_format($row3['amount'], 2);
+                $data[4] = '-' . number_format($row3['amount'], 2, ".", "");
             } else {
-                $data[4] = '-'.number_format($row3['amount'], 2);
+                $data[4] = number_format($row3['amount'], 2, ".", "");
             }
             if (isset($total[4])) {
                 if ($row3['dr_cr'] == 'dr') {
-                   $total[4] += $row3['amount'];
-                }
-                else
-                {
                     $total[4] -= $row3['amount'];
+                } else {
+                    $total[4] += $row3['amount'];
                 }
             } else {
                 if ($row3['dr_cr'] == 'dr') {
-                    $total[4] = $row3['amount'];
-                 }
-                 else
-                 {
                     $total[4] = -$row3['amount'];
-                 }
-                
+                } else {
+                    $total[4] = $row3['amount'];
+                }
             }
 
             $builder = $db->table('jv_particular');
@@ -1472,29 +2728,23 @@ class TestingModel extends Model
             foreach ($header as $key => $value) {
                 foreach ($jv_particular_data_new as $rowjv_item) {
                     if ($value == $rowjv_item['particular']) {
-                        if ($rowjv_item['dr_cr'] == 'dr') {
-                            $data[$key] = '+'.number_format($rowjv_item['amount'], 2);
+                        if ($row3['dr_cr'] == 'dr') {
+                            $data[$key] = '-' . number_format($rowjv_item['amount'], 2, ".", "");
                         } else {
-                            $data[$key] = '-'.number_format($rowjv_item['amount'], 2);
+                            $data[$key] = number_format($rowjv_item['amount'], 2, ".", "");
                         }
                         if (isset($total[$key])) {
                             if ($row3['dr_cr'] == 'dr') {
-                                $total[$key] += $rowjv_item['amount'];
-                             }
-                             else
-                             {
                                 $total[$key] -= $rowjv_item['amount'];
-                             }
-                           
+                            } else {
+                                $total[$key] += $rowjv_item['amount'];
+                            }
                         } else {
                             if ($row3['dr_cr'] == 'dr') {
-                                $total[$key] = $rowjv_item['amount'];
-                             }
-                             else
-                             {
                                 $total[$key] = -$rowjv_item['amount'];
-                             }
-                            
+                            } else {
+                                $total[$key] = $rowjv_item['amount'];
+                            }
                         }
                     }
                 }
@@ -1512,13 +2762,13 @@ class TestingModel extends Model
     }
     public function tds_report_excel_data($post)
     {
-        $data = $this->tds_report_data($post);
+        $data = $this->tds_report_data_excel($post);
         //echo '<pre>';Print_r($data);exit;
         $start = strtotime("{$post['year']}-{$post['month']}-01");
         $end = strtotime('-1 second', strtotime('+1 month', $start));
         $start_date = date('Y-m-d', $start);
         $end_date = date('Y-m-d', $end);
-        $party_id = 149;
+        $party_id = $post['account_id'];
 
         $gmodel = new GeneralModel();
         $acc = $gmodel->get_data_table('account', array('id' => @$party_id), 'id,name,address');
@@ -1541,7 +2791,7 @@ class TestingModel extends Model
         $spreadsheet->getActiveSheet()->getStyle('A5:C5')->getFont()->setBold(true);
         $spreadsheet->getActiveSheet()->getStyle('A5:C5')->getFont()->setSize(20);
 
-        $spreadsheet->setActiveSheetIndex(0)->setCellValue('A6', session('address'));
+        $spreadsheet->setActiveSheetIndex(0)->setCellValue('A6', @$acc['address']);
         $spreadsheet->setActiveSheetIndex(0)->mergeCells('A6:H6');
         $spreadsheet->getActiveSheet()->getStyle('A6:H6')->getBorders()
             ->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
@@ -1551,7 +2801,7 @@ class TestingModel extends Model
         $spreadsheet->setActiveSheetIndex(0)->setCellValue('C8', user_date($end_date));
         $spreadsheet->getActiveSheet()->getStyle('A8:C8')->getFont()->setBold(true);
         $spreadsheet->getActiveSheet()->getStyle('A8:C8')->getFont()->setSize(12);
-        
+
 
         // $spreadsheet->setActiveSheetIndex(0)->setCellValue('A5', 'Tds Report');
         // $spreadsheet->setActiveSheetIndex(0)->setCellValue('A6', user_date($start_date));
@@ -1565,13 +2815,13 @@ class TestingModel extends Model
 
         $j = 0;
         for ($i = 'A'; $i < 'Z'; $i++) {
-            $spreadsheet->getActiveSheet()->getStyle($i.'10')->getBorders()
-            ->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
-            $spreadsheet->getActiveSheet()->getStyle($i.'10')->getBorders()
-            ->getTop()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
-            $spreadsheet->getActiveSheet()->getStyle($i.'10')->getBorders()
-            ->getRight()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
-           
+            $spreadsheet->getActiveSheet()->getStyle($i . '10')->getBorders()
+                ->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+            $spreadsheet->getActiveSheet()->getStyle($i . '10')->getBorders()
+                ->getTop()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+            $spreadsheet->getActiveSheet()->getStyle($i . '10')->getBorders()
+                ->getRight()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+
             $spreadsheet->setActiveSheetIndex(0)->setCellValue($i . '10', @$data['header_account_name'][$j]);
             $j++;
         }
@@ -1587,49 +2837,47 @@ class TestingModel extends Model
             for ($i = 'A'; $i < 'Z'; $i++) {
 
                 $spreadsheet->setActiveSheetIndex(0)->setCellValue($i . $k, @$row[$l]);
-                $spreadsheet->getActiveSheet()->getStyle($i.$k)->getBorders()
-                ->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
-                $spreadsheet->getActiveSheet()->getStyle($i.$k)->getBorders()
-                ->getTop()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
-                $spreadsheet->getActiveSheet()->getStyle($i.$k)->getBorders()
-                ->getRight()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
-                
-                $l++;
+                $spreadsheet->getActiveSheet()->getStyle($i . $k)->getBorders()
+                    ->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+                $spreadsheet->getActiveSheet()->getStyle($i . $k)->getBorders()
+                    ->getTop()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+                $spreadsheet->getActiveSheet()->getStyle($i . $k)->getBorders()
+                    ->getRight()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
 
+                $l++;
             }
-            $spreadsheet->getActiveSheet()->getStyle('B'.$k)->getFont()->setBold(true);
-            $spreadsheet->getActiveSheet()->getStyle('E'.$k)->getFont()->setBold(true);
+            $spreadsheet->getActiveSheet()->getStyle('B' . $k)->getFont()->setBold(true);
+            $spreadsheet->getActiveSheet()->getStyle('E' . $k)->getFont()->setBold(true);
             $k++;
         }
         $spreadsheet->setActiveSheetIndex(0)->setCellValue('A' . $k, 'Total');
-        $spreadsheet->getActiveSheet()->getStyle('A'.$k)->getFont()->setBold(true); 
-        $spreadsheet->getActiveSheet()->getStyle('A'.$k.':E'.$k)->getBorders()
-        ->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
-        $spreadsheet->getActiveSheet()->getStyle('A'.$k.':E'.$k)->getBorders()
-        ->getTop()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
-        $spreadsheet->getActiveSheet()->getStyle('A'.$k.':E'.$k)->getBorders()
-        ->getRight()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
-          
-      
-            $l = 4;
-           
-            for ($i = 'E'; $i < 'Z'; $i++) {
+        $spreadsheet->getActiveSheet()->getStyle('A' . $k)->getFont()->setBold(true);
+        $spreadsheet->getActiveSheet()->getStyle('A' . $k . ':E' . $k)->getBorders()
+            ->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+        $spreadsheet->getActiveSheet()->getStyle('A' . $k . ':E' . $k)->getBorders()
+            ->getTop()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+        $spreadsheet->getActiveSheet()->getStyle('A' . $k . ':E' . $k)->getBorders()
+            ->getRight()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
 
-                $spreadsheet->setActiveSheetIndex(0)->setCellValue($i . $k, @$data['total'][$l]);
-                $spreadsheet->getActiveSheet()->getStyle($i.$k)->getFont()->setBold(true);
-                $spreadsheet->getActiveSheet()->getStyle($i.$k)->getBorders()
+
+        $l = 4;
+
+        for ($i = 'E'; $i < 'Z'; $i++) {
+
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue($i . $k, @$data['total'][$l]);
+            $spreadsheet->getActiveSheet()->getStyle($i . $k)->getFont()->setBold(true);
+            $spreadsheet->getActiveSheet()->getStyle($i . $k)->getBorders()
                 ->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
-                $spreadsheet->getActiveSheet()->getStyle($i.$k)->getBorders()
+            $spreadsheet->getActiveSheet()->getStyle($i . $k)->getBorders()
                 ->getTop()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
-                $spreadsheet->getActiveSheet()->getStyle($i.$k)->getBorders()
+            $spreadsheet->getActiveSheet()->getStyle($i . $k)->getBorders()
                 ->getRight()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
-    
-                
-                $l++;
 
-            }
-           
-        
+
+            $l++;
+        }
+
+
         $spreadsheet->getActiveSheet()->setTitle('Tds Report');
 
         $spreadsheet->createSheet();

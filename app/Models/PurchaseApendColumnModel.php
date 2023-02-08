@@ -1685,4 +1685,598 @@ class PurchaseApendColumnModel extends Model
         }
         return $msg;
     }
+    public function update_divide_discount_purchase_challan()
+    {
+        $db = $this->db;
+        $db->setDatabase(session('DataSource'));
+        $builder = $db->table('purchase_challan');
+        $builder->select('*');
+        $builder->where(array('is_delete'=>0,'divide_disc_up'=>0));
+        $builder->limit(1000);
+        $result = $builder->get();
+        $result_array = $result->getResultArray();
+        $gmodel = new GeneralModel();
+        foreach($result_array as $row)
+        {
+            $builder = $db->table('purchase_item');
+            $builder->select('*');
+            $builder->where(array('is_delete'=>0,'parent_id'=>$row['id'],'type'=>'challan'));
+            $result = $builder->get();
+            $result_array_item = $result->getResultArray();
+            $item_total = 0;
+            foreach($result_array_item as $row1)
+            {
+                if($row1['is_expence'] == 0)
+                {
+                    $sub = $row1['qty'] * $row1['rate'];
+                    $item_total += $sub;
+                }
+            }
+            $total = 0;
+            if($row['discount'] > 0)
+            {
+                if ($row['disc_type'] == '%') {    
+                    $total_discount = $item_total * $row['discount'] / 100;
+                }
+                else
+                {
+                    $total_discount = $row['discount'];
+                }
+                //echo '<pre>';Print_r($total_discount);exit;
+                
+                
+                foreach($result_array_item as $row1)
+                {
+                    if($row1['is_expence'] == 0)
+                    {
+                        $item_disc = 0;
+                        $item_disc_amt = 0;
+                        $sub = $row1['qty'] * $row1['rate'];
+                        $divide_disc_per = ($sub * 100) / $item_total;  
+                        $divide_disc_amt = ($divide_disc_per / 100) * $total_discount;
+                        $final_sub = $sub - $divide_disc_amt;
+                        $total += $final_sub;
+                        // echo '<pre>nonexp';Print_r($sub);
+                        // echo '<pre>nonexp';Print_r($divide_disc_per);
+                        // echo '<pre>nonexp';Print_r($final_sub);
+                         
+                    }
+                    else
+                    {
+                        $item_disc = 0;
+                        $item_disc_amt = 0;
+                        $divide_disc_per = 0;
+                        $divide_disc_amt = 0.00;
+                        $sub = $row1['rate'];
+                        $final_sub = $row1['rate'];
+                        $total += $final_sub; 
+                      //  echo '<pre>exp';Print_r($divide_disc_amt);
+                       // echo '<pre>exp';Print_r($final_sub);
+                    }
+                    //echo '<pre>';Print_r($total);exit;
+                    $item_data = array(
+                        'total' => $sub,
+                        'item_disc'=>  $item_disc,
+                        'discount'=> $item_disc_amt,
+                        'divide_disc_item_per'=> $divide_disc_per,
+                        'divide_disc_item_amt'=> $divide_disc_amt,
+                        'sub_total'=> $final_sub,
+                    );
+                    $update_total = $gmodel->update_data_table('purchase_item', array('id' => $row1['id']), $item_data);
+                 }
+                // exit;
+               
+                
+            }
+            else
+            {
+                
+                foreach($result_array_item as $row1)
+                {
+                    if($row1['is_expence'] == 0)
+                    {
+                        if($row1['item_disc'] > 0)
+                        {
+                            $sub = $row1['qty'] * $row1['rate']; 
+                            $item_disc_amt = $sub * $row1['item_disc'] / 100;
+                            $divide_disc_per = 0;  
+                            $divide_disc_amt = 0.00;
+                            $final_sub = $sub - $item_disc_amt;  
+                            $total += $final_sub;  
+                        }
+                        else
+                        {
+                            $sub = $row1['qty'] * $row1['rate']; 
+                            $item_disc_amt = 0.00;
+                            $divide_disc_per = 0;  
+                            $divide_disc_amt = 0.00;
+                            $final_sub = $sub;   
+                            $total += $final_sub;
+                        }
+                    }
+                    else
+                    {
+                            $item_disc_amt = 0;
+                            $divide_disc_per = 0;
+                            $divide_disc_amt = 0.00;
+                            $sub = $row1['rate'];
+                            $final_sub = $row1['rate'];
+                            $total += $final_sub;
+                    }
+                    $item_data = array(
+                        'total' => $sub,
+                        'discount'=> $item_disc_amt,
+                        'divide_disc_item_per'=> $divide_disc_per,
+                        'divide_disc_item_amt'=> $divide_disc_amt,
+                        'sub_total'=> $final_sub,
+                    );
+                    $update_total = $gmodel->update_data_table('purchase_item', array('id' => $row1['id']), $item_data);
+                    
+                   
+                }
+            }
+            $update_total_invoice = $gmodel->update_data_table('purchase_challan', array('id' => $row['id']), array('divide_disc_up'=>1));
+                   
+        }
+        if(isset($update_total))
+        {
+            $msg = array("sucsess","updated data");
+        }
+        else
+        {
+            $msg = array("fail","out");   
+        }
+        return $msg;
+        
+    }
+    public function update_net_amount_purchase_challan()
+    {
+        $db = $this->db;
+        $db->setDatabase(session('DataSource'));
+        $builder = $db->table('purchase_challan');
+        $builder->select('*');
+        $builder->where(array('is_delete'=>0,'net_amt_up'=>0));
+        $builder->limit(1000);
+        $result = $builder->get();
+        $result_array = $result->getResultArray();
+        $gmodel = new GeneralModel();
+        foreach($result_array as $row)
+        {
+            $builder = $db->table('purchase_item');
+            $builder->select('*');
+            $builder->where(array('is_delete'=>0,'parent_id'=>$row['id'],'type'=>'challan'));
+            $result = $builder->get();
+            $result_array_item = $result->getResultArray();
+            $item_total = 0;
+            foreach($result_array_item as $row1)
+            {
+                $cal_total = $row1['sub_total'] + $row1['added_amt'];
+                $item_total += $cal_total;
+            }
+            if ($row['cess_type'] == '%') {
+                if ($row['cess'] == '')
+                    $row['cess'] = 0;
+                else
+                    $row['cess'] = $item_total *  $row['cess'] / 100;
+            } else {
+                if ($row['cess'] == '')
+                    $row['cess'] = 0;
+            }
+    
+            if (!empty($row['tds_per'])) {
+                $tds_amt = $item_total *  $row['tds_per'] / 100;
+            } else {
+                $tds_amt = 0;
+            }
+            $netamount = $item_total + $row['cess'] + $row['amty'] +   $tds_amt + $row['tot_igst'];
+          
+            $update_total_invoice = $gmodel->update_data_table('purchase_challan', array('id' => $row['id']), array('net_amt_up'=>1,'net_amount'=> $netamount));
+      
+        }
+        if(isset($update_total_invoice))
+        {
+            $msg = array("sucsess","updated data");
+        }
+        else
+        {
+            $msg = array("fail","out");   
+        }
+        return $msg;
+    }
+    public function update_divide_discount_purchase_invoice()
+    {
+        $db = $this->db;
+        $db->setDatabase(session('DataSource'));
+        $builder = $db->table('purchase_invoice');
+        $builder->select('*');
+        $builder->where(array('is_delete'=>0,'divide_disc_up'=>0));
+        $builder->limit(1000);
+        $result = $builder->get();
+        $result_array = $result->getResultArray();
+        $gmodel = new GeneralModel();
+        foreach($result_array as $row)
+        {
+            $builder = $db->table('purchase_item');
+            $builder->select('*');
+            $builder->where(array('is_delete'=>0,'parent_id'=>$row['id'],'type'=>'invoice'));
+            $result = $builder->get();
+            $result_array_item = $result->getResultArray();
+            $item_total = 0;
+            foreach($result_array_item as $row1)
+            {
+                if($row1['is_expence'] == 0)
+                {
+                    $sub = $row1['qty'] * $row1['rate'];
+                    $item_total += $sub;
+                }
+            }
+            $total = 0;
+            if($row['discount'] > 0)
+            {
+                if ($row['disc_type'] == '%') {    
+                    $total_discount = $item_total * $row['discount'] / 100;
+                }
+                else
+                {
+                    $total_discount = $row['discount'];
+                }
+                //echo '<pre>';Print_r($total_discount);exit;
+                
+                
+                foreach($result_array_item as $row1)
+                {
+                    if($row1['is_expence'] == 0)
+                    {
+                        $item_disc = 0;
+                        $item_disc_amt = 0;
+                        $sub = $row1['qty'] * $row1['rate'];
+                        $divide_disc_per = ($sub * 100) / $item_total;  
+                        $divide_disc_amt = ($divide_disc_per / 100) * $total_discount;
+                        $final_sub = $sub - $divide_disc_amt;
+                        $total += $final_sub;
+                        // echo '<pre>nonexp';Print_r($sub);
+                        // echo '<pre>nonexp';Print_r($divide_disc_per);
+                        // echo '<pre>nonexp';Print_r($final_sub);
+                         
+                    }
+                    else
+                    {
+                        $item_disc = 0;
+                        $item_disc_amt = 0;
+                        $divide_disc_per = 0;
+                        $divide_disc_amt = 0.00;
+                        $sub = $row1['rate'];
+                        $final_sub = $row1['rate'];
+                        $total += $final_sub; 
+                      //  echo '<pre>exp';Print_r($divide_disc_amt);
+                       // echo '<pre>exp';Print_r($final_sub);
+                    }
+                    //echo '<pre>';Print_r($total);exit;
+                    $item_data = array(
+                        'total' => $sub,
+                        'item_disc'=>  $item_disc,
+                        'discount'=> $item_disc_amt,
+                        'divide_disc_item_per'=> $divide_disc_per,
+                        'divide_disc_item_amt'=> $divide_disc_amt,
+                        'sub_total'=> $final_sub,
+                    );
+                    $update_total = $gmodel->update_data_table('purchase_item', array('id' => $row1['id']), $item_data);
+                 }
+                // exit;
+               
+                
+            }
+            else
+            {
+                
+                foreach($result_array_item as $row1)
+                {
+                    if($row1['is_expence'] == 0)
+                    {
+                        if($row1['item_disc'] > 0)
+                        {
+                            $sub = $row1['qty'] * $row1['rate']; 
+                            $item_disc_amt = $sub * $row1['item_disc'] / 100;
+                            $divide_disc_per = 0;  
+                            $divide_disc_amt = 0.00;
+                            $final_sub = $sub - $item_disc_amt;  
+                            $total += $final_sub;  
+                        }
+                        else
+                        {
+                            $sub = $row1['qty'] * $row1['rate']; 
+                            $item_disc_amt = 0.00;
+                            $divide_disc_per = 0;  
+                            $divide_disc_amt = 0.00;
+                            $final_sub = $sub;   
+                            $total += $final_sub;
+                        }
+                    }
+                    else
+                    {
+                            $item_disc_amt = 0;
+                            $divide_disc_per = 0;
+                            $divide_disc_amt = 0.00;
+                            $sub = $row1['rate'];
+                            $final_sub = $row1['rate'];
+                            $total += $final_sub;
+                    }
+                    $item_data = array(
+                        'total' => $sub,
+                        'discount'=> $item_disc_amt,
+                        'divide_disc_item_per'=> $divide_disc_per,
+                        'divide_disc_item_amt'=> $divide_disc_amt,
+                        'sub_total'=> $final_sub,
+                    );
+                    $update_total = $gmodel->update_data_table('purchase_item', array('id' => $row1['id']), $item_data);
+                    
+                   
+                }
+            }
+            $update_total_invoice = $gmodel->update_data_table('purchase_invoice', array('id' => $row['id']), array('divide_disc_up'=>1));
+                   
+        }
+        if(isset($update_total))
+        {
+            $msg = array("sucsess","updated data");
+        }
+        else
+        {
+            $msg = array("fail","out");   
+        }
+        return $msg;
+        
+    }
+    public function update_net_amount_purchase_invoice()
+    {
+        $db = $this->db;
+        $db->setDatabase(session('DataSource'));
+        $builder = $db->table('purchase_invoice');
+        $builder->select('*');
+        $builder->where(array('is_delete'=>0,'net_amt_up'=>0));
+        $builder->limit(1000);
+        $result = $builder->get();
+        $result_array = $result->getResultArray();
+        $gmodel = new GeneralModel();
+        foreach($result_array as $row)
+        {
+            $builder = $db->table('purchase_item');
+            $builder->select('*');
+            $builder->where(array('is_delete'=>0,'parent_id'=>$row['id'],'type'=>'invoice'));
+            $result = $builder->get();
+            $result_array_item = $result->getResultArray();
+            $item_total = 0;
+            foreach($result_array_item as $row1)
+            {
+                $cal_total = $row1['sub_total'] + $row1['added_amt'];
+                $item_total += $cal_total;
+            }
+            if ($row['cess_type'] == '%') {
+                if ($row['cess'] == '')
+                    $row['cess'] = 0;
+                else
+                    $row['cess'] = $item_total *  $row['cess'] / 100;
+            } else {
+                if ($row['cess'] == '')
+                    $row['cess'] = 0;
+            }
+    
+            if (!empty($row['tds_per'])) {
+                $tds_amt = $item_total *  $row['tds_per'] / 100;
+            } else {
+                $tds_amt = 0;
+            }
+            $netamount = $item_total + $row['cess'] + $row['amty'] +   $tds_amt + $row['tot_igst'];
+          
+            $update_total_invoice = $gmodel->update_data_table('purchase_invoice', array('id' => $row['id']), array('net_amt_up'=>1,'net_amount'=> $netamount));
+      
+        }
+        if(isset($update_total_invoice))
+        {
+            $msg = array("sucsess","updated data");
+        }
+        else
+        {
+            $msg = array("fail","out");   
+        }
+        return $msg;
+    }
+    public function update_divide_discount_purchase_return()
+    {
+        $db = $this->db;
+        $db->setDatabase(session('DataSource'));
+        $builder = $db->table('purchase_return');
+        $builder->select('*');
+        $builder->where(array('is_delete'=>0,'divide_disc_up'=>0));
+        $builder->limit(1000);
+        $result = $builder->get();
+        $result_array = $result->getResultArray();
+        $gmodel = new GeneralModel();
+        foreach($result_array as $row)
+        {
+            $builder = $db->table('purchase_item');
+            $builder->select('*');
+            $builder->where(array('is_delete'=>0,'parent_id'=>$row['id'],'type'=>'return'));
+            $result = $builder->get();
+            $result_array_item = $result->getResultArray();
+            $item_total = 0;
+            foreach($result_array_item as $row1)
+            {
+                if($row1['is_expence'] == 0)
+                {
+                    $sub = $row1['qty'] * $row1['rate'];
+                    $item_total += $sub;
+                }
+            }
+            $total = 0;
+            if($row['discount'] > 0)
+            {
+                if ($row['disc_type'] == '%') {    
+                    $total_discount = $item_total * $row['discount'] / 100;
+                }
+                else
+                {
+                    $total_discount = $row['discount'];
+                }
+                //echo '<pre>';Print_r($total_discount);exit;
+                
+                
+                foreach($result_array_item as $row1)
+                {
+                    if($row1['is_expence'] == 0)
+                    {
+                        $item_disc = 0;
+                        $item_disc_amt = 0;
+                        $sub = $row1['qty'] * $row1['rate'];
+                        $divide_disc_per = ($sub * 100) / $item_total;  
+                        $divide_disc_amt = ($divide_disc_per / 100) * $total_discount;
+                        $final_sub = $sub - $divide_disc_amt;
+                        $total += $final_sub;
+                        // echo '<pre>nonexp';Print_r($sub);
+                        // echo '<pre>nonexp';Print_r($divide_disc_per);
+                        // echo '<pre>nonexp';Print_r($final_sub);
+                         
+                    }
+                    else
+                    {
+                        $item_disc = 0;
+                        $item_disc_amt = 0;
+                        $divide_disc_per = 0;
+                        $divide_disc_amt = 0.00;
+                        $sub = $row1['rate'];
+                        $final_sub = $row1['rate'];
+                        $total += $final_sub; 
+                      //  echo '<pre>exp';Print_r($divide_disc_amt);
+                       // echo '<pre>exp';Print_r($final_sub);
+                    }
+                    //echo '<pre>';Print_r($total);exit;
+                    $item_data = array(
+                        'total' => $sub,
+                        'item_disc'=>  $item_disc,
+                        'discount'=> $item_disc_amt,
+                        'divide_disc_item_per'=> $divide_disc_per,
+                        'divide_disc_item_amt'=> $divide_disc_amt,
+                        'sub_total'=> $final_sub,
+                    );
+                    $update_total = $gmodel->update_data_table('purchase_item', array('id' => $row1['id']), $item_data);
+                 }
+                // exit;
+               
+                
+            }
+            else
+            {
+                
+                foreach($result_array_item as $row1)
+                {
+                    if($row1['is_expence'] == 0)
+                    {
+                        if($row1['item_disc'] > 0)
+                        {
+                            $sub = $row1['qty'] * $row1['rate']; 
+                            $item_disc_amt = $sub * $row1['item_disc'] / 100;
+                            $divide_disc_per = 0;  
+                            $divide_disc_amt = 0.00;
+                            $final_sub = $sub - $item_disc_amt;  
+                            $total += $final_sub;  
+                        }
+                        else
+                        {
+                            $sub = $row1['qty'] * $row1['rate']; 
+                            $item_disc_amt = 0.00;
+                            $divide_disc_per = 0;  
+                            $divide_disc_amt = 0.00;
+                            $final_sub = $sub;   
+                            $total += $final_sub;
+                        }
+                    }
+                    else
+                    {
+                            $item_disc_amt = 0;
+                            $divide_disc_per = 0;
+                            $divide_disc_amt = 0.00;
+                            $sub = $row1['rate'];
+                            $final_sub = $row1['rate'];
+                            $total += $final_sub;
+                    }
+                    $item_data = array(
+                        'total' => $sub,
+                        'discount'=> $item_disc_amt,
+                        'divide_disc_item_per'=> $divide_disc_per,
+                        'divide_disc_item_amt'=> $divide_disc_amt,
+                        'sub_total'=> $final_sub,
+                    );
+                    $update_total = $gmodel->update_data_table('purchase_item', array('id' => $row1['id']), $item_data);
+                    
+                   
+                }
+            }
+            $update_total_invoice = $gmodel->update_data_table('purchase_return', array('id' => $row['id']), array('divide_disc_up'=>1));
+                   
+        }
+        if(isset($update_total))
+        {
+            $msg = array("sucsess","updated data");
+        }
+        else
+        {
+            $msg = array("fail","out");   
+        }
+        return $msg;
+        
+    }
+    public function update_net_amount_purchase_return()
+    {
+        $db = $this->db;
+        $db->setDatabase(session('DataSource'));
+        $builder = $db->table('purchase_return');
+        $builder->select('*');
+        $builder->where(array('is_delete'=>0,'net_amt_up'=>0));
+        $builder->limit(1000);
+        $result = $builder->get();
+        $result_array = $result->getResultArray();
+        $gmodel = new GeneralModel();
+        foreach($result_array as $row)
+        {
+            $builder = $db->table('purchase_item');
+            $builder->select('*');
+            $builder->where(array('is_delete'=>0,'parent_id'=>$row['id'],'type'=>'return'));
+            $result = $builder->get();
+            $result_array_item = $result->getResultArray();
+            $item_total = 0;
+            foreach($result_array_item as $row1)
+            {
+                $cal_total = $row1['sub_total'] + $row1['added_amt'];
+                $item_total += $cal_total;
+            }
+            if ($row['cess_type'] == '%') {
+                if ($row['cess'] == '')
+                    $row['cess'] = 0;
+                else
+                    $row['cess'] = $item_total *  $row['cess'] / 100;
+            } else {
+                if ($row['cess'] == '')
+                    $row['cess'] = 0;
+            }
+    
+            if (!empty($row['tds_per'])) {
+                $tds_amt = $item_total *  $row['tds_per'] / 100;
+            } else {
+                $tds_amt = 0;
+            }
+            $netamount = $item_total + $row['cess'] + $row['amty'] +   $tds_amt + $row['tot_igst'];
+          
+            $update_total_invoice = $gmodel->update_data_table('purchase_return', array('id' => $row['id']), array('net_amt_up'=>1,'net_amount'=> $netamount));
+      
+        }
+        if(isset($update_total_invoice))
+        {
+            $msg = array("sucsess","updated data");
+        }
+        else
+        {
+            $msg = array("fail","out");   
+        }
+        return $msg;
+    }
 }

@@ -17,6 +17,8 @@
         <a href="#" class="btn ripple btn-secondary navresponsive-toggler" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <i class="fe fe-filter mr-1"></i> Filter <i class="fas fa-caret-down ml-1"></i>
         </a>
+        <a href="<?=url('Trading/purchase_return_item_xls?from='.$date['from'].'&to='.$date['to'])?>"  class="btn ripple btn-primary"><i class="fe fe-external-link"></i>Excel Export</a>
+
     </div>
 </div>
 <!--Start Navbar -->
@@ -123,6 +125,8 @@
                             $debit = 0;
                             $credit = 0;
                             $count = count($purchase);
+                            //echo '<pre>';Print_r($purchase);exit;
+                            
 
                             foreach ($purchase as $row) { ?>
                                 <tr>

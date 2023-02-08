@@ -183,19 +183,25 @@
                             <?php
                             if(!empty($tds))
                             {
+                               // echo '<pre>';Print_r($tds['total']);exit;
+                                
                             ?>
-                            <th><b>Total</b></th>
-                            <th colspan="3"></th>
-                               
+                            
                                 <?php 
                                 
-                                    
-                                    for($i=4;$i<count($tds['total']);$i++)
+                                   //echo '<pre>';Print_r(count($tds['total']));exit;
+                                   //$l=4;
+                                    for($i=0;$i<count($tds['total']);$i++)
                                     {
+                                        
+                                       // echo '<pre>';Print_r($tds['total'][$i]);
+                                        
                                 ?>
-                                     <th><b><?= number_format((float)@$tds['total'][$i], 2)?></b></th>     
+                                     <th><b><?=@$tds['total'][$i] ? number_format((float)@$tds['total'][$i],2,".",""):''?></b></th>     
                                 <?php
+                                //$l++;
                                     }
+                                    //exit;
                                 ?>
                             <?php
                             }

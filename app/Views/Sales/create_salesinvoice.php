@@ -60,12 +60,12 @@
                             </div>
                             <div class="col-lg-3 form-group">
                                 <label class="form-label">Invoice ID.: </label>
-                                <input class="form-control" type="text" name="custom_inv_no" value="<?= isset($salesinvoice['custom_inv_no']) ? @$salesinvoice['custom_inv_no'] : '' ?>">
+                                <input class="form-control" type="text" name="custom_inv_no" id ="custom_inv_no" value="<?= isset($salesinvoice['custom_inv_no']) ? @$salesinvoice['custom_inv_no'] : @$custom_inv_no ?>" >
                             </div>
 
                             <div class="col-lg-6 form-group">
                                 <label class="form-label">Invoice Date: </label>
-                                <input class="form-control fc-datepicker" placeholder="YYYY-MM-DD" type="text" name="invoice_date" value="<?= @$salesinvoice['invoice_date'] ? $salesinvoice['invoice_date'] : date('Y-m-d') ?>">
+                                <input class="form-control fc-datepicker" placeholder="YYYY-MM-DD" type="text" name="invoice_date" value="<?= @$salesinvoice['invoice_date'] ? $salesinvoice['invoice_date'] : date('Y-m-d') ?>"  onchange="get_max_customInvno(this.value)" onkeyup="get_max_customInvno(this.value)">
                             </div>
 
                             <div class="col-lg-6 form-group">
@@ -2558,5 +2558,22 @@
             $('#code_new').val('');
         }
     }
+    function get_max_customInvno(date)
+    {
+       
+        $.ajax({
+                url: PATH + "Sales/Getdata/get_max_customInvno",
+                type: "post",
+                data: {date:date,type:'invoice'},
+                success: function(data){
+                    $("#custom_inv_no").val(data.invoice);
+                },
+                error: function(err){
+                    console.log("error");
+                    console.log(err);
+                },
+            });
+    }
+   
 </script>
 <?= $this->endSection() ?>
