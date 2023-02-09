@@ -1528,6 +1528,7 @@ class SalesModel extends Model
         $builder->limit(1);
         $result1 = $builder->get();
         $result_array1 = $result1->getRow();
+       // echo '<pre>';print_r($result_array1);exit;
         $msg = array();
 
         if (!empty($result_array1)) {
@@ -1675,6 +1676,8 @@ class SalesModel extends Model
         } else {
             if ($post['amty'] == '')
                 $post['amty'] = 0;
+            else
+                $post['amty'] = $post['amty'];
         }
 
         if ($post['cess_type'] == '%') {

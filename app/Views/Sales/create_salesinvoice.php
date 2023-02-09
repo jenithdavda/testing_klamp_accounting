@@ -147,11 +147,11 @@
                                     </div>
                                     <div class="row col-md-12 form-group">
                                         <label class="form-label col-md-4">Due Days: </label>
-                                        <input class="form-control col-md-8" name="due_day" value="<?= @$salesinvoice['due_days'] ?>" onkeyup="due_date_calc(this)" placeholder="Enter Due Days" onkeypress="return isNumberKey(event)" type="text">
+                                        <input class="form-control col-md-8" name="due_day" id="due_days" value="<?= @$salesinvoice['due_days'] ?>" placeholder="Enter Due Days" onkeypress="return isNumberKey(event)" onkeyup="getduedate(this.value)" type="text" formnovalidate>
                                     </div>
                                     <div class="row col-md-12 form-group">
                                         <label class="form-label col-md-4">Due Date: </label>
-                                        <input class="form-control fc-datepicker col-md-8" placeholder="YYYY-MM-DD" type="text" id="due_date" name="due_date" value="<?= @$salesinvoice['due_date'] ?>">
+                                        <input class="form-control fc-datepicker col-md-8" placeholder="YYYY-MM-DD" type="text" id="due_date" onchange="getduedays(this.value)" name="due_date" value="<?= @$salesinvoice['due_date'] ?>">
                                     </div>
 
                                     <div class="row col-md-12 form-group">
@@ -2573,6 +2573,25 @@
                     console.log(err);
                 },
             });
+    }
+    // due days and due date
+    function getduedate(days) {
+        const date = new Date();
+        var d = parseInt(days);
+        date.setDate(date.getDate() + d);
+        var new_date = formatDate(date);
+        $("#due_date").val(new_date);
+    }
+
+    function getduedays(date) {
+
+        var startDay = new Date();
+        var endDay = new Date(date);
+        var millisBetween = startDay.getTime() - endDay.getTime();
+        console.log(millisBetween);
+        var days = millisBetween / (1000 * 3600 * 24);
+        $("#due_days").val(Math.round(Math.abs(days)));
+
     }
    
 </script>

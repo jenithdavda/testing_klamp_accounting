@@ -606,7 +606,7 @@ class ApiModel extends Model
         $builder_pt_voucher = $db->table('platform_voucher');
         $select = 'MAX(voucher) as max_id';
         $builder_pt_voucher->select($select);
-        $builder_pt_voucher->where(array('is_delete' => '0', 'platform_id' => 1, 'type' => 'invoice'));
+        $builder_pt_voucher->where(array('is_delete' => '0', 'platform_id' => 1, 'type' => 'invoice','form_type'=>$post['type_foc_normal']));
         $builder_pt_voucher->where(array('DATE(invoice_date)  >= ' => $start_date));
         $builder_pt_voucher->where(array('DATE(invoice_date)  <= ' => $end_date));
         $query = $builder_pt_voucher->get();
@@ -910,6 +910,7 @@ class ApiModel extends Model
                     'voucher' => $id,
                     'type' => "invoice",
                     'platform_id' => 1,
+                    'form_type'=> @$post['type_foc_normal'],
                     'custom_inv_no' => $new_custome_inv_no,
                     'invoice_date' => db_date(@$post['invoice_date']),
                     'database_name' => @$post['database'],
@@ -1063,6 +1064,9 @@ class ApiModel extends Model
         $select = 'MAX(voucher) as max_id';
         $builder_pt_voucher->select($select);
         $builder_pt_voucher->where(array('is_delete' => '0', 'platform_id' => $plateform_id, 'type' => 'return'));
+        if($post['type'] == 'salesFrm'){
+            $builder_pt_voucher->where(array('form_type'=> $post['type_foc_normal']));
+        }
         $builder_pt_voucher->where(array('DATE(invoice_date)  >= ' => $start_date));
         $builder_pt_voucher->where(array('DATE(invoice_date)  <= ' => $end_date));
         $query = $builder_pt_voucher->get();
@@ -1096,7 +1100,7 @@ class ApiModel extends Model
             $new_supply_inv_no = $post['platform_prefix'] . '/' . $custom_date . '/' . $custom_gst_code . $s_number;
         } else {
 
-            if ($post['platform_prefix'] == 'AI') {
+            if($post['type'] == 'salesFrm'){
                 if($post['type_foc_normal'] == 'FOC')
                 {
                     $new_supply_inv_no = 'CN/AI/FOC/' . $month . $year . '/' . $s_number;
@@ -1379,10 +1383,18 @@ class ApiModel extends Model
                     $msg = array('st' => 'fail', 'msg' => "Your Details Updated fail");
                 }
                 // insert here platform, order id, type, database name in platform_voucher for ACE INTERNATIONAL
+                if($post['type'] == 'salesFrm'){
+                    $form_type = $post['type_foc_normal'];
+                }
+                else
+                {
+                    $form_type = '';
+                }
                 $platform_data = array(
                     'voucher' => $id,
                     'type' => "return",
                     'platform_id' => !empty(@$post['platform']) ? @$post['platform'] : 1,
+                    'form_type'=> @$form_type,
                     'custom_inv_no' => @$new_supply_inv_no,
                     'invoice_date' => @$post['return_date'],
                     'database_name' => @$post['database'],
