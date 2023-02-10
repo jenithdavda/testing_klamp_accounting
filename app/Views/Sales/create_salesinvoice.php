@@ -62,11 +62,37 @@
                                 <label class="form-label">Invoice ID.: </label>
                                 <input class="form-control" type="text" name="custom_inv_no" id ="custom_inv_no" value="<?= isset($salesinvoice['custom_inv_no']) ? @$salesinvoice['custom_inv_no'] : @$custom_inv_no ?>" >
                             </div>
+                            <?php
+                            if(session('DataSource')=='ACE20227T93')
+                            {
+                            ?>
 
                             <div class="col-lg-6 form-group">
                                 <label class="form-label">Invoice Date: </label>
                                 <input class="form-control fc-datepicker" placeholder="YYYY-MM-DD" type="text" name="invoice_date" value="<?= @$salesinvoice['invoice_date'] ? $salesinvoice['invoice_date'] : date('Y-m-d') ?>"  onchange="get_max_customInvno(this.value)" onkeyup="get_max_customInvno(this.value)">
                             </div>
+                            <?php
+                            }
+                            else if(session('DataSource')=='KLA2022ZFDH')
+                            
+                            {
+                            ?>
+                             <div class="col-lg-6 form-group">
+                                <label class="form-label">Invoice Date: </label>
+                                <input class="form-control fc-datepicker" placeholder="YYYY-MM-DD" type="text" name="invoice_date" id="invoice_date" value="<?= @$salesinvoice['invoice_date'] ? $salesinvoice['invoice_date'] : date('Y-m-d') ?>"  onchange="ecom_get_max_customInvno()" onkeyup="ecom_get_max_customInvno()">
+                            </div>
+                            <?php
+                            }
+                            else
+                            {
+                            ?>
+                             <div class="col-lg-6 form-group">
+                                <label class="form-label">Invoice Date: </label>
+                                <input class="form-control fc-datepicker" placeholder="YYYY-MM-DD" type="text" name="invoice_date" value="<?= @$salesinvoice['invoice_date'] ? $salesinvoice['invoice_date'] : date('Y-m-d') ?>">
+                            </div>
+                            <?php
+                            }
+                            ?>
 
                             <div class="col-lg-6 form-group">
                                 <label class="form-label">Challan No: </label>
@@ -83,7 +109,7 @@
                                     <div class="row col-lg-12 form-group">
                                         <label class="form-label col-md-4">Account: <span class="tx-danger">*</span></label>
                                         <div class="input-group col-md-8" style="padding:0px;">
-                                            <select class="form-control account" id="account" name='account'>
+                                            <select class="form-control account" id="account" name='account' >
                                                 <?php if (@$salesinvoice['account_name']) { ?>
                                                     <option value="<?= @$salesinvoice['account'] ?>">
                                                         <?= @$salesinvoice['account_name'] ?>
@@ -97,6 +123,8 @@
                                                 </div>
                                             </div>
                                         </div>
+                                       
+                                        <input type="hidden" id="database_name" value="<?= session('DataSource') ?>">
                                         <input type="hidden" name="id" value="<?= @$salesinvoice['id'] ?>">
                                         <input type="hidden" name="tds_per" id="tds_per" class="tds_per" value="<?= @$salesinvoice['tds_per']; ?>">
                                         <input type="hidden" name="tds_limit" id="tds_limit" value="<?= @$salesinvoice['tds_limit']; ?>">
@@ -111,6 +139,7 @@
                                     <div class="row col-md-12 form-group">
                                         <label class="form-label col-md-4">GST No.: <span class="tx-danger">*</span></label>
                                         <input readonly class="form-control col-md-8 gst_no" type="text" name="gst" id="gsttin" value="<?= @$salesinvoice['gst']; ?>">
+                                        <input type="hidden" name="newgsttin" id="_newgsttin" value="">
                                     </div>
                                     <div class="row col-md-12 form-group">
                                         <label class="form-label col-md-4">Shipped to AC: <span class="tx-danger">*</span></label>
@@ -1772,11 +1801,12 @@
             }
         });
 
-        $('#account').on('select2:select', function(e) {
+        $('#account').off('select2:select').on('select2:select', function(e) {
 
             var data = e.params.data;
-
+            //console.log(data);
             $('#gsttin').val(data.gsttin);
+            $("input[name='newgsttin']").val(data.gsttin);
             $('#tds_per').val(data.tds);
             $('#tds_limit').val(data.tds_limit);
             $('#acc_state').val(data.state);
@@ -1834,6 +1864,13 @@
             }
             enable_gst_option();
             calculate();
+            var database_name = $('#database_name').val()
+            if(database_name == 'KLA2022ZFDH')
+            {
+                
+                ecom_get_max_customInvno();
+            }
+           
         });
 
 
@@ -2565,6 +2602,25 @@
                 url: PATH + "Sales/Getdata/get_max_customInvno",
                 type: "post",
                 data: {date:date,type:'invoice'},
+                success: function(data){
+                    $("#custom_inv_no").val(data.invoice);
+                },
+                error: function(err){
+                    console.log("error");
+                    console.log(err);
+                },
+            });
+    }
+    function ecom_get_max_customInvno()
+    {
+        newgst =  document.getElementById('_newgsttin').value;
+        inv_date = $("#invoice_date").val();
+        ac_id = $("#account").val();
+       
+        $.ajax({
+                url: PATH + "Sales/Getdata/ecom_get_max_customInvno",
+                type: "post",
+                data: {date:inv_date,gst:newgst,ac_id:ac_id},
                 success: function(data){
                     $("#custom_inv_no").val(data.invoice);
                 },

@@ -2153,19 +2153,21 @@ class SalesModel extends Model
                 }
                 $item_builder = $db->table('sales_item');
                 $result1 = $item_builder->insertBatch($itemdata);
-
-                $platform_data = array(
-                    'voucher' => $id,
-                    'type' => "invoice",
-                    'platform_id' => 1,
-                    'custom_inv_no' => $post['custom_inv_no'],
-                    'invoice_date' => db_date(@$post['invoice_date']),
-                    'database_name' => @$post['database'],
-                    'created_at' => date('Y-m-d H:i:s'),
-                    'created_by' => 0,
-                );
-                $platform_builder = $db->table('platform_voucher');
-                $sstatus = $platform_builder->Insert($platform_data);
+                if(session('DataSource')=='ACE20223HUY')
+                {
+                    $platform_data = array(
+                        'voucher' => $id,
+                        'type' => "invoice",
+                        'platform_id' => 1,
+                        'custom_inv_no' => $post['custom_inv_no'],
+                        'invoice_date' => db_date(@$post['invoice_date']),
+                        'database_name' => @$post['database'],
+                        'created_at' => date('Y-m-d H:i:s'),
+                        'created_by' => 0,
+                    );
+                    $platform_builder = $db->table('platform_voucher');
+                    $sstatus = $platform_builder->Insert($platform_data);
+                }
 
                 if ($result &&  $result1) {
                     $msg = array('st' => 'success', 'msg' => "Your Details Added Successfully!!!");
@@ -2985,20 +2987,22 @@ class SalesModel extends Model
                 //print_r($itemdata);exit;
                 $item_builder = $db->table('sales_item');
                 $result1 = $item_builder->insertBatch($itemdata);
-
-                $builder = $db->table('sales_return');
-                $platform_data = array(
-                    'voucher' => $id,
-                    'type' => "return",
-                    'platform_id' => 1,
-                    'custom_inv_no' => $post['supp_inv'],
-                    'invoice_date' => db_date(@$post['return_date']),
-                    'database_name' => @$post['database'],
-                    'created_at' => date('Y-m-d H:i:s'),
-                    'created_by' => 0,
-                );
-                $platform_builder = $db->table('platform_voucher');
-                $sstatus = $platform_builder->Insert($platform_data);
+                if(session('DataSource')=='ACE20223HUY')
+                {
+                    $builder = $db->table('sales_return');
+                    $platform_data = array(
+                        'voucher' => $id,
+                        'type' => "return",
+                        'platform_id' => 1,
+                        'custom_inv_no' => $post['supp_inv'],
+                        'invoice_date' => db_date(@$post['return_date']),
+                        'database_name' => @$post['database'],
+                        'created_at' => date('Y-m-d H:i:s'),
+                        'created_by' => 0,
+                    );
+                    $platform_builder = $db->table('platform_voucher');
+                    $sstatus = $platform_builder->Insert($platform_data);
+                }
 
                 if ($result &&  $result1) {
                     $msg = array('st' => 'success', 'msg' => "Your Details Added Successfully!!!");

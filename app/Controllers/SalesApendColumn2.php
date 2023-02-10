@@ -240,19 +240,33 @@ class SalesApendColumn extends BaseController{
         $msg = $this->model->update_divide_discount_sales_invoice();
         return $this->response->setJSON($msg);
     }
-  
+    // public function update_net_amount_sales_invoice()
+    // {
+    //     $msg = $this->model->update_net_amount_sales_invoice();
+    //     return $this->response->setJSON($msg);
+    // }
+
     public function update_divide_discount_sales_challan()
     {
         $msg = $this->model->update_divide_discount_sales_challan();
         return $this->response->setJSON($msg);
     }
-  
+    public function update_net_amount_sales_challan()
+    {
+        $msg = $this->model->update_net_amount_sales_challan();
+        return $this->response->setJSON($msg);
+    }
+
     public function update_divide_discount_sales_return()
     {
         $msg = $this->model->update_divide_discount_sales_return();
         return $this->response->setJSON($msg);
     }
-   
+    public function update_net_amount_sales_return()
+    {
+        $msg = $this->model->update_net_amount_sales_return();
+        return $this->response->setJSON($msg);
+    }
 
    
 

@@ -653,7 +653,361 @@ class GeneralModel extends Model
         } else {
             $s_number = str_pad(0001, 4, "0", STR_PAD_LEFT);
         }
-        $result = 'AI/' . $month . $year . '/' . $s_number;
+        if($post['type'] == 'invoice')
+        {
+            $result = 'AI/' . $month . $year . '/' . $s_number;
+        }
+        else
+        {
+            $result = 'CN/AI/' . $month . $year . '/' . $s_number;
+        }
+        
+        return $result;
+    }
+    
+    public function ecom_get_max_customInvno()
+    {
+        $gmodel = new GeneralModel();
+        $time = strtotime(date('Y-m-d'));
+        $month = date("m", $time);
+        $year = date("y", $time);
+        $year1 = date("Y", $time);
+
+        $start = strtotime("{$year1}-{$month}-01");
+        $end = strtotime('-1 second', strtotime('+1 month', $start));
+
+        $start_date = date('Y-m-d', $start);
+        $end_date = date('Y-m-d', $end);
+
+        $db = $this->db;
+        $db->setDatabase(session('DataSource')); 
+        $builder_pt_voucher = $db->table('sales_invoice');
+        $select = 'MAX(id) as max_id';
+        $builder_pt_voucher->select($select);
+        $builder_pt_voucher->where(array('is_delete' => '0'));
+        $builder_pt_voucher->where(array('DATE(invoice_date)  >= ' => $start_date));
+        $builder_pt_voucher->where(array('DATE(invoice_date)  <= ' => $end_date));
+        $query = $builder_pt_voucher->get();
+        $getdata = $query->getRow();
+        $custom_date = $month . $year;
+
+        if (!empty($getdata->max_id)) {
+            $invoice_data = $gmodel->get_data_table('sales_invoice', array('id' => $getdata->max_id), 'custom_inv_no');
+            if (!empty($invoice_data['custom_inv_no'])) {
+                $string = $invoice_data['custom_inv_no'];
+                $outputArr = preg_split("/\//", $string);
+                $count = count($outputArr);
+                $last_array = $outputArr[$count - 1];
+                $int_var = (int) filter_var($last_array, FILTER_SANITIZE_NUMBER_INT);
+                $new_num = $int_var + 1;
+                $s_number = str_pad($new_num, 4, "0", STR_PAD_LEFT);
+            } else {
+                $s_number = str_pad(0001, 4, "0", STR_PAD_LEFT);
+            }
+           
+           
+        }
+        else
+        {
+            $s_number = str_pad(0001, 4, "0", STR_PAD_LEFT);
+            
+        }
+        $result = 'A' . '/' . $custom_date . '/' . $s_number;
+       
+        
+        return $result;
+    }
+    public function new_ecom_get_max_customInvno($post)
+    {
+        //print_r($post);exit;
+        $gmodel = new GeneralModel();
+        $time = strtotime($post['date']);
+        $month = date("m", $time);
+        $year = date("y", $time);
+        $year1 = date("Y", $time);
+
+        $start = strtotime("{$year1}-{$month}-01");
+        $end = strtotime('-1 second', strtotime('+1 month', $start));
+
+        $start_date = date('Y-m-d', $start);
+        $end_date = date('Y-m-d', $end);
+        $custom_date = $month . $year;
+        $db = $this->db;
+        $db->setDatabase(session('DataSource')); 
+        if(empty($post['ac_id']))
+        {
+            $builder_pt_voucher = $db->table('sales_invoice');
+            $select = 'MAX(id) as max_id';
+            $builder_pt_voucher->select($select);
+            $builder_pt_voucher->where(array('is_delete' => '0'));
+            $builder_pt_voucher->where(array('DATE(invoice_date)  >= ' => $start_date));
+            $builder_pt_voucher->where(array('DATE(invoice_date)  <= ' => $end_date));
+            $query = $builder_pt_voucher->get();
+            $getdata = $query->getRow();
+            $custom_date = $month . $year;
+
+            if (!empty($getdata->max_id)) {
+                $invoice_data = $gmodel->get_data_table('sales_invoice', array('id' => $getdata->max_id), 'custom_inv_no');
+                if (!empty($invoice_data['custom_inv_no'])) {
+                    $string = $invoice_data['custom_inv_no'];
+                    $outputArr = preg_split("/\//", $string);
+                    $count = count($outputArr);
+                    $last_array = $outputArr[$count - 1];
+                    $int_var = (int) filter_var($last_array, FILTER_SANITIZE_NUMBER_INT);
+                    $new_num = $int_var + 1;
+                    $s_number = str_pad($new_num, 4, "0", STR_PAD_LEFT);
+                } else {
+                    $s_number = str_pad(0001, 4, "0", STR_PAD_LEFT);
+                }
+            
+            
+            }
+            else
+            {
+                $s_number = str_pad(0001, 4, "0", STR_PAD_LEFT);
+                
+            }
+            $result = 'A' . '/' . $custom_date . '/' . $s_number;
+        }
+        else
+        {
+            if(!empty($post['gst']))
+            {
+                $builder_pt_voucher = $db->table('sales_invoice');
+                $select = 'MAX(id) as max_id';
+                $builder_pt_voucher->select($select);
+                $builder_pt_voucher->where(array('is_delete' => '0'));
+                $builder_pt_voucher->where(array('DATE(invoice_date)  >= ' => $start_date));
+                $builder_pt_voucher->where(array('DATE(invoice_date)  <= ' => $end_date));
+                $builder_pt_voucher->where('gst !=','');
+                $query = $builder_pt_voucher->get();
+                $getdata = $query->getRow();
+                if (!empty($getdata->max_id)) {
+                    $invoice_data = $gmodel->get_data_table('sales_invoice', array('id' => $getdata->max_id), 'custom_inv_no');
+                    if (!empty($invoice_data['custom_inv_no'])) {
+                        $string = $invoice_data['custom_inv_no'];
+                        $outputArr = preg_split("/\//", $string);
+                        $count = count($outputArr);
+                        $last_array = $outputArr[$count - 1];
+                        $int_var = (int) filter_var($last_array, FILTER_SANITIZE_NUMBER_INT);
+                        $new_num = $int_var + 1;
+                        $s_number = str_pad($new_num, 4, "0", STR_PAD_LEFT);
+                    } else {
+                        $s_number = str_pad(0001, 4, "0", STR_PAD_LEFT);
+                    }
+                }   
+                else
+                {
+                    $s_number = str_pad(0001, 4, "0", STR_PAD_LEFT);
+                }   
+                $result = 'A' . '/' . $custom_date . '/B' . $s_number;      
+
+            }
+            else
+            {
+                $builder_pt_voucher = $db->table('sales_invoice');
+                $select = 'MAX(id) as max_id';
+                $builder_pt_voucher->select($select);
+                $builder_pt_voucher->where(array('is_delete' => '0'));
+                $builder_pt_voucher->where(array('DATE(invoice_date)  >= ' => $start_date));
+                $builder_pt_voucher->where(array('DATE(invoice_date)  <= ' => $end_date));
+                $builder_pt_voucher->where('gst =','');
+                $query = $builder_pt_voucher->get();
+                $getdata = $query->getRow();
+                if (!empty($getdata->max_id)) {
+                    $invoice_data = $gmodel->get_data_table('sales_invoice', array('id' => $getdata->max_id), 'custom_inv_no');
+                    if (!empty($invoice_data['custom_inv_no'])) {
+                        $string = $invoice_data['custom_inv_no'];
+                        $outputArr = preg_split("/\//", $string);
+                        $count = count($outputArr);
+                        $last_array = $outputArr[$count - 1];
+                        $int_var = (int) filter_var($last_array, FILTER_SANITIZE_NUMBER_INT);
+                        $new_num = $int_var + 1;
+                        $s_number = str_pad($new_num, 4, "0", STR_PAD_LEFT);
+                    } else {
+                        $s_number = str_pad(0001, 4, "0", STR_PAD_LEFT);
+                    }
+                }   
+                else
+                {
+                    $s_number = str_pad(0001, 4, "0", STR_PAD_LEFT);
+                }   
+                $result = 'A' . '/' . $custom_date . '/C' . $s_number;  
+            }
+        }
+        
+        return $result;
+    }
+    public function ecom_ret_get_max_customInvno()
+    {
+        $gmodel = new GeneralModel();
+        $time = strtotime(date('Y-m-d'));
+        $month = date("m", $time);
+        $year = date("y", $time);
+        $year1 = date("Y", $time);
+
+        $start = strtotime("{$year1}-{$month}-01");
+        $end = strtotime('-1 second', strtotime('+1 month', $start));
+
+        $start_date = date('Y-m-d', $start);
+        $end_date = date('Y-m-d', $end);
+
+        $db = $this->db;
+        $db->setDatabase(session('DataSource')); 
+        $builder_pt_voucher = $db->table('sales_return');
+        $select = 'MAX(id) as max_id';
+        $builder_pt_voucher->select($select);
+        $builder_pt_voucher->where(array('is_delete' => '0'));
+        $builder_pt_voucher->where(array('DATE(return_date)  >= ' => $start_date));
+        $builder_pt_voucher->where(array('DATE(return_date)  <= ' => $end_date));
+        $query = $builder_pt_voucher->get();
+        $getdata = $query->getRow();
+        $custom_date = $month . $year;
+
+        if (!empty($getdata->max_id)) {
+            $invoice_data = $gmodel->get_data_table('sales_return', array('id' => $getdata->max_id), 'supp_inv');
+            if (!empty($invoice_data['supp_inv'])) {
+                $string = $invoice_data['supp_inv'];
+                $outputArr = preg_split("/\//", $string);
+                $count = count($outputArr);
+                $last_array = $outputArr[$count - 1];
+                $int_var = (int) filter_var($last_array, FILTER_SANITIZE_NUMBER_INT);
+                $new_num = $int_var + 1;
+                $s_number = str_pad($new_num, 4, "0", STR_PAD_LEFT);
+            } else {
+                $s_number = str_pad(0001, 4, "0", STR_PAD_LEFT);
+            }
+           
+           
+        }
+        else
+        {
+            $s_number = str_pad(0001, 4, "0", STR_PAD_LEFT);
+            
+        }
+        $result = 'AC' . '/' . $custom_date . '/' . $s_number;
+       
+        
+        return $result;
+    }
+    public function new_ret_ecom_get_max_customInvno($post)
+    {
+        //print_r($post);exit;
+        $gmodel = new GeneralModel();
+        $time = strtotime($post['date']);
+        $month = date("m", $time);
+        $year = date("y", $time);
+        $year1 = date("Y", $time);
+
+        $start = strtotime("{$year1}-{$month}-01");
+        $end = strtotime('-1 second', strtotime('+1 month', $start));
+
+        $start_date = date('Y-m-d', $start);
+        $end_date = date('Y-m-d', $end);
+        $custom_date = $month . $year;
+        $db = $this->db;
+        $db->setDatabase(session('DataSource')); 
+        if(empty($post['ac_id']))
+        {
+            $builder_pt_voucher = $db->table('sales_return');
+            $select = 'MAX(id) as max_id';
+            $builder_pt_voucher->select($select);
+            $builder_pt_voucher->where(array('is_delete' => '0'));
+            $builder_pt_voucher->where(array('DATE(return_date)  >= ' => $start_date));
+            $builder_pt_voucher->where(array('DATE(return_date)  <= ' => $end_date));
+            $query = $builder_pt_voucher->get();
+            $getdata = $query->getRow();
+            $custom_date = $month . $year;
+
+            if (!empty($getdata->max_id)) {
+                $invoice_data = $gmodel->get_data_table('sales_return', array('id' => $getdata->max_id), 'supp_inv');
+                if (!empty($invoice_data['supp_inv'])) {
+                    $string = $invoice_data['supp_inv'];
+                    $outputArr = preg_split("/\//", $string);
+                    $count = count($outputArr);
+                    $last_array = $outputArr[$count - 1];
+                    $int_var = (int) filter_var($last_array, FILTER_SANITIZE_NUMBER_INT);
+                    $new_num = $int_var + 1;
+                    $s_number = str_pad($new_num, 4, "0", STR_PAD_LEFT);
+                } else {
+                    $s_number = str_pad(0001, 4, "0", STR_PAD_LEFT);
+                }
+            
+            
+            }
+            else
+            {
+                $s_number = str_pad(0001, 4, "0", STR_PAD_LEFT);
+                
+            }
+            $result = 'AC' . '/' . $custom_date . '/' . $s_number;
+        }
+        else
+        {
+            if(!empty($post['gst']))
+            {
+                $builder_pt_voucher = $db->table('sales_return');
+                $select = 'MAX(id) as max_id';
+                $builder_pt_voucher->select($select);
+                $builder_pt_voucher->where(array('is_delete' => '0'));
+                $builder_pt_voucher->where(array('DATE(return_date)  >= ' => $start_date));
+                $builder_pt_voucher->where(array('DATE(return_date)  <= ' => $end_date));
+                $builder_pt_voucher->where('gst !=','');
+                $query = $builder_pt_voucher->get();
+                $getdata = $query->getRow();
+                if (!empty($getdata->max_id)) {
+                    $invoice_data = $gmodel->get_data_table('sales_return', array('id' => $getdata->max_id), 'supp_inv');
+                    if (!empty($invoice_data['supp_inv'])) {
+                        $string = $invoice_data['supp_inv'];
+                        $outputArr = preg_split("/\//", $string);
+                        $count = count($outputArr);
+                        $last_array = $outputArr[$count - 1];
+                        $int_var = (int) filter_var($last_array, FILTER_SANITIZE_NUMBER_INT);
+                        $new_num = $int_var + 1;
+                        $s_number = str_pad($new_num, 4, "0", STR_PAD_LEFT);
+                    } else {
+                        $s_number = str_pad(0001, 4, "0", STR_PAD_LEFT);
+                    }
+                }   
+                else
+                {
+                    $s_number = str_pad(0001, 4, "0", STR_PAD_LEFT);
+                }   
+                $result = 'AC' . '/' . $custom_date . '/B' . $s_number;      
+
+            }
+            else
+            {
+                $builder_pt_voucher = $db->table('sales_return');
+                $select = 'MAX(id) as max_id';
+                $builder_pt_voucher->select($select);
+                $builder_pt_voucher->where(array('is_delete' => '0'));
+                $builder_pt_voucher->where(array('DATE(return_date)  >= ' => $start_date));
+                $builder_pt_voucher->where(array('DATE(return_date)  <= ' => $end_date));
+                $builder_pt_voucher->where('gst =','');
+                $query = $builder_pt_voucher->get();
+                $getdata = $query->getRow();
+                if (!empty($getdata->max_id)) {
+                    $invoice_data = $gmodel->get_data_table('sales_return', array('id' => $getdata->max_id), 'supp_inv');
+                    if (!empty($invoice_data['supp_inv'])) {
+                        $string = $invoice_data['supp_inv'];
+                        $outputArr = preg_split("/\//", $string);
+                        $count = count($outputArr);
+                        $last_array = $outputArr[$count - 1];
+                        $int_var = (int) filter_var($last_array, FILTER_SANITIZE_NUMBER_INT);
+                        $new_num = $int_var + 1;
+                        $s_number = str_pad($new_num, 4, "0", STR_PAD_LEFT);
+                    } else {
+                        $s_number = str_pad(0001, 4, "0", STR_PAD_LEFT);
+                    }
+                }   
+                else
+                {
+                    $s_number = str_pad(0001, 4, "0", STR_PAD_LEFT);
+                }   
+                $result = 'AC' . '/' . $custom_date . '/C' . $s_number;  
+            }
+        }
         
         return $result;
     }

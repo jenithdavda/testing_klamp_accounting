@@ -2,9 +2,9 @@
 
 namespace App\Controllers;
 use App\Models\GeneralModel;
-use App\Models\SalesApendColumnModel;
+use App\Models\PurchaseApendColumnModel;
 
-class SalesApendColumn extends BaseController{
+class PurchaseApendColumn extends BaseController{
     
     public function initController(\CodeIgniter\HTTP\RequestInterface $request, \CodeIgniter\HTTP\ResponseInterface $response, \Psr\Log\LoggerInterface $logger){
         // Do Not Edit This Line
@@ -12,45 +12,47 @@ class SalesApendColumn extends BaseController{
         header("Access-Control-Allow-Origin: * ");
         header("Access-Control-Allow-Methods: *");
         header("Access-Control-Allow-Headers: * ");
-        $this->model = new SalesApendColumnModel();
+        $this->model = new PurchaseApendColumnModel();
         $this->gmodel = new GeneralModel();
         
     }
-    // item taxability
-    public function item_taxability()
-    {
-        // if (!session('uid')) {
-        //     return redirect()->to(url('auth'));
-        // }
-           $msg = $this->model->update_item_taxability();
-           return $this->response->setJSON($msg);
-    }
+    
+     // item taxability
+     public function item_taxability()
+     {
+        //  if (!session('uid')) {
+        //      return redirect()->to(url('auth'));
+        //  }
+            $msg = $this->model->update_item_taxability();
+            return $this->response->setJSON($msg);
+     }
+  
     // inv_taxability
-    public function sales_challan_taxability()
+    public function purchase_challan_taxability()
     {
         // if (!session('uid')) {
         //     return redirect()->to(url('auth'));
         // }
 
-           $msg = $this->model->update_sales_challan_taxability();
+           $msg = $this->model->update_purchase_challan_taxability();
            return $this->response->setJSON($msg);
     }
-    public function sales_invoice_taxability()
+    public function purchase_invoice_taxability()
     {
         // if (!session('uid')) {
         //     return redirect()->to(url('auth'));
         // }
 
-           $msg = $this->model->update_sales_invoice_taxability();
+           $msg = $this->model->update_purchase_invoice_taxability();
            return $this->response->setJSON($msg);
     }
-    public function sales_return_taxability()
+    public function purchase_return_taxability()
     {
         // if (!session('uid')) {
         //     return redirect()->to(url('auth'));
         // }
 
-           $msg = $this->model->update_sales_return_taxability();
+           $msg = $this->model->update_purchase_return_taxability();
            return $this->response->setJSON($msg);
     }
     public function account_taxability()
@@ -65,7 +67,7 @@ class SalesApendColumn extends BaseController{
       
 
     }
-    public function sales_acinvoice_taxability()
+    public function purchase_acinvoice_taxability()
     {
         // if (!session('uid')) {
         //     return redirect()->to(url('auth'));
@@ -75,120 +77,120 @@ class SalesApendColumn extends BaseController{
            return $this->response->setJSON($msg);
     }
     // modified igst_acc, cgst_acc, sgst_acc, glgroup
-    public function sales_challan_gst_acc()
+    public function purchase_challan_gst_acc()
     {
         // if (!session('uid')) {
         //     return redirect()->to(url('auth'));
         // }
 
-           $msg = $this->model->update_sales_challan_gst_acc();
+           $msg = $this->model->update_purchase_challan_gst_acc();
            return $this->response->setJSON($msg);
     }
-    public function sales_invoice_gst_acc()
+    public function purchase_invoice_gst_acc()
     {
         // if (!session('uid')) {
         //     return redirect()->to(url('auth'));
         // }
 
-           $msg = $this->model->update_sales_invoice_gst_acc();
+           $msg = $this->model->update_purchase_invoice_gst_acc();
            return $this->response->setJSON($msg);
     }
-    public function sales_return_gst_acc()
+    public function purchase_return_gst_acc()
     {
         // if (!session('uid')) {
         //     return redirect()->to(url('auth'));
         // }
 
-           $msg = $this->model->update_sales_return_gst_acc();
+           $msg = $this->model->update_purchase_return_gst_acc();
            return $this->response->setJSON($msg);
     }
-    public function sales_general_gst_acc()
+    public function purchase_general_gst_acc()
     {
         // if (!session('uid')) {
         //     return redirect()->to(url('auth'));
         // }
 
-           $msg = $this->model->update_sales_general_gst_acc();
+           $msg = $this->model->update_purchase_general_gst_acc();
            return $this->response->setJSON($msg);
     }
     // item discount
-    public function sales_general_item_disc()
+    public function purchase_general_item_disc()
     {
         // if (!session('uid')) {
         //     return redirect()->to(url('auth'));
         // }
 
-           $msg = $this->model->new_update_sales_general_item_disc();
+           $msg = $this->model->new_update_purchase_general_item_disc();
            return $this->response->setJSON($msg);
     }
-    public function sales_challan_item_disc()
+    public function purchase_challan_item_disc()
     {
         // if (!session('uid')) {
         //     return redirect()->to(url('auth'));
         // }
 
-           $msg = $this->model->new_update_sales_challan_item_disc();
+           $msg = $this->model->new_update_purchase_challan_item_disc();
            return $this->response->setJSON($msg);
     }
-    public function sales_invoice_item_disc()
+    public function purchase_invoice_item_disc()
     {
         // if (!session('uid')) {
         //     return redirect()->to(url('auth'));
         // }
 
-           $msg = $this->model->new_update_sales_invoice_item_disc();
+           $msg = $this->model->new_update_purchase_invoice_item_disc();
            return $this->response->setJSON($msg);
     }
-    public function sales_return_item_disc()
+    public function purchase_return_item_disc()
     {
         // if (!session('uid')) {
         //     return redirect()->to(url('auth'));
         // }
 
-           $msg = $this->model->new_update_sales_return_item_disc();
+           $msg = $this->model->new_update_purchase_return_item_disc();
            return $this->response->setJSON($msg);
     }
    
     /// newwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
-    // sales gl_group update
-    public function update_glgroup_sales_challan()
+    // purchase gl_group update
+    public function update_glgroup_purchase_challan()
     {
         // if (!session('uid')) {
         //     return redirect()->to(url('auth'));
         // }
 
-           $msg = $this->model->update_glgroup_sales_challan();
+           $msg = $this->model->update_glgroup_purchase_challan();
            return $this->response->setJSON($msg);
     }
-    public function update_glgroup_sales_invoice()
+    public function update_glgroup_purchase_invoice()
     {
         // if (!session('uid')) {
         //     return redirect()->to(url('auth'));
         // }
 
-           $msg = $this->model->update_glgroup_sales_invoice();
+           $msg = $this->model->update_glgroup_purchase_invoice();
            return $this->response->setJSON($msg);
     }
-    public function update_glgroup_sales_return()
+    public function update_glgroup_purchase_return()
     {
         // if (!session('uid')) {
         //     return redirect()->to(url('auth'));
         // }
 
-           $msg = $this->model->update_glgroup_sales_return();
+           $msg = $this->model->update_glgroup_purchase_return();
            return $this->response->setJSON($msg);
     }
-    public function update_glgroup_sales_general()
+    public function update_glgroup_purchase_general()
     {
         // if (!session('uid')) {
         //     return redirect()->to(url('auth'));
         // }
 
-           $msg = $this->model->update_glgroup_sales_general();
+           $msg = $this->model->update_glgroup_purchase_general();
            return $this->response->setJSON($msg);
     }
    // update gst number 
-    public function sales_acinvoice_gst()
+    public function purchase_acinvoice_gst()
     {
         // if (!session('uid')) {
         //     return redirect()->to(url('auth'));
@@ -198,65 +200,61 @@ class SalesApendColumn extends BaseController{
            return $this->response->setJSON($msg);
     }
     //sub_total
-    public function sales_sub_total()
+    public function purchase_sub_total()
     {
         // if (!session('uid')) {
         //     return redirect()->to(url('auth'));
         // }
 
-           $msg = $this->model->update_sales_subtotal();
+           $msg = $this->model->update_purchase_subtotal();
            return $this->response->setJSON($msg);
     }
-    public function sales_general_sub_total()
+    public function purchase_general_sub_total()
     {
         // if (!session('uid')) {
         //     return redirect()->to(url('auth'));
         // }
 
-           $msg = $this->model->update_sales_general_subtotal();
+           $msg = $this->model->update_purchase_general_subtotal();
            return $this->response->setJSON($msg);
     }
-    // hsn 
-    public function sales_item_hsn()
-    {
-        // if (!session('uid')) {
-        //     return redirect()->to(url('auth'));
-        // }
 
-           $msg = $this->model->update_sales_item_hsn();
-           return $this->response->setJSON($msg);
-    }
-    public function update_sgst_amt()
-    {
-        // if (!session('uid')) {
-        //     return redirect()->to(url('auth'));
-        // }
 
-           $msg = $this->model->update_sgst_amt();
-           return $this->response->setJSON($msg);
-    }
-    public function update_divide_discount_sales_invoice()
+    public function update_divide_discount_purchase_invoice()
     {
-        $msg = $this->model->update_divide_discount_sales_invoice();
+        $msg = $this->model->update_divide_discount_purchase_invoice();
         return $this->response->setJSON($msg);
     }
-  
-    public function update_divide_discount_sales_challan()
+    public function update_net_amount_purchase_invoice()
     {
-        $msg = $this->model->update_divide_discount_sales_challan();
+        $msg = $this->model->update_net_amount_purchase_invoice();
         return $this->response->setJSON($msg);
     }
-  
-    public function update_divide_discount_sales_return()
+
+    public function update_divide_discount_purchase_challan()
     {
-        $msg = $this->model->update_divide_discount_sales_return();
+        $msg = $this->model->update_divide_discount_purchase_challan();
         return $this->response->setJSON($msg);
     }
-   
+    public function update_net_amount_puchase_challan()
+    {
+        $msg = $this->model->update_net_amount_purchase_challan();
+        return $this->response->setJSON($msg);
+    }
 
-   
+    public function update_divide_discount_purchase_return()
+    {
+        $msg = $this->model->update_divide_discount_purchase_return();
+        return $this->response->setJSON($msg);
+    }
+    public function update_net_amount_purchase_return()
+    {
+        $msg = $this->model->update_net_amount_purchase_return();
+        return $this->response->setJSON($msg);
+    }
 
 
+    
    
       
    

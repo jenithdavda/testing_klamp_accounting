@@ -61,10 +61,38 @@
                                 <input class="form-control" readonly type="text" name="return_no" value="<?= @$s_return['return_no'] ? $s_return['return_no'] : @$current_id; ?>">
                             </div>
 
+                           
+                            <?php
+                            if(session('DataSource')=='ACE20227T93')
+                            {
+                            ?>
+
                             <div class="col-lg-3 form-group">
                                 <label class="form-label">Return Date: <span class="tx-danger">*</span></label>
-                                <input class="form-control fc-datepicker" placeholder="YYYY-MM-DD" type="text" name="return_date" value="<?= @$s_return['return_date'] ? $s_return['return_date'] : date('Y-m-d'); ?>"  onchange="get_max_customInvno(this.value)" onkeyup="get_max_customInvno(this.value)">
+                                <input class="form-control fc-datepicker" placeholder="YYYY-MM-DD" type="text"  name="return_date" value="<?= @$s_return['return_date'] ? $s_return['return_date'] : date('Y-m-d'); ?>"  onchange="get_max_customInvno(this.value)" onkeyup="get_max_customInvno(this.value)">
                             </div>
+                            <?php
+                            }
+                            else if(session('DataSource')=='KLA2022ZFDH')
+                            
+                            {
+                            ?>
+                             <div class="col-lg-3 form-group">
+                                <label class="form-label">Return Date: <span class="tx-danger">*</span></label>
+                                <input class="form-control fc-datepicker" placeholder="YYYY-MM-DD" type="text" id ="return_date" name="return_date" value="<?= @$s_return['return_date'] ? $s_return['return_date'] : date('Y-m-d'); ?>"  onchange="ecom_get_max_customInvno(this.value)" onkeyup="ecom_get_max_customInvno(this.value)">
+                            </div>
+                            <?php
+                            }
+                            else
+                            {
+                            ?>
+                             <div class="col-lg-3 form-group">
+                                <label class="form-label">Return Date: <span class="tx-danger">*</span></label>
+                                <input class="form-control fc-datepicker" placeholder="YYYY-MM-DD" type="text" name="return_date" value="<?= @$s_return['return_date'] ? $s_return['return_date'] : date('Y-m-d'); ?>">
+                            </div>
+                            <?php
+                            }
+                            ?>
                             <div class="col-lg-3 form-group">
                                 <label class="form-label">Supplier Invoice No:</label>
                                 <input class="form-control" type="text" placeholder="Enter Supplier Invoice" id="supp_inv" name="supp_inv" value="<?= @$s_return['supp_inv'] ? $s_return['supp_inv'] : @$supp_inv_no; ?>">
@@ -91,7 +119,7 @@
                                                 </div>
                                             </div>
                                         </div>
-
+                                        <input type="hidden" id="database_name" value="<?= session('DataSource') ?>">
                                         <input type="hidden" name="id" value="<?= @$s_return['id']; ?>">
                                         <input type="hidden" name="tds_per" id="tds_per" class="tds_per" value="<?= @$s_return['tds_per']; ?>">
                                         <input type="hidden" name="tds_limit" id="tds_limit" value="<?= @$s_return['tds_limit']; ?>">
@@ -107,6 +135,7 @@
                                     <div class="row col-md-12 form-group">
                                         <label class="form-label col-md-4">GST No.: <span class="tx-danger">*</span></label>
                                         <input readonly class="form-control col-md-8" type="text" name="gst" id="gst" value="<?= @$s_return['gst']; ?>">
+                                        <input type="hidden" name="newgsttin" id="_newgsttin" value="">
                                     </div>
                                     <div class="row col-md-12 form-group">
                                         <label class="form-label col-md-4">Transport Mode </label>
@@ -1603,6 +1632,7 @@
             var data = e.params.data;
             // console.log(data);
             $('#gst').val(data.gsttin);
+            $("input[name='newgsttin']").val(data.gsttin);
             $('#tds_per').val(data.tds);
             $('#tds_limit').val(data.tds_limit);
             $('#acc_state').val(data.state);
@@ -1679,6 +1709,12 @@
             }
             enable_gst_option();
             calculate();
+            var database_name = $('#database_name').val()
+            if(database_name == 'KLA2022ZFDH')
+            {
+                
+                ecom_get_max_customInvno();
+            }
         });
 
         $('#tax').on('select2:select', function(e) {
@@ -2211,7 +2247,26 @@
         $.ajax({
                 url: PATH + "Sales/Getdata/get_max_customInvno",
                 type: "post",
-                data: {date:date,type:'return'},
+                data: {date:date,type:'invoice'},
+                success: function(data){
+                    $("#supp_inv").val(data.invoice);
+                },
+                error: function(err){
+                    console.log("error");
+                    console.log(err);
+                },
+            });
+    }
+    function ecom_get_max_customInvno()
+    {
+        newgst =  document.getElementById('_newgsttin').value;
+        inv_date = $("#return_date").val();
+        ac_id = $("#account").val();
+       
+        $.ajax({
+                url: PATH + "Sales/Getdata/ecom_ret_get_max_customInvno",
+                type: "post",
+                data: {date:inv_date,gst:newgst,ac_id:ac_id},
                 success: function(data){
                     $("#supp_inv").val(data.invoice);
                 },

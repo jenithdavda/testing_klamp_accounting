@@ -2132,6 +2132,13 @@ class ApiModel extends Model
         $select = 'MAX(id) as max_id';
         $builder_si_voucher->select($select);
         $builder_si_voucher->where(array('is_delete' => '0'));
+        if (empty($post['gst']) or $post['gst'] == null) {
+            $builder_si_voucher->where(array('gst==' => ''));
+        }
+        else
+        {
+            $builder_si_voucher->where(array('gst!=' => ''));
+        }
         $builder_si_voucher->where(array('DATE(invoice_date)  >= ' => $start_date));
         $builder_si_voucher->where(array('DATE(invoice_date)  <= ' => $end_date));
         $query = $builder_si_voucher->get();
