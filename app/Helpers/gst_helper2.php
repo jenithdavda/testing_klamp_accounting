@@ -914,11 +914,6 @@ function get_gstr1_detail($start_date = '', $end_date = ''){
     $query = $builder->get();
     $sales_invoice = $query->getResultArray();
     
-    $sale_ids = array();    
-    foreach($sales_invoice as $row){
-        $sale_ids[] = $row['id'];
-    }
-
     $builder =$db->table('sales_ACinvoice sa');
     $builder->select('sa.*,ac.gst,ac.name,ac.gst_type');
     $builder->join('account ac','ac.id = sa.party_account');
@@ -929,10 +924,6 @@ function get_gstr1_detail($start_date = '', $end_date = ''){
     $builder->where(array('DATE(sa.invoice_date)  <= ' => $end_date));
     $query = $builder->get();
     $salesAcinvoice = $query->getResultArray();
-    $gnrl_ids = array();    
-    foreach($salesAcinvoice as $row){
-        $gnrl_ids[] = $row['id'];
-    }
 
     $sales = array_merge($salesAcinvoice,$sales_invoice);
     
@@ -949,42 +940,15 @@ function get_gstr1_detail($start_date = '', $end_date = ''){
     
 
     $gmodel = new GeneralModel;
-    $gnrl_sales_particular = array();
-    $sales_products = array();
-
-    if(!empty($gnrl_ids)){
-
-        $builder =$db->table('sales_ACparticu');
-        $builder->select('*,parent_id,taxability,igst, amount as total');
-        $builder->where(array('is_delete' => 0));
-        $builder->whereIn('parent_id', $gnrl_ids);
-        $query = $builder->get();
-        $gnrl_sales_particular = $query->getResultArray();
-    }
-
-    if(!empty($sale_ids)){
-
-        $builder =$db->table('sales_item');
-        $builder->select('*,parent_id,taxability,igst,sub_total as total');
-        $builder->whereIn('parent_id', $sale_ids);
-        $builder->where(array('is_delete' => 0));
-        $builder->where(array('type' => 'invoice'));
-        $query = $builder->get();
-        $sales_products = $query->getResultArray();
-    }
    
     foreach($sales as $row){
         
         if($row['gst'] == '' || empty($row['gst'])) {  // B2C Condition 
 
             if (isset($row['v_type'])) {
-
-                $sale = search($gnrl_sales_particular,'parent_id',$row['id']);
-                // $sale = $gmodel->get_array_table('sales_ACparticu', array('parent_id' => $row['id'], 'is_delete' => 0),'taxability,igst, amount as total');
+                $sale = $gmodel->get_array_table('sales_ACparticu', array('parent_id' => $row['id'], 'is_delete' => 0),'taxability,igst, amount as total');
             } else {
-                $sale = search($sales_products,'parent_id',$row['id']);
-
-                // $sale = $gmodel->get_array_table('sales_item', array('parent_id' =>$row['id'], 'is_delete' => 0, 'type' => 'invoice'), 'taxability,igst,(rate*qty) as total');
+                $sale = $gmodel->get_array_table('sales_item', array('parent_id' =>$row['id'], 'is_delete' => 0, 'type' => 'invoice'), 'taxability,igst,(rate*qty) as total');
             }
     
             $nill_invtaxable = 0;
@@ -1009,9 +973,9 @@ function get_gstr1_detail($start_date = '', $end_date = ''){
                 if($row1['taxability'] == 'Nill' || $row1['taxability'] == 'Exempt'){  // In B2c Invoice include exempt and nill rated item  
                   
                     $nill_invtaxable +=  (float)$row1['total'];
-                    $nill_tot_igst +=  (float)$row1['igst_amt'];
-                    $nill_tot_cgst +=  (float)$row1['cgst_amt'];
-                    $nill_tot_sgst +=  (float)$row1['sgst_amt'];
+                    $nill_tot_igst +=  (float)$row1['total'] * (float)$row1['igst'] / 100;
+                    $nill_tot_cgst += ((float)$row1['total'] * (float)$row1['igst'] / 100)/ 2;
+                    $nill_tot_sgst += ((float)$row1['total'] * (float)$row1['igst'] / 100) / 2;
                     $nill_invoice_amt = $nill_invtaxable + $nill_tot_igst;
     
                     $arr1['taxable'] = $nill_invtaxable; 
@@ -1023,10 +987,11 @@ function get_gstr1_detail($start_date = '', $end_date = ''){
                     $i++;
     
                 }else{
+                   
                     $invtaxable +=  (float)$row1['total'];
-                    $tot_igst +=  (float)$row1['igst_amt'];
-                    $tot_cgst += (float)$row1['cgst_amt'];
-                    $tot_sgst += (float)$row1['sgst_amt'];
+                    $tot_igst +=  (float)$row1['total'] * (float)$row1['igst'] / 100;
+                    $tot_cgst += ((float)$row1['total'] * (float)$row1['igst'] / 100) / 2;
+                    $tot_sgst += ((float)$row1['total'] * (float)$row1['igst'] / 100) / 2;
                     
                     $invoice_amt = $invtaxable + $tot_igst;  
     
@@ -1136,7 +1101,6 @@ function get_gstr1_detail($start_date = '', $end_date = ''){
             $b2cSmall['taxable_amount'] += $row['taxable'];
         }
     }
-
    
     $builder =$db->table('sales_return sr');
     $builder->select('sr.*,ac.gst,ac.name');
@@ -1147,11 +1111,6 @@ function get_gstr1_detail($start_date = '', $end_date = ''){
     $builder->where(array('DATE(sr.return_date)  <= ' => $end_date));
     $query = $builder->get();
     $sale_return = $query->getResultArray();
-
-    $sale_ret_ids = array();    
-    foreach($sale_return as $row){
-        $sale_ret_ids[] = $row['id'];
-    }
 
     $builder =$db->table('sales_ACinvoice sa');
     $builder->select('sa.*,ac.gst,ac.name,sa.total_amount as total');
@@ -1164,11 +1123,6 @@ function get_gstr1_detail($start_date = '', $end_date = ''){
     $query = $builder->get();
     $ac_return = $query->getResultArray();
     
-    $gnrl_ret_ids = array();    
-    foreach($ac_return as $row){
-        $gnrl_ret_ids[] = $row['id'];
-    }
-
     $cr_dr = array_merge($sale_return,$ac_return);
 
     $cr_dr_UnReg=array();
@@ -1196,41 +1150,14 @@ function get_gstr1_detail($start_date = '', $end_date = ''){
     $cr_drReg['cess'] =0;
     $cr_drReg['taxable_amount'] =0;
 
-    $gnrl_sales_ret_particular = array();
-    $sales_ret_products = array();
-
-    if(!empty($gnrl_ret_ids)){
-
-        $builder =$db->table('sales_ACparticu');
-        $builder->select('*,parent_id,taxability,igst, amount as total');
-        $builder->where(array('is_delete' => 0));
-        $builder->whereIn('parent_id', $gnrl_ret_ids);
-        $query = $builder->get();
-        $gnrl_sales_ret_particular = $query->getResultArray();
-    }
-
-    if(!empty($sale_ret_ids)){
-
-        $builder =$db->table('sales_item');
-        $builder->select('*,parent_id,taxability,igst,sub_total as total');
-        $builder->whereIn('parent_id', $sale_ret_ids);
-        $builder->where(array('is_delete' => 0));
-        $builder->where(array('type' => 'return'));
-        $query = $builder->get();
-        $sales_ret_products = $query->getResultArray();
-    }
-
-
     foreach($cr_dr as $row){
 
         if($row['gst'] == '' || empty($row['gst'])){
 
             if (isset($row['v_type'])) {
-                $sale_ret = search($gnrl_sales_ret_particular,'parent_id',$row['id']);
-                // $sale_ret = $gmodel->get_array_table('sales_ACparticu', array('parent_id' => $row['id'], 'is_delete' => 0),'taxability,igst, amount as total');
+                $sale_ret = $gmodel->get_array_table('sales_ACparticu', array('parent_id' => $row['id'], 'is_delete' => 0),'taxability,igst, amount as total');
             } else {
-                $sale_ret = search($sales_ret_products,'parent_id',$row['id']);
-                // $sale_ret = $gmodel->get_array_table('sales_item', array('parent_id' =>$row['id'], 'is_delete' => 0, 'type' => 'return'), 'taxability,igst,(rate*qty) as total');
+                $sale_ret = $gmodel->get_array_table('sales_item', array('parent_id' =>$row['id'], 'is_delete' => 0, 'type' => 'return'), 'taxability,igst,(rate*qty) as total');
             }
 
             $nill_crdr_invtaxable = 0;
@@ -1261,9 +1188,9 @@ function get_gstr1_detail($start_date = '', $end_date = ''){
                 if($row1['taxability'] == 'Nill' || $row1['taxability'] == 'Exempt'){
                     
                     $nill_crdr_invtaxable +=  (float)$row1['total'];
-                    $nill_crdr_tot_igst +=  (float)$row1['igst_amt'];
-                    $nill_crdr_tot_cgst += (float)$row1['cgst_amt'];
-                    $nill_crdr_tot_sgst += (float)$row1['sgst_amt'];
+                    $nill_crdr_tot_igst +=  (float)$row1['total'] * (float)$row1['igst'] / 100;
+                    $nill_crdr_tot_cgst += (float)$nill_crdr_tot_igst / 2;
+                    $nill_crdr_tot_sgst += (float)$nill_crdr_tot_igst / 2;
                     $nill_crdr_invoice_amt = $nill_crdr_invtaxable + $nill_crdr_tot_igst;
     
                     $arr3['taxable'] = $nill_crdr_invtaxable; 
@@ -1277,9 +1204,9 @@ function get_gstr1_detail($start_date = '', $end_date = ''){
     
                     if($row['acc_state'] != session('state')){
                         $crdr_invtaxable +=  (float)$row1['total'];
-                        $crdr_tot_igst +=  (float)$row1['igst_amt'];
-                        $crdr_tot_cgst += (float)$row1['cgst_amt'];
-                        $crdr_tot_sgst += (float)$row1['sgst_amt'];
+                        $crdr_tot_igst +=  (float)$row1['total'] * (float)$row1['igst'] / 100;
+                        $crdr_tot_cgst += (float)$crdr_tot_igst / 2;
+                        $crdr_tot_sgst += (float)$crdr_tot_igst / 2;
                         
                         $crdr_invoice_amt = $crdr_invtaxable + $crdr_tot_igst;  
         
@@ -1292,9 +1219,9 @@ function get_gstr1_detail($start_date = '', $end_date = ''){
                     }
 
                     $crdr_invtaxable_state +=  (float)$row1['total'];
-                    $crdr_tot_igst_state +=  (float)$row1['igst_amt'];
-                    $crdr_tot_cgst_state += (float)$row1['cgst_amt'];
-                    $crdr_tot_sgst_state += (float)$row1['sgst_amt'];
+                    $crdr_tot_igst_state +=  (float)$row1['total'] * (float)$row1['igst'] / 100;
+                    $crdr_tot_cgst_state += (float)$crdr_tot_igst_state / 2;
+                    $crdr_tot_sgst_state += (float)$crdr_tot_igst_state / 2;
                     
                     $crdr_invoice_amt_state = $crdr_invtaxable_state + $crdr_tot_igst_state;  
     
@@ -1457,7 +1384,7 @@ function get_gstr1_detail($start_date = '', $end_date = ''){
     $vch_type = "'sale_invoice' as vch_type" ;
     
     $builder =$db->table('sales_item si');
-    $builder->select('si.*,i.hsn,i.name as item_name,s.taxes,s.disc_type,s.discount,'.$vch_type);
+    $builder->select('si.*,i.hsn,s.taxes,s.disc_type,s.discount,'.$vch_type);
     $builder->join('item i','i.id = si.item_id');
     $builder->join('sales_invoice s','s.id = si.parent_id');
     $builder->where(array('si.type' => 'invoice'));
@@ -1472,7 +1399,7 @@ function get_gstr1_detail($start_date = '', $end_date = ''){
     
     $vch_type = "'sale_return' as vch_type" ;
     $builder =$db->table('sales_item si');
-    $builder->select('si.*,i.hsn,i.name as item_name,s.taxes,s.disc_type,s.discount,'.$vch_type);
+    $builder->select('si.*,i.hsn,s.taxes,s.disc_type,s.discount,'.$vch_type);
     $builder->join('item i','i.id = si.item_id');
     $builder->join('sales_return s','s.id = si.parent_id');
     $builder->where(array('si.type' => 'return'));
@@ -1494,8 +1421,8 @@ function get_gstr1_detail($start_date = '', $end_date = ''){
     $gmodel = new App\Models\GeneralModel();
 
     for($i=0;$i<count($sale_item);$i++){
-        // $itm = $gmodel->get_data_table('item',array('id'=>$sale_item[$i]['item_id']),'name');
-        // $sale_item[$i]['item_name'] = $itm['name'];
+        $itm = $gmodel->get_data_table('item',array('id'=>$sale_item[$i]['item_id']),'name');
+        $sale_item[$i]['item_name'] = $itm['name'];
 
         if(@$sale_item[$i]['hsn'] == '' || empty(@$sale_item[$i]['hsn']) ){
             $non_hsn['data'][] = $sale_item[$i];
@@ -1603,7 +1530,7 @@ function get_gstr1_detail($start_date = '', $end_date = ''){
     $from =date_create($start_date);                                         
     $to = date_create($end_date);
 
-    // echo '<pre>';print_r($b2b);exit;
+
     $gstr1 = array(
         'b2b' =>    $b2b,
         'b2cSmall' => $b2cSmall,
@@ -1632,58 +1559,15 @@ function get_state_wise_b2c($b2c,$cr_dr_UnReg_state){
 
     $b2c_small = $b2c['data'];
     $cdnur = $cr_dr_UnReg_state['data'];
+    // $cdnur_not_state = $cr_dr_UnReg['data'];
+    // $cdnur = $cdnur_state;
+    // echo '<pre>';print_r($cdnur_state);exit;
 
-    foreach($b2c_small as $row){
-        if(isset($row['v_type'])){
-            $b2c_vtype_ids[] = $row['id'];
-        }else{
-            $b2c_ids[] = $row['id'];
-        }
-    }
-
-    foreach($cdnur as $row){
-        if(isset($row['v_type'])){
-            $cdnur_vtype_ids[] = $row['id'];
-        }else{
-            $cdnur_ids[] = $row['id'];
-        }
-    }
-    
     $db = \Config\Database::connect();
     if (session('DataSource')) {
         $db->setDatabase(session('DataSource'));
     }
-    
-    $cdnr_gnrl_product = array();
-    $cdnr_product = array();
-
-    if(!empty($cdnur_vtype_ids)){
-
-        $builder = $db->table('sales_ACparticu');
-        $builder->select('*,parent_id,taxability,SUM(amount) as total ,igst');
-        $builder->where('is_delete',0);
-        $builder->whereIn('parent_id',$cdnur_vtype_ids);
-        $builder->groupBy(['parent_id','igst']);
-        // $builder->groupBy('igst');
-        $query = $builder->get();
-        $cdnr_gnrl_product = $query->getResultArray();
-    }
-
-    if(!empty($cdnur_ids)){
-
-        $builder = $db->table('sales_item');
-        $builder->select('*,parent_id,taxability,SUM(sub_total) as total ,igst');
-        $builder->where('is_delete',0);
-        $builder->where('type','return');
-        $builder->whereIn('parent_id',$cdnur_ids);
-        $builder->groupBy(['parent_id','igst']);
-        // $builder->groupBy('igst');
-        $query = $builder->get();
-        $cdnr_product = $query->getResultArray();
-    }
-    
     $gmodel = new GeneralModel;
-
     $comp_state_cdnur = array();
     $cdnr_total['tot_cgst'] =0;
     $cdnr_total['tot_sgst'] =0;
@@ -1698,29 +1582,24 @@ function get_state_wise_b2c($b2c,$cr_dr_UnReg_state){
             // if($row['acc_state'] == session('state')){
                 if(isset($row['v_type'])){
 
-                    // $builder = $db->table('sales_ACparticu');
-                    // $builder->select('parent_id,taxability,SUM(amount) as total ,igst');
-                    // $builder->where('is_delete',0);
-                    // $builder->where('parent_id',$row['id']);
-                    // $builder->groupBy('igst');
-                    // $query = $builder->get();
-                    // $result = $query->getResultArray(); 
-                    
-                    $result = search($cdnr_gnrl_product,'parent_id',$row['id']);
+                    $builder = $db->table('sales_ACparticu');
+                    $builder->select('taxability,SUM(amount) as total ,igst');
+                    $builder->where('is_delete',0);
+                    $builder->where('parent_id',$row['id']);
+                    $builder->groupBy('igst');
+                    $query = $builder->get();
+                    $result = $query->getResultArray();              
 
                 }else{
 
-                    // $builder = $db->table('sales_item');
-                    // $builder->select('parent_id,taxability,SUM(rate*qty) as total ,igst');
-                    // $builder->where('is_delete',0);
-                    // $builder->where('type','return');
-                    // $builder->where('parent_id',$row['id']);
-                    // $builder->groupBy('igst');
-                    // $query = $builder->get();
-                    // $result = $query->getResultArray();
-
-                    $result = search($cdnr_product,'parent_id',$row['id']);
-
+                    $builder = $db->table('sales_item');
+                    $builder->select('taxability,SUM(rate*qty) as total ,igst');
+                    $builder->where('is_delete',0);
+                    $builder->where('type','return');
+                    $builder->where('parent_id',$row['id']);
+                    $builder->groupBy('igst');
+                    $query = $builder->get();
+                    $result = $query->getResultArray();
                 }
 
                 //---- get cdnur company state total taxable gst wise  ---//
@@ -1732,7 +1611,7 @@ function get_state_wise_b2c($b2c,$cr_dr_UnReg_state){
                         $row['igst'] = $row2['igst'];
 
                         $taxes = json_decode($row['taxes']);
-                        $gst = (float)@$row2['igst_amt'];
+                        $gst = $row2['total'] *  (float)$row2['igst'] /100;
                        
                         foreach($taxes as $tax){
                             if($tax == 'cgst'){
@@ -1768,36 +1647,13 @@ function get_state_wise_b2c($b2c,$cr_dr_UnReg_state){
     $new_b2b_small['tot_igst'] =0;
     $new_b2b_small['taxable'] =0;
     $new_b2b_small['net_amount'] = 0;
-
-    if(!empty($b2c_vtype_ids)){
-
-        $builder = $db->table('sales_ACparticu');
-        $builder->select('*,parent_id,taxability,igst , amount as total');
-        $builder->where('is_delete',0);
-        $builder->whereIn('parent_id',$b2c_vtype_ids);
-        $query = $builder->get();
-        $sale_gnrl_product = $query->getResultArray();
-    }
-
-    if(!empty($b2c_ids)){
-
-        $builder = $db->table('sales_item');
-        $builder->select('*,parent_id,taxability,igst,sub_total as total');
-        $builder->where('is_delete',0);
-        $builder->where('type','invoice');
-        $builder->whereIn('parent_id',$b2c_ids);
-        $query = $builder->get();
-        $sale_product = $query->getResultArray();
-    }
    
     foreach ($b2c_small as $row) {
     
         if (isset($row['v_type'])) {
-            // $sale = $gmodel->get_array_table('sales_ACparticu', array('parent_id' => $row['id'], 'is_delete' => 0), 'taxability,igst , amount as total');
-            $sale = search($sale_gnrl_product,'parent_id',$row['id']);
+            $sale = $gmodel->get_array_table('sales_ACparticu', array('parent_id' => $row['id'], 'is_delete' => 0), 'taxability,igst , amount as total');
         } else {
-            $sale = search($sale_product,'parent_id',$row['id']);
-            // $sale = $gmodel->get_array_table('sales_item', array('parent_id' =>$row['id'], 'is_delete' => 0, 'type' => 'invoice'), 'taxability,igst,(rate*qty) as total');
+            $sale = $gmodel->get_array_table('sales_item', array('parent_id' =>$row['id'], 'is_delete' => 0, 'type' => 'invoice'), 'taxability,igst,(rate*qty) as total');
         }
 
         $invtotal = 0;
@@ -1808,7 +1664,7 @@ function get_state_wise_b2c($b2c,$cr_dr_UnReg_state){
                 $invtotal = 0;
                 
                 $taxes = json_decode($row['taxes']);
-                $gst = $row1['igst_amt'];
+                $gst = $row1['total'] *  (float)$row1['igst'] /100;
 
                 foreach($taxes as $tax){
                     $cgst =0;
@@ -2489,9 +2345,8 @@ function get_b2b_b2c_detail($start_date = '', $end_date = ''){
     }
 
     $builder =$db->table('sales_invoice si');
-    $builder->select('si.*,ac.gst,ac.name,ac.gst_type,st.name as state_name');
+    $builder->select('si.*,ac.gst,ac.name,ac.gst_type');
     $builder->join('account ac','ac.id = si.account');
-    $builder->join('states st','st.id = si.acc_state','left');
     $builder->where(array('si.is_delete' => 0));
     $builder->where(array('si.is_cancle' => 0));
     $builder->where(array('DATE(si.invoice_date)  >= ' => $start_date));
@@ -2499,15 +2354,9 @@ function get_b2b_b2c_detail($start_date = '', $end_date = ''){
     $query = $builder->get();
     $sales_invoice = $query->getResultArray();
 
-    $ids = array();    
-    foreach($sales_invoice as $row){
-        $ids[] = $row['id'];
-    }
-
     $builder =$db->table('sales_ACinvoice sa');
-    $builder->select('sa.*,ac.gst,ac.name,ac.gst_type,st.name as state_name');
+    $builder->select('sa.*,ac.gst,ac.name,ac.gst_type');
     $builder->join('account ac','ac.id = sa.party_account');
-    $builder->join('states st','st.id = sa.acc_state','left');
     $builder->where(array('v_type' => 'general'));
     $builder->where(array('sa.is_delete' => 0));
     $builder->where(array('sa.is_cancle' => 0));
@@ -2515,12 +2364,8 @@ function get_b2b_b2c_detail($start_date = '', $end_date = ''){
     $builder->where(array('DATE(sa.invoice_date)  <= ' => $end_date));
     $query = $builder->get();
     $salesAcinvoice = $query->getResultArray();
-
-    $gnrl_ids = array();    
-    foreach($salesAcinvoice as $row){
-        $gnrl_ids[] = $row['id'];
-    }
     
+
     $sales['data'] = array();
     $sales_b2cSmall['data'] = array();
     $sales_b2cLarge['data'] = array();
@@ -2528,35 +2373,33 @@ function get_b2b_b2c_detail($start_date = '', $end_date = ''){
     $gnrl_sales_b2cLarge['data'] = array();
     $sales_nill['data'] = array();
 
-    $sale_products = array();
-    $gnrl_sale_products = array();
+    $gmodel = new App\Models\GeneralModel();
 
-    if(!empty($ids)){
-        $builder =$db->table('sales_item');
-        $builder->select('*,taxability,igst,rate,qty,item_disc as disc');
-        $builder->whereIn('parent_id', $ids);
-        $builder->where(array('is_delete' => 0));
-        $builder->where(array('type' => 'invoice'));
-        $query = $builder->get();
-        $sale_products = $query->getResultArray();
-    }
 
-    if(!empty($gnrl_ids)){
-        $builder =$db->table('sales_ACparticu');
-        $builder->select('*,taxability,igst, amount as total');
-        $builder->whereIn('parent_id', $gnrl_ids);
-        $builder->where(array('is_delete' => 0));
-        $query = $builder->get();
-        $gnrl_sale_products = $query->getResultArray();
-    }
+    // for($i=0;$i<count($sales_invoice);$i++){
+    //     $state = $gmodel->get_data_table('states',array('id'=>$sales_invoice[$i]['acc_state']),'name');
+        
+    //     $sales_invoice[$i]['state_name'] = @$state['name'];
+
+    //     if(@$sales_invoice[$i]['inv_taxability'] == 'Nill' || @$sales_invoice[$i]['inv_taxability'] == 'Exempt' ){
+    //         $sales_nill['data'][] = $sales_invoice[$i];
+    //     }elseif(@$sales_invoice[$i]['gst'] == '' || empty($sales_invoice[$i]['gst'])){
+    //         if($sales_invoice[$i]['taxable'] < 250000){
+    //             $sales_b2cSmall['data'][] = $sales_invoice[$i];
+    //         }else{
+    //             $sales_b2cLarge['data'][] = $sales_invoice[$i];
+    //         }
+    //     }else{
+    //         $sales['data'][] = $sales_invoice[$i];
+    //     }
+    // }
 
     foreach($sales_invoice as $row){
 
-        // $sale = $gmodel->get_array_table('sales_item', array('parent_id' =>$row['id'], 'is_delete' => 0, 'type' => 'invoice'), '*,taxability,igst,rate,qty,item_disc as disc');
-        // $state = $gmodel->get_data_table('states',array('id'=>$row['acc_state']),'name');
-        // $row['state_name'] = @$state['name'];
-        $sale = search($sale_products,'parent_id',$row['id']);
-
+        $sale = $gmodel->get_array_table('sales_item', array('parent_id' =>$row['id'], 'is_delete' => 0, 'type' => 'invoice'), '*,taxability,igst,rate,qty,item_disc as disc');        
+        $state = $gmodel->get_data_table('states',array('id'=>$row['acc_state']),'name');
+        $row['state_name'] = @$state['name'];
+    
         if($row['gst'] == '' || empty($row['gst'])){
 
             $invtaxable = 0;
@@ -2571,7 +2414,7 @@ function get_b2b_b2c_detail($start_date = '', $end_date = ''){
 
                 if($row1['taxability'] != 'Nill' && $row1['taxability'] != 'Exempt'){
                     
-                    $total = $row1['sub_total'];
+                    $total = $row1['qty'] * $row1['rate'];
                     $invtaxable +=  $total;
                     $tot_igst +=  (float)$total * (float)$row1['igst'] / 100;
                     $tot_cgst += (float)$tot_igst / 2;
@@ -2602,7 +2445,7 @@ function get_b2b_b2c_detail($start_date = '', $end_date = ''){
                 
                 foreach($sale as $row2){
                         $total1 = 0;
-                    //if($row2['taxability'] != 'Exempt' && $row2['taxability'] != 'Nill'){
+                    // if($row2['taxability'] != 'Exempt' && $row2['taxability'] != 'Nill'){
                         if(isset($row2['disc']) && $row2['disc'] > 0 ){
                             $total = $row2['qty'] * $row2['rate'];
                             $disc_amt = ($total * (float)$row2['disc'])/100;
@@ -2613,7 +2456,7 @@ function get_b2b_b2c_detail($start_date = '', $end_date = ''){
                             $item_taxable +=  $total;
                         }
                         $row['igst'] = $row2['igst'];     
-                    //}
+                    // }
                 }
                 
                 if($row['discount'] > 0  && $row['discount'] != '' ){
@@ -2630,13 +2473,29 @@ function get_b2b_b2c_detail($start_date = '', $end_date = ''){
     $gnrl_sale['data'] = array();
     $gnrl_sale_nill['data'] = array();
 
+    // for($i=0;$i<count($salesAcinvoice);$i++){
+    //     $state = $gmodel->get_data_table('states',array($salesAcinvoice[$i]['acc_state']),'name');
+    //     $salesAcinvoice[$i]['state_name'] = @$state['name'];
+
+    //     if(@$salesAcinvoice[$i]['inv_taxability'] == 'Nill' || @$sales_invoice[$i]['inv_taxability'] == 'Exempt'){
+    //         $gnrl_sale_nill['data'][] = $salesAcinvoice[$i];
+    //     }elseif(@$salesAcinvoice[$i]['gst'] == '' || empty($salesAcinvoice[$i]['gst'])){
+    //         if($salesAcinvoice[$i]['taxable'] < 250000){
+    //             $gnrl_sales_b2cSmall['data'][] = $salesAcinvoice[$i];
+    //         }else{
+    //             $gnrl_sales_b2cLarge['data'][] = $salesAcinvoice[$i];
+    //         }
+    //     }else{
+    //         $gnrl_sale['data'][] = $salesAcinvoice[$i];
+    //     }
+    // }
+
     foreach($salesAcinvoice as $row){
 
-        // $gnrl_sales = $gmodel->get_array_table('sales_ACparticu', array('parent_id' => $row['id'], 'is_delete' => 0),'taxability,igst, amount as total');
-        $gnrl_sales = search($gnrl_sale_products,'parent_id',$row['id']);
+        $gnrl_sales = $gmodel->get_array_table('sales_ACparticu', array('parent_id' => $row['id'], 'is_delete' => 0),'taxability,igst, amount as total');
 
-        // $state = $gmodel->get_data_table('states',array('id'=>$row['acc_state']),'name');
-        // $row['state_name'] = @$state['name'];
+        $state = $gmodel->get_data_table('states',array('id'=>$row['acc_state']),'name');
+        $row['state_name'] = @$state['name'];
 
         
         if($row['gst'] == '' || empty($row['gst'])){

@@ -195,6 +195,16 @@ class Testing extends BaseController{
         ->setContentType('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
        
     }
+    public function update_jv_management($id='')
+    {
+        if (!session('uid')) {
+            return redirect()->to(url('Auth'));
+        } 
+        $data = $this->model->update_jv_management();
+        return $data;
+       
+        
+    }
     public function Getdata($method = '',$type='') {
         if (!session('uid')) {
             return redirect()->to(url('auth'));
@@ -212,6 +222,12 @@ class Testing extends BaseController{
         if ($method == 'party_inv_list') {
             $get = $this->request->getGet();
             $this->model->get_partyinvoice_data($get);
+        }
+
+        if ($method == 'search_plateform') {
+            //$get = $this->request->getGet();
+            $data = $this->model->get_plateform_data();
+            return $this->response->setJSON($data);
         }
     }
 

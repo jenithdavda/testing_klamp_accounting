@@ -1525,7 +1525,9 @@ class BankModel extends Model
         $data =array();
         $gmodel= new GeneralModel();
 
+
         foreach($sale_ACinvoice as $row){
+            
             $whr = array('invoice' =>$row['id'] , 'invoice_tb'=>'General Sale','is_delete' => '0' );
             $total_paid = $gmodel->get_data_table('bank_tras',$whr,'SUM(amount) as total');
             $sale_return = $gmodel->get_data_table('sales_ACinvoice',array('return_sale'=>$row['id']),'SUM(net_amount) as total');
@@ -1540,6 +1542,7 @@ class BankModel extends Model
                 'data' => $row
             );
         }
+       
         
         foreach($sale_ITMinvoice as $row){
 
@@ -1549,7 +1552,7 @@ class BankModel extends Model
 
             $custom_inv = !empty(@$row['custom_inv_no']) ? ' - '.$row['custom_inv_no'].'-' :  '';
 
-            $text = '('.$row['id'] .')s'.$custom_inv.user_date($row['invoice_date']).'-'.$row['party_name'].' - ₹'.($row['net_amount']).'/'.($row['net_amount'] - $total_paid['total'] ) .' - Sale Invoice';
+            $text = '('.$row['id'] .')'.$custom_inv.user_date($row['invoice_date']).'-'.$row['party_name'].' - ₹'.($row['net_amount']).'/'.($row['net_amount'] - $total_paid['total'] ) .' - Sale Invoice';
 
             $row['voucher_name'] = 'Sale Invoice';
             $row['total_paid'] = @$total_paid['total'] ? $total_paid['total']  : 0;

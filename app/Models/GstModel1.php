@@ -151,17 +151,18 @@ class GstModel extends Model
     public function gstr3_xls_export_data($post)
     {
         $data = get_gstr3_detail(db_date($post['from']), db_date($post['to']));
-
+       
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
         $spreadsheet->getActiveSheet()->getStyle('A4:H4')->getFill()
-            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-            ->getStartColor()->setARGB('F8CBAD');
+        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+        ->getStartColor()->setARGB('F8CBAD');
 
         $spreadsheet->setActiveSheetIndex(0)->setCellValue('A1', 'GSTR-3 Report');
         $spreadsheet->setActiveSheetIndex(0)->setCellValue('A2', db_date(@$post['from']));
         $spreadsheet->setActiveSheetIndex(0)->setCellValue('B2', db_date(@$post['to']));
+       
 
         $spreadsheet->setActiveSheetIndex(0)->setCellValue('A4', 'SI NO.');
         $spreadsheet->setActiveSheetIndex(0)->setCellValue('B4', 'Particular');
@@ -171,52 +172,52 @@ class GstModel extends Model
         $spreadsheet->setActiveSheetIndex(0)->setCellValue('F4', 'State Tax Amount');
         $spreadsheet->setActiveSheetIndex(0)->setCellValue('G4', 'Cess Amount');
         $spreadsheet->setActiveSheetIndex(0)->setCellValue('H4', 'Tax Amount');
+       
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('A' . 5, 3.1);
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('B' . 5, 'Outward Supplies and inward supplies liable to Reverse charge');
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('C' . 5, @$data['outward']['taxable_amount']);
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('D' . 5, @$data['outward']['igst']);
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('E' . 5, @$data['outward']['cgst']);
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('F' . 5, @$data['outward']['sgst']);
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('G' . 5, @$data['outward']['cess']);
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('H' . 5, @$data['outward']['cess'] +@$data['outward']['sgst'] + @$data['outward']['cgst'] + @$data['outward']['igst']);
+            
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('A' . 6, 3.2);
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('B' . 6, 'Of the Supplies Shown in 3.1(a) above,detail of inter-state Supplied maid to unregister persons,composition taxable  person and UIN holders');
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('C' . 6, @$data['gst_type_wise']['unregister']['taxable_amount'] +  @$data['gst_type_wise']['composition']['taxable_amount']);
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('D' . 6, @$data['gst_type_wise']['unregister']['igst'] +  @$data['gst_type_wise']['composition']['igst']);
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('E' . 6, @$data['gst_type_wise']['unregister']['cgst'] +  @$data['gst_type_wise']['composition']['cgst']);
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('F' . 6, @$data['gst_type_wise']['unregister']['sgst'] +  @$data['gst_type_wise']['composition']['sgst']);
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('G' . 6, @$data['gst_type_wise']['unregister']['cess'] +  @$data['gst_type_wise']['composition']['cess']);
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('H' . 6, @$data['gst_type_wise']['unregister']['cess'] + @$data['gst_type_wise']['unregister']['sgst'] + @$data['gst_type_wise']['unregister']['cgst'] + @$data['gst_type_wise']['unregister']['igst'] +  @$data['gst_type_wise']['composition']['cess'] + @$data['gst_type_wise']['composition']['igst'] + @$data['gst_type_wise']['composition']['cgst'] +@$data['gst_type_wise']['composition']['sgst']);
+            
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('A' . 7, 4);
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('B' . 7, 'Eligible ITC');
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('C' . 7,'');
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('D' . 7,@$data['eligable_itc']['igst'] + @$data['import_good']['tot_gst']);
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('E' . 7, @$data['eligable_itc']['cgst']);
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('F' . 7, @$data['eligable_itc']['Sgst']);
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('G' . 7, '');
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('H' . 7, '');
 
-        $spreadsheet->setActiveSheetIndex(0)->setCellValue('A' . 5, 3.1);
-        $spreadsheet->setActiveSheetIndex(0)->setCellValue('B' . 5, 'Outward Supplies and inward supplies liable to Reverse charge');
-        $spreadsheet->setActiveSheetIndex(0)->setCellValue('C' . 5, @$data['outward']['taxable_amount']);
-        $spreadsheet->setActiveSheetIndex(0)->setCellValue('D' . 5, @$data['outward']['igst']);
-        $spreadsheet->setActiveSheetIndex(0)->setCellValue('E' . 5, @$data['outward']['cgst']);
-        $spreadsheet->setActiveSheetIndex(0)->setCellValue('F' . 5, @$data['outward']['sgst']);
-        $spreadsheet->setActiveSheetIndex(0)->setCellValue('G' . 5, @$data['outward']['cess']);
-        $spreadsheet->setActiveSheetIndex(0)->setCellValue('H' . 5, @$data['outward']['cess']+@$data['outward']['sgst']+@$data['outward']['cgst']+@$data['outward']['igst']);
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('A' . 8, 5);
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('B' . 8, 'Value of exempt,nil rated and non-GST inward supplies');
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('C' . 8, @$data['nill']['exempt'] + @$data['nill']['non_gst']);
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('D' . 8, '');
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('E' . 8, '');
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('F' . 8, '');
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('G' . 8, '');
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('H' . 8, '');
 
-        $spreadsheet->setActiveSheetIndex(0)->setCellValue('A' . 6, 3.2);
-        $spreadsheet->setActiveSheetIndex(0)->setCellValue('B' . 6, 'Of the Supplies Shown in 3.1(a) above,detail of inter-state Supplied maid to unregister persons,composition taxable  person and UIN holders');
-        $spreadsheet->setActiveSheetIndex(0)->setCellValue('C' . 6, @$data['gst_type_wise']['unregister']['taxable_amount']+@$data['gst_type_wise']['composition']['taxable_amount']);
-        $spreadsheet->setActiveSheetIndex(0)->setCellValue('D' . 6, @$data['gst_type_wise']['unregister']['igst']+@$data['gst_type_wise']['composition']['igst']);
-        $spreadsheet->setActiveSheetIndex(0)->setCellValue('E' . 6, @$data['gst_type_wise']['unregister']['cgst']+@$data['gst_type_wise']['composition']['cgst']);
-        $spreadsheet->setActiveSheetIndex(0)->setCellValue('F' . 6, @$data['gst_type_wise']['unregister']['sgst']+@$data['gst_type_wise']['composition']['sgst']);
-        $spreadsheet->setActiveSheetIndex(0)->setCellValue('G' . 6, @$data['gst_type_wise']['unregister']['cess']+@$data['gst_type_wise']['composition']['cess']);
-        $spreadsheet->setActiveSheetIndex(0)->setCellValue('H' . 6, @$data['gst_type_wise']['unregister']['cess']+@$data['gst_type_wise']['unregister']['sgst']+@$data['gst_type_wise']['unregister']['cgst']+@$data['gst_type_wise']['unregister']['igst']+@$data['gst_type_wise']['composition']['cess']+@$data['gst_type_wise']['composition']['igst']+@$data['gst_type_wise']['composition']['cgst']+@$data['gst_type_wise']['composition']['sgst']);
-
-        $spreadsheet->setActiveSheetIndex(0)->setCellValue('A' . 7, 4);
-        $spreadsheet->setActiveSheetIndex(0)->setCellValue('B' . 7, 'Eligible ITC');
-        $spreadsheet->setActiveSheetIndex(0)->setCellValue('C' . 7, '');
-        $spreadsheet->setActiveSheetIndex(0)->setCellValue('D' . 7, @$data['eligable_itc']['igst']+@$data['import_good']['tot_gst']);
-        $spreadsheet->setActiveSheetIndex(0)->setCellValue('E' . 7, @$data['eligable_itc']['cgst']);
-        $spreadsheet->setActiveSheetIndex(0)->setCellValue('F' . 7, @$data['eligable_itc']['Sgst']);
-        $spreadsheet->setActiveSheetIndex(0)->setCellValue('G' . 7, '');
-        $spreadsheet->setActiveSheetIndex(0)->setCellValue('H' . 7, '');
-
-        $spreadsheet->setActiveSheetIndex(0)->setCellValue('A' . 8, 5);
-        $spreadsheet->setActiveSheetIndex(0)->setCellValue('B' . 8, 'Value of exempt,nil rated and non-GST inward supplies');
-        $spreadsheet->setActiveSheetIndex(0)->setCellValue('C' . 8, @$data['nill']['exempt']+@$data['nill']['non_gst']);
-        $spreadsheet->setActiveSheetIndex(0)->setCellValue('D' . 8, '');
-        $spreadsheet->setActiveSheetIndex(0)->setCellValue('E' . 8, '');
-        $spreadsheet->setActiveSheetIndex(0)->setCellValue('F' . 8, '');
-        $spreadsheet->setActiveSheetIndex(0)->setCellValue('G' . 8, '');
-        $spreadsheet->setActiveSheetIndex(0)->setCellValue('H' . 8, '');
-
-        $spreadsheet->setActiveSheetIndex(0)->setCellValue('A' . 9, 5.1);
-        $spreadsheet->setActiveSheetIndex(0)->setCellValue('B' . 9, 'Interest and Late fee Payable');
-        $spreadsheet->setActiveSheetIndex(0)->setCellValue('C' . 9, '');
-        $spreadsheet->setActiveSheetIndex(0)->setCellValue('D' . 9, '');
-        $spreadsheet->setActiveSheetIndex(0)->setCellValue('E' . 9, '');
-        $spreadsheet->setActiveSheetIndex(0)->setCellValue('F' . 9, '');
-        $spreadsheet->setActiveSheetIndex(0)->setCellValue('G' . 9, '');
-        $spreadsheet->setActiveSheetIndex(0)->setCellValue('H' . 9, '');
-
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('A' . 9, 5.1);
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('B' . 9, 'Interest and Late fee Payable');
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('C' . 9, '');
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('D' . 9, '');
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('E' . 9, '');
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('F' . 9, '');
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('G' . 9, '');
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('H' . 9, '');
+    
         $spreadsheet->getActiveSheet()->setTitle('GSTR-3');
         $spreadsheet->setActiveSheetIndex(0);
         $writer = new Xlsx($spreadsheet);
@@ -230,7 +231,8 @@ class GstModel extends Model
         $data = get_gstr1_detail(db_date($post['from']), db_date($post['to']));
 
         $b2b = $data['b2b']['data'];
-
+        
+        
         $b2cs = $data['b2cSmall']['data'];
         $cdnr = @$data['cr_drReg']['data'];
         $cdnur = $data['cr_drUnReg']['data'];
@@ -326,6 +328,7 @@ class GstModel extends Model
 
             $final['b2cs'][] = $b2c_data;
         }
+
 
         //------------ CREDIT NOTE REGISTER (CDNR)---------//
 
@@ -481,25 +484,197 @@ class GstModel extends Model
         return $final_json = json_encode($final);
     }
 
-    // update  gstr1 doc sheet plateform wise 09-01-2023
+
     public function gstr1_xls_export_data($post)
     {
         $data = get_gstr1_detail(db_date($post['from']), db_date($post['to']));
 
-        $nill = get_nill_detail(db_date($post['from']), db_date($post['to']));
+        $nill = get_nill_detail(db_date($post['from']),db_date($post['to']));
+       
+        // $inter_unreg = $nill['inter_unreg']['data'];
+        // $inter_reg = $nill['inter_reg']['data'];
+        // $intera_reg = $nill['intera_reg']['data'];
+        // $intera_unreg = $nill['intera_unreg']['data'];
+
+        // $inter_unreg_nill['taxable'] = 0;
+        // $inter_unreg_nill['net_amt'] = 0;
+
+        // $inter_unreg_exempt['taxable'] = 0;
+        // $inter_unreg_exempt['net_amt'] = 0;
+
+        // $inter_unreg_na['taxable'] = 0;
+        // $inter_unreg_na['net_amt'] = 0;
+
+        // $inter_reg_nill['taxable'] = 0;
+        // $inter_reg_nill['net_amt'] = 0;
+
+        // $inter_reg_exempt['taxable'] = 0;
+        // $inter_reg_exempt['net_amt'] = 0;
+        
+        // $inter_reg_na['taxable'] = 0;
+        // $inter_reg_na['net_amt'] = 0;
+
+        // $intera_reg_nill['taxable'] = 0;
+        // $intera_reg_nill['net_amt'] = 0;
+
+        // $intera_reg_exempt['taxable'] = 0;
+        // $intera_reg_exempt['net_amt'] = 0;
+        
+        // $intera_reg_na['taxable'] = 0;
+        // $intera_reg_na['net_amt'] = 0;
+
+        // $intera_unreg_nill['taxable'] = 0;
+        // $intera_unreg_nill['net_amt'] = 0;
+
+        // $intera_unreg_exempt['taxable'] = 0;
+        // $intera_unreg_exempt['net_amt'] = 0;
+        
+        // $intera_unreg_na['taxable'] = 0;
+        // $intera_unreg_na['net_amt'] = 0;
+
+        // foreach($inter_unreg as $row){
+        //     if($row['inv_taxability'] == 'Exempt'){
+
+        //         if(isset($row['return_no']) || @$row['v_type'] == 'return'){
+        //             $inter_unreg_exempt['taxable'] -= $row['taxable'];
+        //             $inter_unreg_exempt['net_amt'] -= $row['net_amount'];   
+        //         }else{
+        //             $inter_unreg_exempt['taxable'] += $row['taxable'];
+        //             $inter_unreg_exempt['net_amt'] += $row['net_amount'];    
+        //         }
+                
+        //     }else if($row['inv_taxability'] == 'Nill'){
+
+        //         if(isset($row['return_no']) || @$row['v_type'] == 'return'){
+        //             $inter_unreg_exempt['taxable'] -= $row['taxable'];
+        //             $inter_unreg_exempt['net_amt'] -= $row['net_amount'];
+        //         }else{
+        //             $inter_unreg_exempt['taxable'] += $row['taxable'];
+        //             $inter_unreg_exempt['net_amt'] += $row['net_amount'];
+        //         }
+                
+        //     }else{
+
+        //         if(isset($row['return_no']) || @$row['v_type'] == 'return'){
+
+        //             $inter_unreg_na['taxable'] -= $row['taxable'];
+        //             $inter_unreg_na['net_amt'] -= $row['net_amount'];
+        //         }else{
+        //             $inter_unreg_na['taxable'] += $row['taxable'];
+        //             $inter_unreg_na['net_amt'] += $row['net_amount'];
+        //         }
+        //     }
+        // }
+
+        // foreach($inter_reg as $row){
+        //     if($row['inv_taxability'] == 'Exempt'){
+
+        //         if(isset($row['return_no']) || @$row['v_type'] == 'return'){
+        //             $inter_reg_exempt['taxable'] -= $row['taxable'];
+        //             $inter_reg_exempt['net_amt'] -= $row['net_amount'];
+        //         }else{
+        //             $inter_reg_exempt['taxable'] += $row['taxable'];
+        //             $inter_reg_exempt['net_amt'] += $row['net_amount'];
+        //         }
+               
+        //     }else if($row['inv_taxability'] == 'Nill'){
+        //         if(isset($row['return_no']) || @$row['v_type'] == 'return'){
+        //             $inter_reg_exempt['taxable'] -= $row['taxable'];
+        //             $inter_reg_exempt['net_amt'] -= $row['net_amount'];
+        //         }else{
+        //             $inter_reg_exempt['taxable'] += $row['taxable'];
+        //             $inter_reg_exempt['net_amt'] += $row['net_amount'];
+        //         }
+        //     }else{
+        //         if(isset($row['return_no']) || @$row['v_type'] == 'return'){
+        //             $inter_reg_na['taxable'] -= $row['taxable'];
+        //             $inter_reg_na['net_amt'] -= $row['net_amount'];
+        //         }else{
+        //             $inter_reg_na['taxable'] += $row['taxable'];
+        //             $inter_reg_na['net_amt'] += $row['net_amount'];
+        //         }
+        //     }
+        // }
+
+        // foreach($intera_reg as $row){
+        //     if($row['inv_taxability'] == 'Exempt'){
+        //         if(isset($row['return_no']) || @$row['v_type'] == 'return'){
+        //             $intera_reg_exempt['taxable'] -= $row['taxable'];
+        //             $intera_reg_exempt['net_amt'] -= $row['net_amount'];
+        //         }else{
+        //             $intera_reg_exempt['taxable'] += $row['taxable'];
+        //             $intera_reg_exempt['net_amt'] += $row['net_amount'];
+        //         }
+                
+        //     }else if($row['inv_taxability'] == 'Nill'){
+        //         if(isset($row['return_no']) || @$row['v_type'] == 'return'){
+        //             $intera_reg_exempt['taxable'] -= $row['taxable'];
+        //             $intera_reg_exempt['net_amt'] -= $row['net_amount'];
+        //         }else{
+        //             $intera_reg_exempt['taxable'] += $row['taxable'];
+        //             $intera_reg_exempt['net_amt'] += $row['net_amount'];
+        //         }
+                
+
+        //     }else{
+        //         if(isset($row['return_no']) || @$row['v_type'] == 'return'){
+        //             $intera_reg_na['taxable'] -= $row['taxable'];
+        //             $intera_reg_na['net_amt'] -= $row['net_amount'];
+        //         }else{
+        //             $intera_reg_na['taxable'] += $row['taxable'];
+        //             $intera_reg_na['net_amt'] += $row['net_amount'];
+        //         }
+              
+        //     }
+        // }
+
+        // foreach($intera_unreg as $row){
+        //     if($row['inv_taxability'] == 'Exempt'){
+        //         if(isset($row['return_no']) || @$row['v_type'] == 'return'){
+        //             $intera_unreg_exempt['taxable'] -= $row['taxable'];
+        //             $intera_unreg_exempt['net_amt'] -= $row['net_amount'];
+        //         }else{
+        //             $intera_unreg_exempt['taxable'] += $row['taxable'];
+        //             $intera_unreg_exempt['net_amt'] += $row['net_amount'];
+        //         }
+                
+        //     }else if($row['inv_taxability'] == 'Nill'){
+        //         if(isset($row['return_no']) || @$row['v_type'] == 'return'){
+        //             $intera_unreg_exempt['taxable'] -= $row['taxable'];
+        //             $intera_unreg_exempt['net_amt'] -= $row['net_amount'];
+        //         }else{
+        //             $intera_unreg_exempt['taxable'] += $row['taxable'];
+        //             $intera_unreg_exempt['net_amt'] += $row['net_amount'];
+        //         }
+        //     }else{
+        //         if(isset($row['return_no']) || @$row['v_type'] == 'return'){
+        //             $intera_unreg_na['taxable'] -= $row['taxable'];
+        //             $intera_unreg_na['net_amt'] -= $row['net_amount'];
+        //         }else{
+        //             $intera_unreg_na['taxable'] += $row['taxable'];
+        //             $intera_unreg_na['net_amt'] += $row['net_amount'];
+        //         }
+        //     }
+        // }
+
 
         $b2b = $data['b2b']['data'];
+        //echo '<pre>';Print_r($b2b);exit;
+        
         $b2c_large = $data['b2cLarge']['data'];
         $b2c_small = $data['b2cSmall']['data'];
+
         $cdnr = $data['cr_drReg']['data'];
         $final_cdnur = $data['cr_drUnReg']['data'];
+        // echo '<pre>';print_r($final_cdnur);exit;
         $hsn = $data['hsn']['data'];
 
         $db = $this->db;
+
         $builder = $db->table('sales_invoice');
         $builder->select('id,custom_inv_no');
-        $builder->where('is_delete', 0);
-        $builder->where('is_cancle', 0);
+        $builder->where('is_delete',0);
+        $builder->where('is_cancle',0);
         $builder->where(array('DATE(invoice_date)  >= ' => db_date($data['start_date'])));
         $builder->where(array('DATE(invoice_date)  <= ' => db_date($data['end_date'])));
         $query = $builder->get();
@@ -507,20 +682,20 @@ class GstModel extends Model
 
         $builder = $db->table('sales_ACinvoice');
         $builder->select('id,supp_inv as custom_inv_no');
-        $builder->where('is_delete', 0);
-        $builder->where('is_cancle', 0);
-        $builder->where('v_type', 'general');
+        $builder->where('is_delete',0);
+        $builder->where('is_cancle',0);
+        $builder->where('v_type','general');
         $builder->where(array('DATE(invoice_date)  >= ' => db_date($data['start_date'])));
         $builder->where(array('DATE(invoice_date)  <= ' => db_date($data['end_date'])));
         $query = $builder->get();
         $gnrl_res = $query->getResultArray();
 
-        $sales_invoice = array_merge($res, $gnrl_res);
-
+        $sales_invoice = array_merge($res,$gnrl_res);
+        
         $builder = $db->table('sales_return');
         $builder->select('id,return_no');
-        $builder->where('is_delete', 0);
-        $builder->where('is_cancle', 0);
+        $builder->where('is_delete',0);
+        $builder->where('is_cancle',0);
         $builder->where(array('DATE(return_date)  >= ' => db_date($data['start_date'])));
         $builder->where(array('DATE(return_date)  <= ' => db_date($data['end_date'])));
         $query = $builder->get();
@@ -528,306 +703,282 @@ class GstModel extends Model
 
         $builder = $db->table('sales_ACinvoice');
         $builder->select('id,supp_inv as custom_inv_no');
-        $builder->where('is_delete', 0);
-        $builder->where('is_cancle', 0);
-        $builder->where('v_type', 'return');
+        $builder->where('is_delete',0);
+        $builder->where('is_cancle',0);
+        $builder->where('v_type','return');
         $builder->where(array('DATE(invoice_date)  >= ' => db_date($data['start_date'])));
         $builder->where(array('DATE(invoice_date)  <= ' => db_date($data['end_date'])));
         $query = $builder->get();
         $gnrl_res1 = $query->getResultArray();
 
-        $sales_return = array_merge($res1, $gnrl_res1);
+        $sales_return = array_merge($res1,$gnrl_res1);
         $gmodel = new GeneralModel();
         $credit_sale_count = count($sales_return);
-        $cancle_ret = $gmodel->get_data_table('sales_return', array('is_cancle' => 1, 'DATE(return_date)  >= ' => db_date($data['start_date']), 'DATE(return_date)  <= ' => db_date($data['end_date'])), 'COUNT(id) as ret_count');
-        $cancle_gnrlret = $gmodel->get_data_table('sales_ACinvoice', array('v_type' => 'return', 'is_cancle' => 1, 'DATE(invoice_date)  >= ' => db_date($data['start_date']), 'DATE(invoice_date)  <= ' => db_date($data['end_date'])), 'COUNT(id) as gnrlret_count');
+        $cancle_ret = $gmodel->get_data_table('sales_return',array('is_cancle'=>1 , 'DATE(return_date)  >= '=> db_date($data['start_date']) ,'DATE(return_date)  <= ' => db_date($data['end_date'])),'COUNT(id) as ret_count');
+        $cancle_gnrlret = $gmodel->get_data_table('sales_ACinvoice',array('v_type'=>'return','is_cancle'=>1 , 'DATE(invoice_date)  >= '=> db_date($data['start_date']) ,'DATE(invoice_date)  <= ' => db_date($data['end_date'])),'COUNT(id) as gnrlret_count');
 
         $credit_sale_from = @$sales_return[0]['return_no'];
-        $credit_sale_to = @$sales_return[$credit_sale_count - 1]['return_no'];
+        $credit_sale_to = @$sales_return[$credit_sale_count-1]['return_no'];
 
         $outward_sale_count = count($sales_invoice);
-        $cancle_sale = $gmodel->get_data_table('sales_invoice', array('is_cancle' => 1, 'DATE(invoice_date)  >= ' => db_date($data['start_date']), 'DATE(invoice_date)  <= ' => db_date($data['end_date'])), 'COUNT(id) as sale_count');
-        $cancle_gnrlsale = $gmodel->get_data_table('sales_ACinvoice', array('v_type' => 'general', 'is_cancle' => 1, 'DATE(invoice_date)  >= ' => db_date($data['start_date']), 'DATE(invoice_date)  <= ' => db_date($data['end_date'])), 'COUNT(id) as gnrlsale_count');
+        $cancle_sale = $gmodel->get_data_table('sales_invoice',array('is_cancle'=>1 , 'DATE(invoice_date)  >= '=> db_date($data['start_date']) ,'DATE(invoice_date)  <= ' => db_date($data['end_date'])),'COUNT(id) as sale_count');
+        $cancle_gnrlsale = $gmodel->get_data_table('sales_ACinvoice',array('v_type'=>'general','is_cancle'=>1 , 'DATE(invoice_date)  >= '=> db_date($data['start_date']) ,'DATE(invoice_date)  <= ' => db_date($data['end_date'])),'COUNT(id) as gnrlsale_count');
+
 
         $outward_sale_from = $sales_invoice[0]['custom_inv_no'];
-        $outward_sale_to = $sales_invoice[$outward_sale_count - 1]['custom_inv_no'];
-        // start update doc sheet
-        if (session('DataSource') == 'ACE20227T93') {
-
-            $builder = $db->table('platform');
-            $builder->select('id,name');
-            $builder->where('is_delete', 0);
-            $query = $builder->get();
-            $plateform_list = $query->getResultArray();
-            $plateform_new = array();
-            $plateform_ret_new = array();
-            foreach ($plateform_list as $row) {
-                $builder = $db->table('platform_voucher');
-                $builder->select('MAX(voucher) as max_invoice,MIN(voucher) as min_invoice,count(voucher) as total_voucher');
-                $builder->where(array('is_delete' => 0, 'is_cancle' => 0, 'type' => 'invoice', 'platform_id' => $row['id']));
-                $query = $builder->get();
-                $plateform_invoice = $query->getRowArray();
-
-                $builder = $db->table('platform_voucher');
-                $builder->select('count(voucher) as total_voucher');
-                $builder->where(array('is_delete' => 0, 'is_cancle' => 1, 'type' => 'invoice', 'platform_id' => $row['id']));
-                $query = $builder->get();
-                $plateform_invoice_cancel = $query->getRowArray();
-
-                $builder = $db->table('platform_voucher');
-                $builder->select('MAX(voucher) as max_invoice,MIN(voucher) as min_invoice,count(voucher) as total_voucher');
-                $builder->where(array('is_delete' => 0, 'is_cancle' => 0, 'type' => 'return', 'platform_id' => $row['id']));
-                $query = $builder->get();
-                $plateform_return_inv = $query->getRowArray();
-
-                $builder = $db->table('platform_voucher');
-                $builder->select('count(voucher) as total_voucher');
-                $builder->where(array('is_delete' => 0, 'is_cancle' => 1, 'type' => 'return', 'platform_id' => $row['id']));
-                $query = $builder->get();
-                $plateform_return_cancel = $query->getRowArray();
-
-                $plateform['id'] = $row['id'];
-                $plateform['name'] = $row['name'];
-                $plateform['start_invoice'] = $plateform_invoice['min_invoice'];
-                $plateform['end_invoice'] = $plateform_invoice['max_invoice'];
-                $plateform['total_voucher'] = $plateform_invoice['total_voucher'];
-                $plateform['total_voucher_cancel'] = $plateform_invoice_cancel['total_voucher'];
-
-                $plateform_return['id'] = $row['id'];
-                $plateform_return['name'] = $row['name'];
-                $plateform_return['start_invoice'] = $plateform_return_inv['min_invoice'];
-                $plateform_return['end_invoice'] = $plateform_return_inv['max_invoice'];
-                $plateform_return['total_voucher'] = $plateform_return_inv['total_voucher'];
-                $plateform_return['total_voucher_cancel'] = $plateform_return_cancel['total_voucher'];
-                $plateform_new[] = $plateform;
-                $plateform_ret_new[] = $plateform_return;
-
-            }
-        }
-        // end update doc sheet
+        $outward_sale_to = $sales_invoice[$outward_sale_count-1]['custom_inv_no'];
 
         $gmodel = new GeneralModel;
+
         $hsn_arr = array();
         $hsn_da = array();
+
         $final_b2b = array();
         $final_cdnr = array();
+        
+        foreach($b2b as $row){
 
-        foreach ($b2b as $row) {
-
-            if (isset($row['v_type'])) {
+            if(isset($row['v_type'])){
 
                 $builder = $db->table('sales_ACparticu');
                 $builder->select('taxability,SUM(amount) as total ,igst');
-                $builder->where('is_delete', 0);
-                $builder->where('parent_id', $row['id']);
+                $builder->where('is_delete',0);
+                $builder->where('parent_id',$row['id']);
                 $builder->groupBy('igst');
                 $query = $builder->get();
-                $result = $query->getResultArray();
+                $result = $query->getResultArray();              
 
-            } else {
+            }else{
 
                 $builder = $db->table('sales_item');
                 $builder->select('taxability,SUM(rate*qty) as total,igst,AVG(item_disc) as disc');
-                $builder->where('is_delete', 0);
-                $builder->where('type', 'invoice');
-                $builder->where('parent_id', $row['id']);
+                $builder->where('is_delete',0);
+                $builder->where('type','invoice');
+                $builder->where('parent_id',$row['id']);
                 $builder->groupBy('igst');
                 $query = $builder->get();
                 $result = $query->getResultArray();
-
+                
             }
-
-            foreach ($result as $row2) {
+            
+            foreach($result as $row2){
                 // if($row2['taxability'] != 'Exempt' && $row2['taxability'] != 'Nill'){
-                if (isset($row2['disc']) && $row2['disc'] > 0) {
-                    $disc_amt = ($row2['total'] * $row2['disc']) / 100;
-                    $total = $row2['total'] - $disc_amt;
-                    $row['taxable'] = $total;
+                    if(isset($row2['disc']) && $row2['disc'] > 0 ){
+                        $disc_amt = ($row2['total'] * $row2['disc'])/100;
+                        $total = $row2['total'] - $disc_amt; 
+                        $row['taxable'] = $total;
 
-                } else {
-                    $row['taxable'] = $row2['total'];
-                }
-                $row['igst'] = $row2['igst'];
-                $final_b2b[] = $row;
+                    }else{
+                        $row['taxable'] = $row2['total'];
+                    }
+                    $row['igst'] = $row2['igst'];
+                    $final_b2b[] = $row;
                 // }
             }
-        }
-
-        foreach ($cdnr as $row) {
+        } 
+        
+        foreach($cdnr as $row){
 
             $db = $this->db;
 
-            if (isset($row['v_type'])) {
+            if(isset($row['v_type'])){
                 $builder = $db->table('sales_ACparticu');
                 $builder->select('taxability,SUM(amount) as total ,igst');
-                $builder->where('is_delete', 0);
-                $builder->where('parent_id', $row['id']);
+                $builder->where('is_delete',0);
+                $builder->where('parent_id',$row['id']);
                 $builder->groupBy('igst');
                 $query = $builder->get();
                 $result = $query->getResultArray();
-            } else {
+            }else{
                 $builder = $db->table('sales_item');
                 $builder->select('taxability,SUM(rate*qty) as total ,igst');
-                $builder->where('is_delete', 0);
-                $builder->where('type', 'return');
-                $builder->where('parent_id', $row['id']);
+                $builder->where('is_delete',0);
+                $builder->where('type','return');
+                $builder->where('parent_id',$row['id']);
                 $builder->groupBy('igst');
                 $query = $builder->get();
                 $result = $query->getResultArray();
             }
-
-            foreach ($result as $row2) {
-                //   if($row2['taxability'] != 'Exempt' && $row2['taxability'] != 'Nill'){
+            
+            foreach($result as $row2){
+            //   if($row2['taxability'] != 'Exempt' && $row2['taxability'] != 'Nill'){  
                 $row['taxable'] = $row2['total'];
                 $row['igst'] = $row2['igst'];
 
                 $final_cdnr[] = $row;
-                //   }
+            //   }
             }
 
-        }
 
+
+        } 
+        
+      
+        // foreach($cdnur as $row){
+
+        //     $db = $this->db;
+        //     if($row['acc_state'] != session('state')){
+        //         if(isset($row['v_type'])){
+
+        //             $builder = $db->table('sales_ACparticu');
+        //             $builder->select('taxability,SUM(amount) as total ,igst');
+        //             $builder->where('is_delete',0);
+        //             $builder->where('parent_id',$row['id']);
+        //             $builder->groupBy('igst');
+        //             $query = $builder->get();
+        //             $result = $query->getResultArray();              
+
+        //         }else{
+
+        //             $builder = $db->table('sales_item');
+        //             $builder->select('taxability,SUM(rate*qty) as total ,igst');
+        //             $builder->where('is_delete',0);
+        //             $builder->where('type','return');
+        //             $builder->where('parent_id',$row['id']);
+        //             $builder->groupBy('igst');
+        //             $query = $builder->get();
+        //             $result = $query->getResultArray();
+
+        //         }
+                
+        //         foreach($result as $row2){
+        //             if($row2['taxability'] != 'Exempt' && $row2['taxability'] != 'Nill'){  
+
+        //                 $row['taxable'] = $row2['total'];
+        //                 $row['igst'] = $row2['igst'];
+        //                 $final_cdnur[] = $row;
+        //             }
+        //         }
+        //     }else{
+
+        //         if(isset($row['v_type'])){
+
+        //             $builder = $db->table('sales_ACparticu');
+        //             $builder->select('taxability,SUM(amount) as total ,igst');
+        //             $builder->where('is_delete',0);
+        //             $builder->where('parent_id',$row['id']);
+        //             $builder->groupBy('igst');
+        //             $query = $builder->get();
+        //             $result = $query->getResultArray();              
+
+        //         }else{
+
+        //             $builder = $db->table('sales_item');
+        //             $builder->select('taxability,SUM(rate*qty) as total ,igst');
+        //             $builder->where('is_delete',0);
+        //             $builder->where('type','return');
+        //             $builder->where('parent_id',$row['id']);
+        //             $builder->groupBy('igst');
+        //             $query = $builder->get();
+        //             $result = $query->getResultArray();
+        //         }
+
+        //         //---- get cdnur company state total taxable gst wise  ---//
+
+        //         foreach($result as $row2){
+        //             if($row2['taxability'] != 'Exempt' && $row2['taxability'] != 'Nill'){
+
+        //                 $row['taxable'] = $row2['total'];
+        //                 $row['igst'] = $row2['igst'];
+        //                 $comp_state_cdnur[$row2['igst']]['state'] = $row['acc_state'];
+        //                 $comp_state_cdnur[$row2['igst']]['gst'] = $row2['igst'];
+        //                 $comp_state_cdnur[$row2['igst']]['taxable'] = (@$comp_state_cdnur[$row2['igst']]['taxable'] ? $comp_state_cdnur[$row2['igst']]['taxable'] : 0) + $row2['total'];
+        //             }
+        //         }
+        //     }
+        // }
+
+        // $new_b2b_small = array();
+        // $abc = 0;
+        // foreach ($b2c_small as $row) {
+        
+        //     if (isset($row['v_type'])) {
+        //         $sale = $gmodel->get_array_table('sales_ACparticu', array('parent_id' => $row['id'], 'is_delete' => 0), 'taxability,igst , amount as total');
+        //     } else {
+        //         $sale = $gmodel->get_array_table('sales_item', array('parent_id' =>$row['id'], 'is_delete' => 0, 'type' => 'invoice'), 'taxability,igst,(rate*qty) as total');
+        //     }
+        //     $invtotal = 0;
+
+        //     foreach($sale as $row1){
+        //         if($row1['taxability'] != 'Exempt' && $row1['taxability'] != 'Nill'){
+        //             $invtotal = 0;
+        //             $new_b2b_small[$row['acc_state']][$row1['igst']]['acc_state'] = $row['acc_state'];
+        //             $new_b2b_small[$row['acc_state']][$row1['igst']]['taxable'] = (@$new_b2b_small[$row['acc_state']][$row1['igst']]['taxable'] ? $new_b2b_small[$row['acc_state']][$row1['igst']]['taxable'] : 0) + $row1['total'];
+        //             $new_b2b_small[$row['acc_state']][$row1['igst']]['cess'] = (@$new_b2b_small[$row['acc_state']][$row1['igst']]['cess'] ? $new_b2b_small[$row['acc_state']][$row1['igst']]['cess'] : 0) + $row['cess'];
+        //             $new_b2b_small[$row['acc_state']][$row1['igst']]['gst'] = $row1['igst'];
+        //         }
+        //     }
+        // }
+
+
+        // $b2c_small = $data['b2cSmall']['data'];
         $cdnur_state = $data['cr_drUnReg_state']['data'];
-
+        
         $db = $this->db;
         $gmodel = new GeneralModel;
         $comp_state_cdnur = array();
 
+
         foreach($cdnur_state as $row){
-            if(isset($row['v_type'])){
-                $cdnur_vtype_ids[] = $row['id'];
-            }else{
-                $cdnur_ids[] = $row['id'];
-            }
-        }
-
-        $cdnr_gnrl_product = array();
-        $cdnr_product = array();
-    
-        if(!empty($cdnur_vtype_ids)){
-    
-            $builder = $db->table('sales_ACparticu');
-            $builder->select('*,parent_id,taxability,SUM(amount) as total ,igst');
-            $builder->where('is_delete',0);
-            $builder->whereIn('parent_id',$cdnur_vtype_ids);
-            $builder->groupBy(['parent_id','igst']);
-            // $builder->groupBy('igst');
-            $query = $builder->get();
-            $cdnr_gnrl_product = $query->getResultArray();
-        }
-    
-        if(!empty($cdnur_ids)){
-    
-            $builder = $db->table('sales_item');
-            $builder->select('*,parent_id,taxability,SUM(sub_total) as total ,igst');
-            $builder->where('is_delete',0);
-            $builder->where('type','return');
-            $builder->whereIn('parent_id',$cdnur_ids);
-            $builder->groupBy(['parent_id','igst']);
-            // $builder->groupBy('igst');
-            $query = $builder->get();
-            $cdnr_product = $query->getResultArray();
-        }
-
-        foreach ($cdnur_state as $row) {
 
             $db = $this->db;
 
-            if ($row['gst'] == '' || empty($row['gst'])) {
+            if($row['gst'] == '' ||  empty($row['gst'])){
 
                 // if($row['acc_state'] == session('state')){
-                if (isset($row['v_type'])) {
+                    if(isset($row['v_type'])){
 
-                    // $builder = $db->table('sales_ACparticu');
-                    // $builder->select('taxability,SUM(amount) as total ,igst');
-                    // $builder->where('is_delete', 0);
-                    // $builder->where('parent_id', $row['id']);
-                    // $builder->groupBy('igst');
-                    // $query = $builder->get();
-                    // $result = $query->getResultArray();
+                        $builder = $db->table('sales_ACparticu');
+                        $builder->select('taxability,SUM(amount) as total ,igst');
+                        $builder->where('is_delete',0);
+                        $builder->where('parent_id',$row['id']);
+                        $builder->groupBy('igst');
+                        $query = $builder->get();
+                        $result = $query->getResultArray();              
 
-                    $result = search($cdnr_gnrl_product,'parent_id',$row['id']);
+                    }else{
 
-
-                } else {
-
-                    // $builder = $db->table('sales_item');
-                    // $builder->select('taxability,SUM(rate*qty) as total ,igst');
-                    // $builder->where('is_delete', 0);
-                    // $builder->where('type', 'return');
-                    // $builder->where('parent_id', $row['id']);
-                    // $builder->groupBy('igst');
-                    // $query = $builder->get();
-                    // $result = $query->getResultArray();
-
-                    $result = search($cdnr_product,'parent_id',$row['id']);
-
-                }
-
-                //---- get cdnur company state total taxable gst wise  ---//
-
-                foreach ($result as $row2) {
-                    if ($row2['taxability'] != 'Nill' && $row2['taxability'] != 'Exempt') {
-
-                        $row['taxable'] = $row2['total'];
-                        $row['igst'] = $row2['igst'];
-
-                        $comp_state_cdnur[$row['acc_state']][$row2['igst']]['state'] = $row['acc_state'];
-                        $comp_state_cdnur[$row['acc_state']][$row2['igst']]['gst'] = $row2['igst'];
-                        $comp_state_cdnur[$row['acc_state']][$row2['igst']]['taxable'] = (@$comp_state_cdnur[$row['acc_state']][$row2['igst']]['taxable'] ? $comp_state_cdnur[$row['acc_state']][$row2['igst']]['taxable'] : 0) + $row2['total'];
+                        $builder = $db->table('sales_item');
+                        $builder->select('taxability,SUM(rate*qty) as total ,igst');
+                        $builder->where('is_delete',0);
+                        $builder->where('type','return');
+                        $builder->where('parent_id',$row['id']);
+                        $builder->groupBy('igst');
+                        $query = $builder->get();
+                        $result = $query->getResultArray();
                     }
-                }
+
+                    //---- get cdnur company state total taxable gst wise  ---//
+
+                    foreach($result as $row2){
+                        if($row2['taxability'] != 'Nill' && $row2['taxability'] != 'Exempt' ){
+
+                            $row['taxable'] = $row2['total'];
+                            $row['igst'] = $row2['igst'];
+                            
+                            $comp_state_cdnur[$row['acc_state']][$row2['igst']]['state'] = $row['acc_state'];
+                            $comp_state_cdnur[$row['acc_state']][$row2['igst']]['gst'] = $row2['igst'];
+                            $comp_state_cdnur[$row['acc_state']][$row2['igst']]['taxable'] = (@$comp_state_cdnur[$row['acc_state']][$row2['igst']]['taxable'] ? $comp_state_cdnur[$row['acc_state']][$row2['igst']]['taxable'] : 0) + $row2['total'];
+                        }
+                    }
                 // }
             }
-        }
+        } 
 
         $new_b2b_small = array();
-        $b2c_vtype_ids = array();
-        $b2c_ids = array();
-        foreach($b2c_small as $row){
-            if(isset($row['v_type'])){
-                $b2c_vtype_ids[] = $row['id'];
-            }else{
-                $b2c_ids[] = $row['id'];
-            }
-        }
-
-        if(!empty($b2c_vtype_ids)){
-
-            $builder = $db->table('sales_ACparticu');
-            $builder->select('*,parent_id,taxability,igst , amount as total');
-            $builder->where('is_delete',0);
-            $builder->whereIn('parent_id',$b2c_vtype_ids);
-            $query = $builder->get();
-            $sale_gnrl_product = $query->getResultArray();
-        }
-    
-        if(!empty($b2c_ids)){
-    
-            $builder = $db->table('sales_item');
-            $builder->select('*,parent_id,taxability,igst,sub_total as total');
-            $builder->where('is_delete',0);
-            $builder->where('type','invoice');
-            $builder->whereIn('parent_id',$b2c_ids);
-            $query = $builder->get();
-            $sale_product = $query->getResultArray();
-        }
 
         foreach ($b2c_small as $row) {
-
+        
             if (isset($row['v_type'])) {
-                // $sale = $gmodel->get_array_table('sales_ACparticu', array('parent_id' => $row['id'], 'is_delete' => 0), 'taxability,igst , amount as total');
-                $sale = search($sale_gnrl_product,'parent_id',$row['id']);
-
+                $sale = $gmodel->get_array_table('sales_ACparticu', array('parent_id' => $row['id'], 'is_delete' => 0), 'taxability,igst , amount as total');
             } else {
-                $sale = search($sale_product,'parent_id',$row['id']);
-                // $sale = $gmodel->get_array_table('sales_item', array('parent_id' => $row['id'], 'is_delete' => 0, 'type' => 'invoice'), 'taxability,igst,(rate*qty) as total');
+                $sale = $gmodel->get_array_table('sales_item', array('parent_id' =>$row['id'], 'is_delete' => 0, 'type' => 'invoice'), 'taxability,igst,(rate*qty) as total');
             }
 
             $invtotal = 0;
-            foreach ($sale as $row1) {
-                if ($row1['taxability'] != 'Nill' && $row1['taxability'] != 'Exempt') {
-
+            foreach($sale as $row1){
+                if($row1['taxability'] != 'Nill' && $row1['taxability'] != 'Exempt' ){
+                    
                     $invtotal = 0;
                     $new_b2b_small[$row['acc_state']][$row1['igst']]['id'] = $row['id'];
                     $new_b2b_small[$row['acc_state']][$row1['igst']]['acc_state'] = $row['acc_state'];
@@ -838,32 +989,130 @@ class GstModel extends Model
             }
         }
 
-        foreach ($comp_state_cdnur as $state => $value) {
-            foreach ($value as $gst => $row2) {
-                $new_b2b_small[$state][$gst]['acc_state'] = @$new_b2b_small[$state][$gst]['acc_state'] ? @$new_b2b_small[$state][$gst]['acc_state'] : $state;
-                $new_b2b_small[$state][$gst]['taxable'] = (@$new_b2b_small[$state][$gst]['taxable'] ? (float) $new_b2b_small[$state][$gst]['taxable'] : 0) - (@$row2['taxable'] ? (float) $row2['taxable'] : 0);
-                $new_b2b_small[$state][$gst]['gst'] = @$new_b2b_small[$state][$gst]['gst'] ? (float) $new_b2b_small[$state][$gst]['gst'] : @$row2['gst'];
+        //---- cdnur company state taxable minus from b2c small same state data ---//
+
+        // foreach($comp_state_cdnur as $row){
+        //     $new_b2b_small[$row['state']][$row['gst']]['taxable'] = $new_b2b_small[$row['state']][$row['gst']]['taxable'] - $row['taxable'];
+        // }
+       
+        foreach($comp_state_cdnur as $state => $value){
+            foreach($value as $gst => $row2){
+                $new_b2b_small[$state][$gst]['acc_state'] = @$new_b2b_small[$state][$gst]['acc_state'] ?  @$new_b2b_small[$state][$gst]['acc_state'] :  $state ;
+                $new_b2b_small[$state][$gst]['taxable'] = (@$new_b2b_small[$state][$gst]['taxable'] ? (float)$new_b2b_small[$state][$gst]['taxable'] : 0) - (@$row2['taxable'] ? (float)$row2['taxable'] : 0);
+                $new_b2b_small[$state][$gst]['gst'] = @$new_b2b_small[$state][$gst]['gst'] ? (float)$new_b2b_small[$state][$gst]['gst'] :   @$row2['gst'] ;
             }
         }
 
-        foreach ($hsn as $row) {
+        //---- cdnur company state taxable minus from b2c small same state data ---//
 
+        // foreach($comp_state_cdnur as $row){
+        //     $new_b2b_small[$row['state']][$row['gst']]['taxable'] = $new_b2b_small[$row['state']][$row['gst']]['taxable'] - $row['taxable'];
+        // }
+
+
+        // foreach ($hsn as $row) {
+        //     if($row['vch_type'] == 'sale_return' || $row['vch_type'] == 'sale_invoice'){
+        //         $uom = $gmodel->get_data_table('uom',array('code'=>$row['uom']),'*');
+        //     }else{
+        //         $uom = array();
+        //     }
+        //     $taxes = json_decode($row['taxes']);
+        //     $total = 0;
+        //     $disc_amt=0;
+        //     if($row['vch_type'] == 'sale_return' || $row['vch_type'] == 'sale_invoice'){
+        //         $total = (float) $row['qty'] * (float) $row['rate'];
+        //         if($row['item_disc'] > 0){
+        //             $disc_amt = (float)$total * (float)$row['item_disc'] /100;
+        //             $total -= $disc_amt;
+        //         }
+        //     }else{
+        //         $total =  (float)$row['rate'];
+        //     }
+
+        //     $gst_amt = (float) $total * ((float) $row['igst'] / 100);
+
+        //     $row['igst_amt'] = 0;
+        //     $row['sgst_amt'] = 0;
+        //     $row['cgst_amt'] = 0;
+
+        //     if (in_array('igst', $taxes)) {
+        //         $row['igst_amt'] = (float) $gst_amt;
+        //     } else {
+        //         $row['sgst_amt'] = (float) $gst_amt / 2;
+        //         $row['cgst_amt'] = (float) $gst_amt / 2;
+        //     }
+            
+        //     $row['total_amt'] = (float) $total + (float) $gst_amt;
+        //     $row['total_taxable'] = $total;
+            
+        //     $row['uom_name'] = @$uom['name'];
+            
+        //     $hsn_arr[$row['hsn']][$row['igst']][] = $row;
+            
+        // }
+      
+        
+        // foreach ($hsn_arr as $hsn_rw) {
+
+        //     $hsn_data['txval'] =0;
+        //     $hsn_data['iamt'] = 0;
+        //     $hsn_data['samt'] = 0;
+        //     $hsn_data['camt'] = 0;
+        //     $hsn_data['val'] = 0;
+        //     $hsn_data['qty'] = 0;
+
+        //     foreach ($hsn_rw as $row1) {    
+        //         $i = 1;
+
+        //         foreach ($row1 as $row){
+                    
+        //             $hsn_data['num'] = $i;
+        //             $hsn_data['hsn_sc'] = $row['hsn'];
+        //             $hsn_data['rate'] = $row['igst'];
+        //             $hsn_data['desc'] = $row['item_name'];
+        //             $hsn_data['uqc'] = isset($row['uom']) ? @$row['uom'].'-'.@$row['uom_name'] : '';
+        //             if($row['vch_type'] == 'sale_invoice'){
+        //                 $hsn_data['qty'] = (@$hsn_data['qty'] ? (float) $hsn_data['qty'] : 0) + (float) $row['qty'];
+        //             }else if($row['vch_type'] == 'sale_return'){
+        //                 $hsn_data['qty'] = (@$hsn_data['qty'] ? (float) $hsn_data['qty'] : 0) - (float) $row['qty'];
+        //             }else{
+        //                 $hsn_data['qty'] = '';
+        //             }
+        //             if($row['vch_type'] == 'sale_invoice' || $row['vch_type'] == 'general'){
+        //                 $hsn_data['val'] = (@$hsn_data['val'] ? $hsn_data['val'] : 0) + $row['total_amt'];
+        //                 $hsn_data['txval'] = (float) (@$hsn_data['txval'] ? (float) $hsn_data['txval'] : 0) + (float) $row['total_taxable'];
+        //                 $hsn_data['iamt'] = (float) (@$hsn_data['iamt'] ? (float) $hsn_data['iamt'] : 0) + (float) $row['igst_amt'];
+        //                 $hsn_data['samt'] = (float) (@$hsn_data['samt'] ? (float) $hsn_data['samt'] : 0) + (float) $row['sgst_amt'];
+        //                 $hsn_data['camt'] = (float) (@$hsn_data['camt'] ? (float) $hsn_data['camt'] : 0) + (float) $row['cgst_amt'];
+        //             }else{
+        //                 $hsn_data['val'] = (@$hsn_data['val'] ? $hsn_data['val'] : 0) - $row['total_amt'];
+        //                 $hsn_data['txval'] = (float) (@$hsn_data['txval'] ? (float) $hsn_data['txval'] : 0) - (float) $row['total_taxable'];
+        //                 $hsn_data['iamt'] = (float) (@$hsn_data['iamt'] ? (float) $hsn_data['iamt'] : 0) - (float) $row['igst_amt'];
+        //                 $hsn_data['samt'] = (float) (@$hsn_data['samt'] ? (float) $hsn_data['samt'] : 0) - (float) $row['sgst_amt'];
+        //                 $hsn_data['camt'] = (float) (@$hsn_data['camt'] ? (float) $hsn_data['camt'] : 0) - (float) $row['cgst_amt'];
+        //             }
+                    
+        //         }
+        //         $hsn_da['data'][] = $hsn_data;
+        //     }
+        // }
+
+        foreach ($hsn as $row) {
+            
             $taxes = json_decode($row['taxes']);
             $total = 0;
-            if ($row['vch_type'] != 'general') {
-                $total = (float) $row['sub_total'];
-                // if ($row['item_disc'] > 0) {
-                //     $disc_amt = (float) $total * (float) $row['item_disc'] / 100;
-                //     $total -= $disc_amt;
-                // }
-                $uom = $gmodel->get_data_table('uom', array('code' => @$row['uom']), '*');
-            } else {
-                $total = (float) $row['rate'];
+            if($row['vch_type'] != 'general'){
+                $total = (float) $row['qty'] * (float) $row['rate'];
+                if($row['item_disc'] > 0 ){
+                    $disc_amt = (float)$total * (float)$row['item_disc'] /100;
+                    $total -= $disc_amt;
+                }
+                $uom = $gmodel->get_data_table('uom',array('code'=>@$row['uom']),'*');
+            }else{
+                $total = (float)$row['rate'];
             }
 
-            //$gst_amt = (float) $total * ((float) $row['igst'] / 100);
-            //temp solution of gst_amt
-            $gst_amt = (float) $row['sub_total'] * ((float) $row['igst'] / 100);
+            $gst_amt = (float) $total * ((float) $row['igst'] / 100);
 
             $row['igst_amt'] = 0;
             $row['sgst_amt'] = 0;
@@ -875,74 +1124,74 @@ class GstModel extends Model
                 $row['sgst_amt'] = (float) $gst_amt / 2;
                 $row['cgst_amt'] = (float) $gst_amt / 2;
             }
-
+            
             $row['total_amt'] = (float) $total + (float) $gst_amt;
             $row['total_taxable'] = $total;
             $row['uom_name'] = @$uom['name'];
-
+            
             $hsn_arr[$row['hsn']][$row['igst']][] = $row;
-
+            
         }
-
+        
         foreach ($hsn_arr as $hsn_rw) {
 
-            foreach ($hsn_rw as $row1) {
+            foreach ($hsn_rw as $row1) {    
                 $i = 1;
-
+                
                 $hsn_data = array();
-                $hsn_data['txval'] = 0;
+                $hsn_data['txval'] =0;
                 $hsn_data['iamt'] = 0;
                 $hsn_data['samt'] = 0;
                 $hsn_data['camt'] = 0;
                 $hsn_data['val'] = 0;
                 $hsn_data['qty'] = 0;
-
-                foreach ($row1 as $row) {
+                
+                foreach ($row1 as $row){
 
                     $hsn_data['num'] = $i;
                     $hsn_data['hsn_sc'] = $row['hsn'];
                     $hsn_data['rate'] = $row['igst'];
                     $hsn_data['desc'] = $row['item_name'];
-                    $hsn_data['uqc'] = @$row['uom'] . '-' . @$row['uom_name'];
+                    $hsn_data['uqc'] = @$row['uom'].'-'.@$row['uom_name'];
 
-                    if ($row['type'] == 'general' || $row['type'] == 'invoice') {
+                    if($row['type'] == 'general' || $row['type'] == 'invoice' ){
 
-                        $hsn_data['qty'] = (@$hsn_data['qty'] ? (float) @$hsn_data['qty'] : 0) + (float) @$row['qty'];
+                        $hsn_data['qty'] = (@$hsn_data['qty'] ? (float)@$hsn_data['qty'] : 0) + (float)@$row['qty'];
                         $hsn_data['val'] = (@$hsn_data['val'] ? $hsn_data['val'] : 0) + $row['total_amt'];
-                        $hsn_data['txval'] = (float) (@$hsn_data['txval'] ? (float) $hsn_data['txval'] : 0) + (float) $row['total_taxable'];
-                        $hsn_data['iamt'] = (float) (@$hsn_data['iamt'] ? (float) $hsn_data['iamt'] : 0) + (float) $row['igst_amt'];
-                        $hsn_data['samt'] = (float) (@$hsn_data['samt'] ? (float) $hsn_data['samt'] : 0) + (float) $row['sgst_amt'];
-                        $hsn_data['camt'] = (float) (@$hsn_data['camt'] ? (float) $hsn_data['camt'] : 0) + (float) $row['cgst_amt'];
+                        $hsn_data['txval'] = (float)(@$hsn_data['txval'] ? (float) $hsn_data['txval'] : 0) + (float) $row['total_taxable'];
+                        $hsn_data['iamt'] = (float)(@$hsn_data['iamt'] ? (float) $hsn_data['iamt'] : 0) + (float) $row['igst_amt'];
+                        $hsn_data['samt'] = (float)(@$hsn_data['samt'] ? (float) $hsn_data['samt'] : 0) + (float) $row['sgst_amt'];
+                        $hsn_data['camt'] = (float)(@$hsn_data['camt'] ? (float) $hsn_data['camt'] : 0) + (float) $row['cgst_amt'];
 
-                    } else {
+                    }else{
 
                         $hsn_data['qty'] = (@$hsn_data['qty'] ? (float) $hsn_data['qty'] : 0) - (float) $row['qty'];
                         $hsn_data['val'] = (@$hsn_data['val'] ? $hsn_data['val'] : 0) - $row['total_amt'];
-                        $hsn_data['txval'] = (float) (@$hsn_data['txval'] ? (float) $hsn_data['txval'] : 0) - (float) $row['total_taxable'];
-                        $hsn_data['iamt'] = (float) (@$hsn_data['iamt'] ? (float) $hsn_data['iamt'] : 0) - (float) $row['igst_amt'];
-                        $hsn_data['samt'] = (float) (@$hsn_data['samt'] ? (float) $hsn_data['samt'] : 0) - (float) $row['sgst_amt'];
-                        $hsn_data['camt'] = (float) (@$hsn_data['camt'] ? (float) $hsn_data['camt'] : 0) - (float) $row['cgst_amt'];
+                        $hsn_data['txval'] = (float)(@$hsn_data['txval'] ? (float) $hsn_data['txval'] : 0) - (float) $row['total_taxable'];
+                        $hsn_data['iamt'] = (float)(@$hsn_data['iamt'] ? (float) $hsn_data['iamt'] : 0) - (float) $row['igst_amt'];
+                        $hsn_data['samt'] = (float)(@$hsn_data['samt'] ? (float) $hsn_data['samt'] : 0) - (float) $row['sgst_amt'];
+                        $hsn_data['camt'] = (float)(@$hsn_data['camt'] ? (float) $hsn_data['camt'] : 0) - (float) $row['cgst_amt'];
                     }
-
+                    
                 }
                 $hsn_da['data'][] = $hsn_data;
             }
         }
-
+       
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
         $spreadsheet->getActiveSheet()->getStyle('A1:B1')->getFill()
-            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-            ->getStartColor()->setARGB('2F75B5');
+        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+        ->getStartColor()->setARGB('2F75B5');
 
         $spreadsheet->getActiveSheet()->getStyle('A2:M2')->getFill()
-            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-            ->getStartColor()->setARGB('2F75B5');
+        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+        ->getStartColor()->setARGB('2F75B5');
 
         $spreadsheet->getActiveSheet()->getStyle('A4:M4')->getFill()
-            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-            ->getStartColor()->setARGB('F8CBAD');
+        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+        ->getStartColor()->setARGB('F8CBAD');
 
         $spreadsheet->setActiveSheetIndex(0)->setCellValue('A1', 'Summary For B2B(4)');
         $spreadsheet->setActiveSheetIndex(0)->setCellValue('A4', 'GSTIN/UIN of Recipient');
@@ -960,18 +1209,18 @@ class GstModel extends Model
         $spreadsheet->setActiveSheetIndex(0)->setCellValue('M4', 'Cess Amount');
 
         $i = 5;
-
+         
         foreach ($final_b2b as $row) {
 
-            if ($row['discount'] > 0 && $row['discount'] != '') {
+            if($row['discount'] > 0  && $row['discount'] != '' ){
                 $taxable = $row['total_amount'];
-            } else {
+            }else{
                 $taxable = $row['taxable'];
             }
 
             $spreadsheet->setActiveSheetIndex(0)->setCellValue('A' . $i, $row['gst']);
             $spreadsheet->setActiveSheetIndex(0)->setCellValue('B' . $i, '');
-            $spreadsheet->setActiveSheetIndex(0)->setCellValue('C' . $i, @$row['custom_inv_no'] ? @$row['custom_inv_no'] : $row['supp_inv']);
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('C' . $i, @$row['custom_inv_no'] ? @$row['custom_inv_no'] : $row['supp_inv'] );
 
             $dt = date_create(@$row['invoice_date']);
             $i_date = date_format($dt, 'd-M-y');
@@ -995,17 +1244,18 @@ class GstModel extends Model
 
         $spreadsheet->createSheet();
 
+
         $spreadsheet->getActiveSheet()->getStyle('A1:B1')->getFill()
-            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-            ->getStartColor()->setARGB('2F75B5');
+        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+        ->getStartColor()->setARGB('2F75B5');
 
         $spreadsheet->getActiveSheet()->getStyle('A2:I2')->getFill()
-            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-            ->getStartColor()->setARGB('2F75B5');
+        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+        ->getStartColor()->setARGB('2F75B5');
 
         $spreadsheet->getActiveSheet()->getStyle('A4:I4')->getFill()
-            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-            ->getStartColor()->setARGB('F8CBAD');
+        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+        ->getStartColor()->setARGB('F8CBAD');
 
         $spreadsheet->setActiveSheetIndex(1)->setCellValue('A1', 'Summary For B2CL(5)');
 
@@ -1052,16 +1302,17 @@ class GstModel extends Model
         $spreadsheet->createSheet();
 
         $spreadsheet->getActiveSheet()->getStyle('A1:B1')->getFill()
-            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-            ->getStartColor()->setARGB('2F75B5');
+        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+        ->getStartColor()->setARGB('2F75B5');
 
         $spreadsheet->getActiveSheet()->getStyle('A2:G2')->getFill()
-            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-            ->getStartColor()->setARGB('2F75B5');
+        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+        ->getStartColor()->setARGB('2F75B5');
 
         $spreadsheet->getActiveSheet()->getStyle('A4:G4')->getFill()
-            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-            ->getStartColor()->setARGB('F8CBAD');
+        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+        ->getStartColor()->setARGB('F8CBAD');
+
 
         $spreadsheet->setActiveSheetIndex(2)->setCellValue('A1', 'Summary For B2CS(7)');
 
@@ -1076,7 +1327,7 @@ class GstModel extends Model
         $i = 5;
 
         foreach ($new_b2b_small as $row1) {
-            foreach ($row1 as $row) {
+            foreach($row1 as $row){
                 $state = $gmodel->get_data_table('states', array('id' => $row['acc_state']), '*');
 
                 $spreadsheet->setActiveSheetIndex(2)->setCellValue('A' . $i, 'OE');
@@ -1098,16 +1349,17 @@ class GstModel extends Model
         $spreadsheet->createSheet();
 
         $spreadsheet->getActiveSheet()->getStyle('A1:B1')->getFill()
-            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-            ->getStartColor()->setARGB('2F75B5');
+        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+        ->getStartColor()->setARGB('2F75B5');
 
         $spreadsheet->getActiveSheet()->getStyle('A2:M2')->getFill()
-            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-            ->getStartColor()->setARGB('2F75B5');
+        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+        ->getStartColor()->setARGB('2F75B5');
 
         $spreadsheet->getActiveSheet()->getStyle('A4:M4')->getFill()
-            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-            ->getStartColor()->setARGB('F8CBAD');
+        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+        ->getStartColor()->setARGB('F8CBAD');
+
 
         $spreadsheet->setActiveSheetIndex(3)->setCellValue('A1', 'Summary For CDNR(9B)');
 
@@ -1129,9 +1381,9 @@ class GstModel extends Model
 
         foreach ($final_cdnr as $row) {
 
-            if (isset($row['return_date'])) {
+            if(isset($row['return_date'])){
                 $dt = date_create(@$row['return_date']);
-            } else {
+            }else{
                 $dt = date_create(@$row['invoice_date']);
             }
 
@@ -1141,7 +1393,7 @@ class GstModel extends Model
 
             $spreadsheet->setActiveSheetIndex(3)->setCellValue('A' . $i, $row['gst']);
             $spreadsheet->setActiveSheetIndex(3)->setCellValue('B' . $i, $row['name']);
-            $spreadsheet->setActiveSheetIndex(3)->setCellValue('C' . $i, @$row['supp_inv'] ? $row['supp_inv'] : $row['supp_inv']);
+            $spreadsheet->setActiveSheetIndex(3)->setCellValue('C' . $i, @$row['supp_inv'] ? $row['supp_inv'] : $row['supp_inv'] );
             $spreadsheet->setActiveSheetIndex(3)->setCellValue('D' . $i, $r_date);
             $spreadsheet->setActiveSheetIndex(3)->setCellValue('E' . $i, 'C');
             $spreadsheet->setActiveSheetIndex(3)->setCellValue('F' . $i, @$state['state_code'] . '-' . @$state['name']);
@@ -1163,16 +1415,17 @@ class GstModel extends Model
         $spreadsheet->createSheet();
 
         $spreadsheet->getActiveSheet()->getStyle('A1:B1')->getFill()
-            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-            ->getStartColor()->setARGB('2F75B5');
+        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+        ->getStartColor()->setARGB('2F75B5');
 
         $spreadsheet->getActiveSheet()->getStyle('A2:J2')->getFill()
-            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-            ->getStartColor()->setARGB('2F75B5');
+        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+        ->getStartColor()->setARGB('2F75B5');
 
         $spreadsheet->getActiveSheet()->getStyle('A4:J4')->getFill()
-            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-            ->getStartColor()->setARGB('F8CBAD');
+        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+        ->getStartColor()->setARGB('F8CBAD');
+
 
         $spreadsheet->setActiveSheetIndex(4)->setCellValue('A1', 'Summary For CDNUR(9B)');
 
@@ -1191,9 +1444,9 @@ class GstModel extends Model
 
         foreach ($final_cdnur as $row) {
 
-            if (isset($row['return_date'])) {
+            if(isset($row['return_date'])){
                 $dt = date_create(@$row['return_date']);
-            } else {
+            }else{
                 $dt = date_create(@$row['invoice_date']);
             }
 
@@ -1224,16 +1477,17 @@ class GstModel extends Model
         $spreadsheet->createSheet();
 
         $spreadsheet->getActiveSheet()->getStyle('A1:B1')->getFill()
-            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-            ->getStartColor()->setARGB('2F75B5');
+        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+        ->getStartColor()->setARGB('2F75B5');
 
         $spreadsheet->getActiveSheet()->getStyle('A2:J2')->getFill()
-            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-            ->getStartColor()->setARGB('2F75B5');
+        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+        ->getStartColor()->setARGB('2F75B5');
 
         $spreadsheet->getActiveSheet()->getStyle('A4:J4')->getFill()
-            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-            ->getStartColor()->setARGB('F8CBAD');
+        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+        ->getStartColor()->setARGB('F8CBAD');
+
 
         $spreadsheet->setActiveSheetIndex(5)->setCellValue('A1', 'Summary For EXP(6)');
 
@@ -1257,16 +1511,16 @@ class GstModel extends Model
         $spreadsheet->createSheet();
 
         $spreadsheet->getActiveSheet()->getStyle('A1:B1')->getFill()
-            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-            ->getStartColor()->setARGB('2F75B5');
+        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+        ->getStartColor()->setARGB('2F75B5');
 
         $spreadsheet->getActiveSheet()->getStyle('A2:E2')->getFill()
-            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-            ->getStartColor()->setARGB('2F75B5');
+        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+        ->getStartColor()->setARGB('2F75B5');
 
         $spreadsheet->getActiveSheet()->getStyle('A4:E4')->getFill()
-            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-            ->getStartColor()->setARGB('F8CBAD');
+        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+        ->getStartColor()->setARGB('F8CBAD');
 
         $spreadsheet->setActiveSheetIndex(6)->setCellValue('A1', 'Summary For Advance Received (11B)');
 
@@ -1285,16 +1539,16 @@ class GstModel extends Model
         $spreadsheet->createSheet();
 
         $spreadsheet->getActiveSheet()->getStyle('A1:B1')->getFill()
-            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-            ->getStartColor()->setARGB('2F75B5');
+        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+        ->getStartColor()->setARGB('2F75B5');
 
         $spreadsheet->getActiveSheet()->getStyle('A2:E2')->getFill()
-            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-            ->getStartColor()->setARGB('2F75B5');
+        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+        ->getStartColor()->setARGB('2F75B5');
 
         $spreadsheet->getActiveSheet()->getStyle('A4:E4')->getFill()
-            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-            ->getStartColor()->setARGB('F8CBAD');
+        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+        ->getStartColor()->setARGB('F8CBAD');
 
         $spreadsheet->setActiveSheetIndex(7)->setCellValue('A1', 'Summary For Advance Adjusted (11B)');
 
@@ -1313,17 +1567,17 @@ class GstModel extends Model
         $spreadsheet->createSheet();
 
         $spreadsheet->getActiveSheet()->getStyle('A1:B1')->getFill()
-            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-            ->getStartColor()->setARGB('2F75B5');
+        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+        ->getStartColor()->setARGB('2F75B5');
 
         $spreadsheet->getActiveSheet()->getStyle('A2:D2')->getFill()
-            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-            ->getStartColor()->setARGB('2F75B5');
+        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+        ->getStartColor()->setARGB('2F75B5');
 
         $spreadsheet->getActiveSheet()->getStyle('A4:D4')->getFill()
-            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-            ->getStartColor()->setARGB('F8CBAD');
-
+        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+        ->getStartColor()->setARGB('F8CBAD');
+        
         $spreadsheet->setActiveSheetIndex(8)->setCellValue('A1', 'Summary For Nil rated, exempted and non GST outward supplies (8)');
 
         $spreadsheet->setActiveSheetIndex(8)->setCellValue('A4', 'Description');
@@ -1335,22 +1589,24 @@ class GstModel extends Model
         $spreadsheet->setActiveSheetIndex(8)->setCellValue('B4', 'Nil Rated Supplies');
         $spreadsheet->setActiveSheetIndex(8)->setCellValue('C4', 'Exempted (other than nil rated/non GST supply )');
         $spreadsheet->setActiveSheetIndex(8)->setCellValue('D4', 'Non-GST supplies');
+      
 
-        $spreadsheet->setActiveSheetIndex(8)->setCellValue('B5', @$inter_reg_nill['net_amt']);
-        $spreadsheet->setActiveSheetIndex(8)->setCellValue('C5', $nill['inter_reg']['net_amount']);
-        $spreadsheet->setActiveSheetIndex(8)->setCellValue('D5', @$inter_reg_na['net_amt']);
+        $spreadsheet->setActiveSheetIndex(8)->setCellValue('B5' , @$inter_reg_nill['net_amt']);
+        $spreadsheet->setActiveSheetIndex(8)->setCellValue('C5' , $nill['inter_reg']['net_amount']);
+        $spreadsheet->setActiveSheetIndex(8)->setCellValue('D5' , @$inter_reg_na['net_amt']);
 
-        $spreadsheet->setActiveSheetIndex(8)->setCellValue('B6', @$intera_reg_nill['net_amt']);
-        $spreadsheet->setActiveSheetIndex(8)->setCellValue('C6', $nill['intera_reg']['net_amount']);
-        $spreadsheet->setActiveSheetIndex(8)->setCellValue('D6', @$intera_reg_na['net_amt']);
+        $spreadsheet->setActiveSheetIndex(8)->setCellValue('B6' , @$intera_reg_nill['net_amt']);
+        $spreadsheet->setActiveSheetIndex(8)->setCellValue('C6' , $nill['intera_reg']['net_amount']);
+        $spreadsheet->setActiveSheetIndex(8)->setCellValue('D6' , @$intera_reg_na['net_amt']);
 
-        $spreadsheet->setActiveSheetIndex(8)->setCellValue('B7', @$inter_unreg_nill['net_amt']);
-        $spreadsheet->setActiveSheetIndex(8)->setCellValue('C7', $nill['inter_unreg']['net_amount']);
-        $spreadsheet->setActiveSheetIndex(8)->setCellValue('D7', @$inter_unreg_na['net_amt']);
+        $spreadsheet->setActiveSheetIndex(8)->setCellValue('B7' , @$inter_unreg_nill['net_amt']);
+        $spreadsheet->setActiveSheetIndex(8)->setCellValue('C7' , $nill['inter_unreg']['net_amount']);
+        $spreadsheet->setActiveSheetIndex(8)->setCellValue('D7' , @$inter_unreg_na['net_amt']);
 
-        $spreadsheet->setActiveSheetIndex(8)->setCellValue('B8', @$intera_unreg_nill['net_amt']);
-        $spreadsheet->setActiveSheetIndex(8)->setCellValue('C8', $nill['intera_unreg']['net_amount']);
-        $spreadsheet->setActiveSheetIndex(8)->setCellValue('D8', @$intera_unreg_na['net_amt']);
+        $spreadsheet->setActiveSheetIndex(8)->setCellValue('B8' , @$intera_unreg_nill['net_amt']);
+        $spreadsheet->setActiveSheetIndex(8)->setCellValue('C8' , $nill['intera_unreg']['net_amount']);
+        $spreadsheet->setActiveSheetIndex(8)->setCellValue('D8' , @$intera_unreg_na['net_amt']);
+        
 
         $spreadsheet->getActiveSheet()->setTitle('exemp');
 
@@ -1361,16 +1617,17 @@ class GstModel extends Model
         $spreadsheet->createSheet();
 
         $spreadsheet->getActiveSheet()->getStyle('A1:B1')->getFill()
-            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-            ->getStartColor()->setARGB('2F75B5');
+        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+        ->getStartColor()->setARGB('2F75B5');
 
         $spreadsheet->getActiveSheet()->getStyle('A2:J2')->getFill()
-            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-            ->getStartColor()->setARGB('2F75B5');
+        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+        ->getStartColor()->setARGB('2F75B5');
 
         $spreadsheet->getActiveSheet()->getStyle('A4:J4')->getFill()
-            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-            ->getStartColor()->setARGB('F8CBAD');
+        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+        ->getStartColor()->setARGB('F8CBAD');
+        
 
         $spreadsheet->setActiveSheetIndex(9)->setCellValue('A1', 'Summary For HSN(12)');
 
@@ -1387,7 +1644,7 @@ class GstModel extends Model
         $spreadsheet->setActiveSheetIndex(9)->setCellValue('K4', 'Cess Amount');
 
         $i = 5;
-
+        
         foreach ($hsn_da['data'] as $row) {
 
             $spreadsheet->setActiveSheetIndex(9)->setCellValue('A' . $i, $row['hsn_sc']);
@@ -1414,16 +1671,17 @@ class GstModel extends Model
         $spreadsheet->createSheet();
 
         $spreadsheet->getActiveSheet()->getStyle('A1:B1')->getFill()
-            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-            ->getStartColor()->setARGB('2F75B5');
+        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+        ->getStartColor()->setARGB('2F75B5');
 
         $spreadsheet->getActiveSheet()->getStyle('A2:E2')->getFill()
-            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-            ->getStartColor()->setARGB('2F75B5');
+        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+        ->getStartColor()->setARGB('2F75B5');
 
         $spreadsheet->getActiveSheet()->getStyle('A4:E4')->getFill()
-            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-            ->getStartColor()->setARGB('F8CBAD');
+        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+        ->getStartColor()->setARGB('F8CBAD');
+        
 
         $spreadsheet->setActiveSheetIndex(10)->setCellValue('A1', 'Summary of documents issued during the tax period (13)');
 
@@ -1436,57 +1694,19 @@ class GstModel extends Model
         $spreadsheet->setActiveSheetIndex(10)->setCellValue('E4', 'Cancelled');
 
         $spreadsheet->setActiveSheetIndex(10)->setCellValue('A5', 'Invoices for outward supply');
-        $spreadsheet->getActiveSheet()->getStyle('A5')->getFill()
-            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-            ->getStartColor()->setARGB('F8CBAD');
-        if (session('DataSource') != 'ACE20227T93') {
-            $spreadsheet->setActiveSheetIndex(10)->setCellValue('A6', 'Credit Note');
+        $spreadsheet->setActiveSheetIndex(10)->setCellValue('A6', 'Credit Note');
 
-            $spreadsheet->setActiveSheetIndex(10)->setCellValue('B5', $outward_sale_from);
-            $spreadsheet->setActiveSheetIndex(10)->setCellValue('C5', $outward_sale_to);
-            $spreadsheet->setActiveSheetIndex(10)->setCellValue('D5', $outward_sale_count + $cancle_sale['sale_count'] + $cancle_gnrlsale['gnrlsale_count']);
-            $spreadsheet->setActiveSheetIndex(10)->setCellValue('E5', $cancle_sale['sale_count'] + $cancle_gnrlsale['gnrlsale_count']);
+        $spreadsheet->setActiveSheetIndex(10)->setCellValue('B5', $outward_sale_from);
+        $spreadsheet->setActiveSheetIndex(10)->setCellValue('C5', $outward_sale_to);
+        $spreadsheet->setActiveSheetIndex(10)->setCellValue('D5', $outward_sale_count + $cancle_sale['sale_count'] + $cancle_gnrlsale['gnrlsale_count']);
+        $spreadsheet->setActiveSheetIndex(10)->setCellValue('E5', $cancle_sale['sale_count'] + $cancle_gnrlsale['gnrlsale_count']);
 
-            $spreadsheet->setActiveSheetIndex(10)->setCellValue('B6', $credit_sale_from);
-            $spreadsheet->setActiveSheetIndex(10)->setCellValue('C6', $credit_sale_to);
-            $spreadsheet->setActiveSheetIndex(10)->setCellValue('D6', $credit_sale_count + $cancle_ret['ret_count'] + $cancle_gnrlret['gnrlret_count']);
-            $spreadsheet->setActiveSheetIndex(10)->setCellValue('E6', $cancle_ret['ret_count'] + $cancle_gnrlret['gnrlret_count']);
-        } else {
-            $i = 6;
+        $spreadsheet->setActiveSheetIndex(10)->setCellValue('B6', $credit_sale_from);
+        $spreadsheet->setActiveSheetIndex(10)->setCellValue('C6', $credit_sale_to);
+        $spreadsheet->setActiveSheetIndex(10)->setCellValue('D6', $credit_sale_count + $cancle_ret['ret_count'] + $cancle_gnrlret['gnrlret_count']);
+        $spreadsheet->setActiveSheetIndex(10)->setCellValue('E6', $cancle_ret['ret_count'] + $cancle_gnrlret['gnrlret_count']);
 
-            foreach ($plateform_new as $row) {
-                $start_inv = $gmodel->get_data_table('platform_voucher', array('voucher' => $row['start_invoice']), 'custom_inv_no');
-                $end_inv = $gmodel->get_data_table('platform_voucher', array('voucher' => $row['end_invoice']), 'custom_inv_no');
 
-                $spreadsheet->setActiveSheetIndex(10)->setCellValue('A' . $i, @$row['name']);
-                $spreadsheet->setActiveSheetIndex(10)->setCellValue('B' . $i, @$start_inv['custom_inv_no']);
-                $spreadsheet->setActiveSheetIndex(10)->setCellValue('C' . $i, @$end_inv['custom_inv_no']);
-                $spreadsheet->setActiveSheetIndex(10)->setCellValue('D' . $i, @$row['total_voucher']);
-                $spreadsheet->setActiveSheetIndex(10)->setCellValue('E' . $i, @$row['total_voucher_cancel']);
-                $i++;
-
-            }
-            $i = $i + 1;
-            $spreadsheet->setActiveSheetIndex(10)->setCellValue('A' . $i, 'Credit Note');
-            $spreadsheet->getActiveSheet()->getStyle('A' . $i)->getFill()
-                ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-                ->getStartColor()->setARGB('F8CBAD');
-            //$spreadsheet->setActiveSheetIndex(10)->setCellValue('A6', 'Credit Note');
-            // echo '<pre>';Print_r($plateform_ret_new);exit;
-            $i = $i + 1;
-            foreach ($plateform_ret_new as $row) {
-                $start_inv = $gmodel->get_data_table('platform_voucher', array('voucher' => $row['start_invoice']), 'custom_inv_no');
-                $end_inv = $gmodel->get_data_table('platform_voucher', array('voucher' => $row['end_invoice']), 'custom_inv_no');
-
-                $spreadsheet->setActiveSheetIndex(10)->setCellValue('A' . $i, @$row['name']);
-                $spreadsheet->setActiveSheetIndex(10)->setCellValue('B' . $i, @$start_inv['custom_inv_no']);
-                $spreadsheet->setActiveSheetIndex(10)->setCellValue('C' . $i, @$end_inv['custom_inv_no']);
-                $spreadsheet->setActiveSheetIndex(10)->setCellValue('D' . $i, @$row['total_voucher']);
-                $spreadsheet->setActiveSheetIndex(10)->setCellValue('E' . $i, @$row['total_voucher_cancel']);
-                $i++;
-
-            }
-        }
         $spreadsheet->getActiveSheet()->setTitle('docs');
 
         // ------------- End Summary For Advance Adjusted (11B) ------------- //
@@ -1497,34 +1717,30 @@ class GstModel extends Model
 
     }
 
-    public function get_hsn_summary($start_date, $end_date)
+    public function get_hsn_summary($start_date,$end_date)
     {
         $data = get_gstr1_detail(db_date($start_date), db_date($end_date));
         $hsn = $data['hsn']['data'];
-
+        
         $gmodel = new GeneralModel();
-        $grand = 0;
+        $grand = 0 ;
 
         foreach ($hsn as $row) {
-
-            if ($row['vch_type'] != 'general') {
-                $uom = $gmodel->get_data_table('uom', array('code' => $row['uom']), '*');
-                
+            if($row['vch_type'] != 'general'){
+                $uom = $gmodel->get_data_table('uom',array('code'=>$row['uom']),'*');
                 $total = 0;
-                $total = (float) $row['sub_total'];
-                // if ($row['item_disc'] > 0) {
-                //     $disc_amt = (float) $total * (float) $row['item_disc'] / 100;
-                //     $total -= $disc_amt;
-                // }
-            } else {
-                $total = (float) $row['rate'];
+                $total = (float) $row['qty'] * (float) $row['rate'];
+                if($row['item_disc'] > 0 ){
+                    $disc_amt = (float)$total * (float)$row['item_disc'] /100;
+                    $total -= $disc_amt;
+                }    
+            }else{
+                $total = (float)$row['rate'];
             }
-
+ 
             $taxes = json_decode($row['taxes']);
-
-           // $gst_amt = (float) $total * ((float) $row['igst'] / 100);
-           //temp solution of gst_amt
-           $gst_amt = (float) $row['sub_total'] * ((float) $row['igst'] / 100);
+            
+            $gst_amt = (float) $total * ((float) $row['igst'] / 100);
 
             $row['igst_amt'] = 0;
             $row['sgst_amt'] = 0;
@@ -1536,56 +1752,56 @@ class GstModel extends Model
                 $row['sgst_amt'] = (float) $gst_amt / 2;
                 $row['cgst_amt'] = (float) $gst_amt / 2;
             }
-
+            
             $row['total_amt'] = (float) $total + (float) $gst_amt;
             $row['total_taxable'] = $total;
-            $row['uom_name'] = @$uom['name'];
-
+            $row['uom_name'] = $uom['name'];
+            
             $hsn_arr[$row['hsn']][$row['igst']][] = $row;
-
-            $grand += $total;
+            
+            $grand +=$total;
         }
-
+        
         foreach ($hsn_arr as $hsn_rw) {
 
-            foreach ($hsn_rw as $row1) {
+            foreach ($hsn_rw as $row1) {    
                 $i = 1;
-
+                
                 $hsn_data = array();
-                $hsn_data['txval'] = 0;
+                $hsn_data['txval'] =0;
                 $hsn_data['iamt'] = 0;
                 $hsn_data['samt'] = 0;
                 $hsn_data['camt'] = 0;
                 $hsn_data['val'] = 0;
                 $hsn_data['qty'] = 0;
-
-                foreach ($row1 as $row) {
+                
+                foreach ($row1 as $row){
 
                     $hsn_data['num'] = $i;
                     $hsn_data['hsn_sc'] = $row['hsn'];
                     $hsn_data['rate'] = $row['igst'];
                     $hsn_data['desc'] = $row['item_name'];
-                    $hsn_data['uqc'] = @$row['uom'] . '-' . @$row['uom_name'];
+                    $hsn_data['uqc'] = @$row['uom'].'-'.@$row['uom_name'];
 
-                    if ($row['type'] == 'general' || $row['type'] == 'invoice') {
+                    if($row['type'] == 'general' || $row['type'] == 'invoice' ){
 
-                        $hsn_data['qty'] = (@$hsn_data['qty'] ? (float) @$hsn_data['qty'] : 0) + (float) @$row['qty'];
+                        $hsn_data['qty'] = (@$hsn_data['qty'] ? (float)@$hsn_data['qty'] : 0) + (float) @$row['qty'];
                         $hsn_data['val'] = (@$hsn_data['val'] ? $hsn_data['val'] : 0) + $row['total_amt'];
-                        $hsn_data['txval'] = (float) (@$hsn_data['txval'] ? (float) $hsn_data['txval'] : 0) + (float) $row['total_taxable'];
-                        $hsn_data['iamt'] = (float) (@$hsn_data['iamt'] ? (float) $hsn_data['iamt'] : 0) + (float) $row['igst_amt'];
-                        $hsn_data['samt'] = (float) (@$hsn_data['samt'] ? (float) $hsn_data['samt'] : 0) + (float) $row['sgst_amt'];
-                        $hsn_data['camt'] = (float) (@$hsn_data['camt'] ? (float) $hsn_data['camt'] : 0) + (float) $row['cgst_amt'];
+                        $hsn_data['txval'] = (float)(@$hsn_data['txval'] ? (float) $hsn_data['txval'] : 0) + (float) $row['total_taxable'];
+                        $hsn_data['iamt'] = (float)(@$hsn_data['iamt'] ? (float) $hsn_data['iamt'] : 0) + (float) $row['igst_amt'];
+                        $hsn_data['samt'] = (float)(@$hsn_data['samt'] ? (float) $hsn_data['samt'] : 0) + (float) $row['sgst_amt'];
+                        $hsn_data['camt'] = (float)(@$hsn_data['camt'] ? (float) $hsn_data['camt'] : 0) + (float) $row['cgst_amt'];
 
-                    } else {
+                    }else{
 
                         $hsn_data['qty'] = (@$hsn_data['qty'] ? (float) $hsn_data['qty'] : 0) - (float) $row['qty'];
                         $hsn_data['val'] = (@$hsn_data['val'] ? $hsn_data['val'] : 0) - $row['total_amt'];
-                        $hsn_data['txval'] = (float) (@$hsn_data['txval'] ? (float) $hsn_data['txval'] : 0) - (float) $row['total_taxable'];
-                        $hsn_data['iamt'] = (float) (@$hsn_data['iamt'] ? (float) $hsn_data['iamt'] : 0) - (float) $row['igst_amt'];
-                        $hsn_data['samt'] = (float) (@$hsn_data['samt'] ? (float) $hsn_data['samt'] : 0) - (float) $row['sgst_amt'];
-                        $hsn_data['camt'] = (float) (@$hsn_data['camt'] ? (float) $hsn_data['camt'] : 0) - (float) $row['cgst_amt'];
+                        $hsn_data['txval'] = (float)(@$hsn_data['txval'] ? (float) $hsn_data['txval'] : 0) - (float) $row['total_taxable'];
+                        $hsn_data['iamt'] = (float)(@$hsn_data['iamt'] ? (float) $hsn_data['iamt'] : 0) - (float) $row['igst_amt'];
+                        $hsn_data['samt'] = (float)(@$hsn_data['samt'] ? (float) $hsn_data['samt'] : 0) - (float) $row['sgst_amt'];
+                        $hsn_data['camt'] = (float)(@$hsn_data['camt'] ? (float) $hsn_data['camt'] : 0) - (float) $row['cgst_amt'];
                     }
-
+                    
                 }
                 $hsn_da['data'][] = $hsn_data;
             }
@@ -1594,39 +1810,43 @@ class GstModel extends Model
         $hsn_sum['data'] = $hsn_da['data'];
         $hsn_sum['start_date'] = $start_date;
         $hsn_sum['end_date'] = $end_date;
-
-        return $hsn_sum;
+        
+        return  $hsn_sum;
 
     }
 
-    public function get_hsn_detail($start_date, $end_date, $hsn, $gst)
+    public function get_hsn_detail($start_date,$end_date,$hsn,$gst)
     {
         $data = get_gstr1_detail(db_date($start_date), db_date($end_date));
         $hsn_list = $data['hsn']['data'];
-        // echo '<pre>';print_r($hsn_list);exit;
+
         $gmodel = new GeneralModel();
 
         foreach ($hsn_list as $row) {
 
-            if ($row['hsn'] == $hsn && (float) $row['igst'] == (float) $gst) {
-                $uom = $gmodel->get_data_table('uom', array('code' => $row['uom']), '*');
-                if (isset($row['v_type'])) {
-                    $invoice = $gmodel->get_data_table('sales_ACinvoice', array('id' => $row['parent_id']), 'id,custom_inv_no,party_account');
-                    $account = $gmodel->get_data_table('account', array('id' => $invoice['party_account']), 'name');
-                } else {
-                    if ($row['type'] == 'return' && !isset($row['v_type'])) {
-                        $invoice = $gmodel->get_data_table('sales_return', array('id' => $row['parent_id']), 'id,supp_inv as custom_inv_no,account');
-                    } else {
-                        $invoice = $gmodel->get_data_table('sales_invoice', array('id' => $row['parent_id']), 'id,custom_inv_no,account');
+            if($row['hsn'] == $hsn && (float)$row['igst'] == (float)$gst)
+            {
+                $uom = $gmodel->get_data_table('uom',array('code'=>$row['uom']),'*');
+                if(isset($row['v_type']))
+                {
+                    $invoice = $gmodel->get_data_table('sales_ACinvoice',array('id'=>$row['parent_id']),'id,custom_inv_no,party_account');
+                    $account = $gmodel->get_data_table('account',array('id'=>$invoice['party_account']),'name');  
+                }
+                else
+                {
+                    if($row['type'] == 'return' && !isset($row['v_type'])){
+                        $invoice = $gmodel->get_data_table('sales_return',array('id'=>$row['parent_id']),'id,supp_inv as custom_inv_no,account');
+                    }else{
+                        $invoice = $gmodel->get_data_table('sales_invoice',array('id'=>$row['parent_id']),'id,custom_inv_no,account');
                     }
-                    $account = $gmodel->get_data_table('account', array('id' => $invoice['account']), 'name');
+                    $account = $gmodel->get_data_table('account',array('id'=>$invoice['account']),'name');
                 }
 
                 $invoice['account_name'] = $account['name'];
                 $row['invoice_detail'] = $invoice;
                 $taxes = json_decode($row['taxes']);
                 $total = 0;
-                $total = (float) $row['sub_total'];
+                $total = (float) $row['qty'] * (float) $row['rate'];
                 $gst_amt = (float) $total * ((float) $row['igst'] / 100);
 
                 $row['igst_amt'] = 0;
@@ -1639,163 +1859,93 @@ class GstModel extends Model
                     $row['sgst_amt'] = (float) $gst_amt / 2;
                     $row['cgst_amt'] = (float) $gst_amt / 2;
                 }
-
+                
                 $row['total_amt'] = (float) $total + (float) $gst_amt;
                 $row['total_taxable'] = $total;
                 $row['uom_name'] = $uom['name'];
-
+                
                 $hsn_arr[] = $row;
-
+               
             }
-
+         
         }
 
-        return $hsn_arr;
-
+       
+       return $hsn_arr;
+        
     }
 
-    public function get_state_wise_data($from, $to)
+    public function get_state_wise_data($from,$to)
     {
         $data = get_gstr1_detail(db_date($from), db_date($to));
-
+       
         $b2c_small = $data['b2cSmall']['data'];
         $cdnur = $data['cr_drUnReg_state']['data'];
-
-        foreach($b2c_small as $row){
-            if(isset($row['v_type'])){
-                $b2c_vtype_ids[] = $row['id'];
-            }else{
-                $b2c_ids[] = $row['id'];
-            }
-        }
-    
-        foreach($cdnur as $row){
-            if(isset($row['v_type'])){
-                $cdnur_vtype_ids[] = $row['id'];
-            }else{
-                $cdnur_ids[] = $row['id'];
-            }
-        }
-
+        
         $db = $this->db;
         $gmodel = new GeneralModel;
         $comp_state_cdnur = array();
 
-        $cdnr_gnrl_product = array();
-        $cdnr_product = array();
-    
-        if(!empty($cdnur_vtype_ids)){
-    
-            $builder = $db->table('sales_ACparticu');
-            $builder->select('parent_id,taxability,SUM(amount) as total ,igst');
-            $builder->where('is_delete',0);
-            $builder->whereIn('parent_id',$cdnur_vtype_ids);
-            $builder->groupBy(['parent_id','igst']);
-            $query = $builder->get();
-            $cdnr_gnrl_product = $query->getResultArray();
-        }
-    
-        if(!empty($cdnur_ids)){
-    
-            $builder = $db->table('sales_item');
-            $builder->select('parent_id,taxability,SUM(sub_total) as total ,igst');
-            $builder->where('is_delete',0);
-            $builder->where('type','return');
-            $builder->whereIn('parent_id',$cdnur_ids);
-            $builder->groupBy(['parent_id','igst']);
-            $query = $builder->get();
-            $cdnr_product = $query->getResultArray();
-        }
 
-        foreach ($cdnur as $row) {
+        foreach($cdnur as $row){
 
             $db = $this->db;
 
-            if ($row['gst'] == '' || empty($row['gst'])) {
+            if($row['gst'] == '' ||  empty($row['gst'])){
 
                 // if($row['acc_state'] == session('state')){
-                if (isset($row['v_type'])) {
+                    if(isset($row['v_type'])){
 
-                    // $builder = $db->table('sales_ACparticu');
-                    // $builder->select('taxability,SUM(amount) as total ,igst,parent_id');
-                    // $builder->where('is_delete', 0);
-                    // $builder->where('parent_id', $row['id']);
-                    // $builder->groupBy('igst');
-                    // $query = $builder->get();
-                    // $result = $query->getResultArray();
+                        $builder = $db->table('sales_ACparticu');
+                        $builder->select('taxability,SUM(amount) as total ,igst,parent_id');
+                        $builder->where('is_delete',0);
+                        $builder->where('parent_id',$row['id']);
+                        $builder->groupBy('igst');
+                        $query = $builder->get();
+                        $result = $query->getResultArray();              
 
-                    $result = search($cdnr_gnrl_product,'parent_id',$row['id']);
+                    }else{
 
-
-                } else {
-
-                    // $builder = $db->table('sales_item');
-                    // $builder->select('taxability,SUM(rate*qty) as total ,igst,parent_id');
-                    // $builder->where('is_delete', 0);
-                    // $builder->where('type', 'return');
-                    // $builder->where('parent_id', $row['id']);
-                    // $builder->groupBy('igst');
-                    // $query = $builder->get();
-                    // $result = $query->getResultArray();
-
-                    $result = search($cdnr_product,'parent_id',$row['id']);
-
-                }
-
-                //---- get cdnur company state total taxable gst wise  ---//
-
-                foreach ($result as $row2) {
-                    if ($row2['taxability'] != 'Nill' && $row2['taxability'] != 'Exempt') {
-
-                        $row['taxable'] = $row2['total'];
-                        $row['igst'] = $row2['igst'];
-                        $comp_state_cdnur[$row['acc_state']][$row2['igst']]['voucher'] = $row2['parent_id'];
-                        $comp_state_cdnur[$row['acc_state']][$row2['igst']]['state'] = $row['acc_state'];
-                        $comp_state_cdnur[$row['acc_state']][$row2['igst']]['gst'] = $row2['igst'];
-                        $comp_state_cdnur[$row['acc_state']][$row2['igst']]['taxable'] = (@$comp_state_cdnur[$row['acc_state']][$row2['igst']]['taxable'] ? $comp_state_cdnur[$row['acc_state']][$row2['igst']]['taxable'] : 0) + $row2['total'];
+                        $builder = $db->table('sales_item');
+                        $builder->select('taxability,SUM(rate*qty) as total ,igst,parent_id');
+                        $builder->where('is_delete',0);
+                        $builder->where('type','return');
+                        $builder->where('parent_id',$row['id']);
+                        $builder->groupBy('igst');
+                        $query = $builder->get();
+                        $result = $query->getResultArray();
                     }
-                }
+
+                    //---- get cdnur company state total taxable gst wise  ---//
+
+                    foreach($result as $row2){
+                        if($row2['taxability'] != 'Nill' && $row2['taxability'] != 'Exempt' ){
+
+                            $row['taxable'] = $row2['total'];
+                            $row['igst'] = $row2['igst'];
+                            $comp_state_cdnur[$row['acc_state']][$row2['igst']]['voucher'] = $row2['parent_id'];
+                            $comp_state_cdnur[$row['acc_state']][$row2['igst']]['state'] = $row['acc_state'];
+                            $comp_state_cdnur[$row['acc_state']][$row2['igst']]['gst'] = $row2['igst'];
+                            $comp_state_cdnur[$row['acc_state']][$row2['igst']]['taxable'] = (@$comp_state_cdnur[$row['acc_state']][$row2['igst']]['taxable'] ? $comp_state_cdnur[$row['acc_state']][$row2['igst']]['taxable'] : 0) + $row2['total'];
+                        }
+                    }
                 // }
             }
-        }
+        } 
 
         $new_b2b_small = array();
 
-        if(!empty($b2c_vtype_ids)){
-
-            $builder = $db->table('sales_ACparticu');
-            $builder->select('parent_id,taxability,igst , amount as total');
-            $builder->where('is_delete',0);
-            $builder->whereIn('parent_id',$b2c_vtype_ids);
-            $query = $builder->get();
-            $sale_gnrl_product = $query->getResultArray();
-        }
-    
-        if(!empty($b2c_ids)){
-    
-            $builder = $db->table('sales_item');
-            $builder->select('parent_id,taxability,igst,sub_total as total');
-            $builder->where('is_delete',0);
-            $builder->where('type','invoice');
-            $builder->whereIn('parent_id',$b2c_ids);
-            $query = $builder->get();
-            $sale_product = $query->getResultArray();
-        }
-       
-
         foreach ($b2c_small as $row) {
-
+        
             if (isset($row['v_type'])) {
-                // $sale = $gmodel->get_array_table('sales_ACparticu', array('parent_id' => $row['id'], 'is_delete' => 0), 'taxability,igst , amount as total');
-                $sale = search($sale_gnrl_product,'parent_id',$row['id']);
+                $sale = $gmodel->get_array_table('sales_ACparticu', array('parent_id' => $row['id'], 'is_delete' => 0), 'taxability,igst , amount as total');
             } else {
-                // $sale = $gmodel->get_array_table('sales_item', array('parent_id' => $row['id'], 'is_delete' => 0, 'type' => 'invoice'), 'taxability,igst,(rate*qty) as total');
-                $sale = search($sale_product,'parent_id',$row['id']);
+                $sale = $gmodel->get_array_table('sales_item', array('parent_id' =>$row['id'], 'is_delete' => 0, 'type' => 'invoice'), 'taxability,igst,(rate*qty) as total');
             }
 
             $invtotal = 0;
-            foreach ($sale as $row1) {
-                if ($row1['taxability'] != 'Nill' && $row1['taxability'] != 'Exempt') {
+            foreach($sale as $row1){
+                if($row1['taxability'] != 'Nill' && $row1['taxability'] != 'Exempt' ){
                     $invtotal = 0;
                     $new_b2b_small[$row['acc_state']][$row1['igst']]['id'] = $row['id'];
                     $new_b2b_small[$row['acc_state']][$row1['igst']]['acc_state'] = $row['acc_state'];
@@ -1807,17 +1957,17 @@ class GstModel extends Model
         }
 
         //---- cdnur company state taxable minus from b2c small same state data ---//
-
+        
         // foreach($comp_state_cdnur as $row){
         //     $new_b2b_small[$row['state']][$row['gst']]['taxable'] = $new_b2b_small[$row['state']][$row['gst']]['taxable'] - $row['taxable'];
         // }
 
-        foreach ($comp_state_cdnur as $state => $value) {
-            foreach ($value as $gst => $row2) {
+        foreach($comp_state_cdnur as $state => $value){
+            foreach($value as $gst => $row2){
 
-                $new_b2b_small[$state][$gst]['acc_state'] = @$new_b2b_small[$state][$gst]['acc_state'] ? @$new_b2b_small[$state][$gst]['acc_state'] : $state;
-                $new_b2b_small[$state][$gst]['taxable'] = (@$new_b2b_small[$state][$gst]['taxable'] ? (float) $new_b2b_small[$state][$gst]['taxable'] : 0) - (@$row2['taxable'] ? (float) $row2['taxable'] : 0);
-                $new_b2b_small[$state][$gst]['gst'] = @$new_b2b_small[$state][$gst]['gst'] ? (float) $new_b2b_small[$state][$gst]['gst'] : @$row2['gst'];
+                $new_b2b_small[$state][$gst]['acc_state'] = @$new_b2b_small[$state][$gst]['acc_state'] ?  @$new_b2b_small[$state][$gst]['acc_state'] :  $state ;
+                $new_b2b_small[$state][$gst]['taxable'] = (@$new_b2b_small[$state][$gst]['taxable'] ? (float)$new_b2b_small[$state][$gst]['taxable'] : 0) - (@$row2['taxable'] ? (float)$row2['taxable'] : 0);
+                $new_b2b_small[$state][$gst]['gst'] = @$new_b2b_small[$state][$gst]['gst'] ? (float)$new_b2b_small[$state][$gst]['gst'] :   @$row2['gst'] ;
                 // $new_b2b_small[$state][$gst]['tot_cgst'] = (@$new_b2b_small[$state][$gst]['tot_cgst'] ? (float)$new_b2b_small[$state][$gst]['tot_cgst'] : 0)  - (@$row2['tot_cgst'] ? (float)$row2['tot_cgst'] : 0);
                 // $new_b2b_small[$state][$gst]['tot_sgst'] = (@$new_b2b_small[$state][$gst]['tot_sgst'] ? (float)$new_b2b_small[$state][$gst]['tot_sgst'] : 0) - (@$row2['tot_cgst'] ? (float)$row2['tot_sgst'] : 0);
             }
@@ -1831,8 +1981,8 @@ class GstModel extends Model
     {
         $gmodel = new GeneralModel;
 
-        $state = $gmodel->get_data_table('states', array('id' => $post['state_code']), 'state_code,name');
-        if ($post['from'] == '') {
+        $state= $gmodel->get_data_table('states',array('id'=>$post['state_code']),'state_code,name');
+        if($post['from'] == '') {
             if (date('m') <= '03') {
                 $year = date('Y') - 1;
                 $post['from'] = $year . '-04-01';
@@ -1841,9 +1991,9 @@ class GstModel extends Model
                 $post['from'] = $year . '-04-01';
             }
         }
-
-        if ($post['to'] == '') {
-
+        
+        if($post['to'] == '') {
+    
             if (date('m') <= '03') {
                 $year = date('Y');
             } else {
@@ -1855,76 +2005,26 @@ class GstModel extends Model
         if (session('DataSource')) {
             $db->setDatabase(session('DataSource'));
         }
-
+    
         $data = get_gstr1_detail(db_date($post['from']), db_date($post['to']));
-
+       
         $b2c_small = $data['b2cSmall']['data'];
         $cdnur = $data['cr_drUnReg_state']['data'];
-
         
-        foreach($b2c_small as $row){
-            if(isset($row['v_type'])){
-                $b2c_vtype_ids[] = $row['id'];
-            }else{
-                $b2c_ids[] = $row['id'];
-            }
-        }
-    
-        foreach($cdnur as $row){
-            if(isset($row['v_type'])){
-                $cdnur_vtype_ids[] = $row['id'];
-            }else{
-                $cdnur_ids[] = $row['id'];
-            }
-        }
-
-
         $db = $this->db;
-
+      
         $comp_state_cdnur = array();
         $new_cdnur = array();
 
-
-        if(!empty($cdnur_vtype_ids)){
-    
-            $builder = $db->table('sales_ACparticu');
-            $builder->select('*,parent_id,taxability,SUM(amount) as total ,igst');
-            $builder->where('is_delete',0);
-            $builder->whereIn('parent_id',$cdnur_vtype_ids);
-            $builder->groupBy(['parent_id','igst']);
-            $query = $builder->get();
-            $cdnr_gnrl_product = $query->getResultArray();
-        }
-    
-        if(!empty($cdnur_ids)){
-    
-            $builder = $db->table('sales_item');
-            $builder->select('*,parent_id,taxability,SUM(sub_total) as total ,igst');
-            $builder->where('is_delete',0);
-            $builder->where('type','return');
-            $builder->whereIn('parent_id',$cdnur_ids);
-            $builder->groupBy(['parent_id','igst']);
-            $query = $builder->get();
-            $cdnr_product = $query->getResultArray();
-        }
-
-        foreach ($cdnur as $row) {
+        foreach($cdnur as $row){
 
             $db = $this->db;
-            if ($row['acc_state'] == $post['state_code']) {
+            if($row['acc_state'] == $post['state_code']){
 
-                if (isset($row['v_type'])) {
-                    $result2 = $gmodel->get_array_table('sales_ACparticu', array('parent_id' => $row['id'], 'is_delete' => 0), '*,igst , amount as total');
-                    // echo '<pre>';print_r($result2);
-                    $result1 = search($cdnr_gnrl_product,'parent_id',$row['id']);
-                    // echo '<pre>';print_r($result1);
-
-                } else {
-                    $result2 = $gmodel->get_array_table('sales_item', array('parent_id' => $row['id'], 'is_delete' => 0, 'type' => 'return'), '*,igst,sub_total as total');
-                    // echo '<pre>';print_r($result2);
-                    $result1 = search($cdnr_product,'parent_id',$row['id']);
-                    // echo '<pre>';print_r($result1);
-
+                if(isset($row['v_type'])){
+                    $result = $gmodel->get_array_table('sales_ACparticu', array('parent_id' => $row['id'], 'is_delete' => 0), 'igst , amount as total');
+                }else{
+                    $result = $gmodel->get_array_table('sales_item', array('parent_id' =>$row['id'], 'is_delete' => 0, 'type' => 'return'), 'igst,(rate*qty) as total');
                 }
 
                 $invtaxable = 0;
@@ -1932,101 +2032,78 @@ class GstModel extends Model
                 $tot_cgst = 0;
                 $tot_sgst = 0;
 
-                foreach ($result1 as $row2) {
-                    if ($post['rate'] == $row2['igst']) {
-                        if ($row2['igst'] == $post['rate']) {
+                foreach($result as $row2){
+                   if($post['rate'] == $row2['igst'])
+                   {
+                        if($row2['igst'] == $post['rate']){
 
-                            $invtaxable += (float) $row2['total'];
-                            $tot_igst += (float) $row2['igst_amt'];
-                            $tot_cgst += (float) $tot_igst / 2;
-                            $tot_sgst += (float) $tot_igst / 2;
-
+                            $invtaxable +=  (float)$row2['total'];
+                            $tot_igst +=  (float)$row2['total'] * (float)$row2['igst'] / 100;
+                            $tot_cgst += (float)$tot_igst / 2;
+                            $tot_sgst += (float)$tot_igst / 2;
+    
                             $row['taxable'] = $invtaxable;
                             $row['tot_igst'] = $tot_igst;
                             $row['tot_cgst'] = $tot_cgst;
                             $row['tot_sgst'] = $tot_sgst;
-
-                            if (isset($row['v_type'])) {
+    
+                            if(isset($row['v_type'])){
                                 $new_cdnur['gnrl_sale'][$row['id']] = $row;
-                            } else {
+                            }else{
                                 $new_cdnur['sale'][$row['id']] = $row;
                             }
                         }
-                    }
+                   }
                 }
             }
-        }
+        } 
 
-        $cdnur_merge = array_merge(@$new_cdnur['gnrl_sale'] ? $new_cdnur['gnrl_sale'] : array(), @$new_cdnur['sale'] ? $new_cdnur['sale'] : array());
+        $cdnur_merge = array_merge(@$new_cdnur['gnrl_sale'] ? $new_cdnur['gnrl_sale'] : array() ,@$new_cdnur['sale'] ? $new_cdnur['sale'] : array());     
         $new_b2b_small = array();
 
-        if(!empty($b2c_vtype_ids)){
-
-            $builder = $db->table('sales_ACparticu');
-            $builder->select('*,parent_id,taxability,igst , amount as total');
-            $builder->where('is_delete',0);
-            $builder->whereIn('parent_id',$b2c_vtype_ids);
-            $query = $builder->get();
-            $sale_gnrl_product = $query->getResultArray();
-        }
-    
-        if(!empty($b2c_ids)){
-    
-            $builder = $db->table('sales_item');
-            $builder->select('*,parent_id,taxability,igst,sub_total as total');
-            $builder->where('is_delete',0);
-            $builder->where('type','invoice');
-            $builder->whereIn('parent_id',$b2c_ids);
-            $query = $builder->get();
-            $sale_product = $query->getResultArray();
-        }
-       
-
-
         foreach ($b2c_small as $row) {
-            if ($row['acc_state'] == $post['state_code']) {
-
+            if($row['acc_state'] == $post['state_code'])
+            {
+               
                 if (isset($row['v_type'])) {
-                    // $sale = $gmodel->get_array_table('sales_ACparticu', array('parent_id' => $row['id'], 'is_delete' => 0), '*,igst , amount as total');
-                    $sale = search($sale_gnrl_product,'parent_id',$row['id']);
+                    $sale = $gmodel->get_array_table('sales_ACparticu', array('parent_id' => $row['id'], 'is_delete' => 0), 'igst , amount as total');
                 } else {
-                    // $sale = $gmodel->get_array_table('sales_item', array('parent_id' => $row['id'], 'is_delete' => 0, 'type' => 'invoice'), '*,igst,sub_total as total');
-                    $sale = search($sale_product,'parent_id',$row['id']);
+                    $sale = $gmodel->get_array_table('sales_item', array('parent_id' =>$row['id'], 'is_delete' => 0, 'type' => 'invoice'), 'igst,(rate*qty) as total');
                 }
-
+                
                 $invtaxable = 0;
                 $tot_igst = 0;
                 $tot_cgst = 0;
                 $tot_sgst = 0;
                 $invoice_total = 0;
+    
+                foreach($sale as $row1){
 
-                foreach ($sale as $row1) {
-
-                    if ($row1['igst'] == $post['rate']) {
-
-                        $invtaxable += (float) $row1['total'];
-                        $tot_igst += (float) $row1['igst_amt'];
-                        $tot_cgst += (float) $row1['cgst_amt'];
-                        $tot_sgst += (float) $row1['sgst_amt'];
+                    if($row1['igst'] == $post['rate']){
+                       
+                        $invtaxable +=  (float)$row1['total'];
+                        $tot_igst +=  (float)$row1['total'] * (float)$row1['igst'] / 100;
+                        $tot_cgst += ((float)$row1['total'] * (float)$row1['igst'] / 100) / 2;
+                        $tot_sgst += ((float)$row1['total'] * (float)$row1['igst'] / 100) / 2;
 
                         $row['taxable'] = $invtaxable;
                         $row['tot_igst'] = $tot_igst;
                         $row['tot_cgst'] = $tot_cgst;
                         $row['tot_sgst'] = $tot_sgst;
 
-                        if (isset($row['v_type'])) {
+                        if(isset($row['v_type'])){
                             $new_b2b_small['gnrl_sale'][$row['id']] = $row;
-                        } else {
+                        }else{
                             $new_b2b_small['sale'][$row['id']] = $row;
                         }
                     }
-
+                
                 }
             }
         }
 
-        $b2c_merge = array_merge(@$new_b2b_small['gnrl_sale'] ? $new_b2b_small['gnrl_sale'] : array(), @$new_b2b_small['sale'] ? $new_b2b_small['sale'] : array());
-        
+        $b2c_merge = array_merge(@$new_b2b_small['gnrl_sale'] ? $new_b2b_small['gnrl_sale'] : array() ,@$new_b2b_small['sale'] ? $new_b2b_small['sale'] : array());
+
         $result['state'] = $state;
         $result['new_b2c_small'] = $b2c_merge;
         $result['new_cdnur'] = $cdnur_merge;
@@ -2034,36 +2111,43 @@ class GstModel extends Model
         return $result;
 
     }
-
+    
     public function b2b_sales_inv_vouchers_xls_export_data($post)
     {
         //print_r($post);exit;
-        $data = get_b2b_b2c_detail($post['from'], $post['to']);
-        if ($post['type'] == 'sales') {
+        $data = get_b2b_b2c_detail($post['from'],$post['to']);
+        if($post['type'] == 'sales')
+        {
             $sale = $data['sale']['data'];
-        } else {
+        }
+        else
+        {
             $sale = $data['gnrl_sale']['data'];
         }
-
+        
         $gmodel = new GeneralModel();
 
         $acc = $gmodel->get_data_table('account', array('id' => @$post['ac_id']), 'id,name');
         // $from = $post['from'];
         // $to = $post['to'];
-        //echo '<pre>';print_r($data);exit;
+       //echo '<pre>';print_r($data);exit;
 
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
+
         $spreadsheet->getActiveSheet()->getStyle('A4:I4')->getFill()
-            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-            ->getStartColor()->setARGB('F8CBAD');
-        if ($post['type'] == 'sales') {
+        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+        ->getStartColor()->setARGB('F8CBAD');
+        if($post['type'] == 'sales')
+        {
             $spreadsheet->setActiveSheetIndex(0)->setCellValue('A1', 'B2B Sales Invoice Register Report');
-        } else {
+        }
+        else
+        {
             $spreadsheet->setActiveSheetIndex(0)->setCellValue('A1', 'B2B General Sales Invoice Register Report');
         }
-        // $spreadsheet->setActiveSheetIndex(0)->setCellValue('A2', @$acc['name']);
+       // $spreadsheet->setActiveSheetIndex(0)->setCellValue('A2', @$acc['name']);
         $spreadsheet->setActiveSheetIndex(0)->setCellValue('A2', @$post['from']);
         $spreadsheet->setActiveSheetIndex(0)->setCellValue('B2', @$post['to']);
 
@@ -2080,31 +2164,36 @@ class GstModel extends Model
         $i = 5;
         $closing = 0;
         foreach ($sale as $row) {
-
+        
             $spreadsheet->setActiveSheetIndex(0)->setCellValue('A' . $i, @$row['invoice_no']);
             $spreadsheet->setActiveSheetIndex(0)->setCellValue('B' . $i, @$row['name']);
-
-            $spreadsheet->setActiveSheetIndex(0)->setCellValue('C' . $i, isset($row['return_no']) || @$row['v_type'] == 'return' ? '-' : '' . number_format(@$row['taxable'], 2));
+            
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('C' . $i, isset($row['return_no']) || @$row['v_type']=='return' ? '-' : ''.number_format(@$row['taxable'],2));
             $taxes = json_decode($row['taxes']);
 
-            if (in_array('igst', $taxes)) {
-                $spreadsheet->setActiveSheetIndex(0)->setCellValue('D' . $i, '');
+            if(in_array('igst',$taxes)){
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue('D' . $i,'');
                 $spreadsheet->setActiveSheetIndex(0)->setCellValue('E' . $i, '');
-                $spreadsheet->setActiveSheetIndex(0)->setCellValue('F' . $i, number_format(@$row['tot_igst'], 2));
-            } else {
-                $spreadsheet->setActiveSheetIndex(0)->setCellValue('D' . $i, number_format(@$row['tot_cgst'], 2));
-                $spreadsheet->setActiveSheetIndex(0)->setCellValue('E' . $i, number_format(@$row['tot_sgst'], 2));
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue('F' . $i, number_format(@$row['tot_igst'],2));  
+            }
+            else
+            {
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue('D' . $i, number_format(@$row['tot_cgst'],2));
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue('E' . $i, number_format(@$row['tot_sgst'],2));
                 $spreadsheet->setActiveSheetIndex(0)->setCellValue('F' . $i, '');
             }
-            $spreadsheet->setActiveSheetIndex(0)->setCellValue('G' . $i, number_format(@$row['tot_cess'], 2));
-            $spreadsheet->setActiveSheetIndex(0)->setCellValue('H' . $i, number_format(@$row['tot_igst'], 2));
-            $spreadsheet->setActiveSheetIndex(0)->setCellValue('I' . $i, number_format(@$row['net_amount'], 2));
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('G' . $i, number_format(@$row['tot_cess'],2));
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('H' . $i, number_format(@$row['tot_igst'],2));
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('I' . $i, number_format(@$row['net_amount'],2));
 
             $i++;
         }
-        if ($post['type'] == 'sales') {
+        if($post['type'] == 'sales')
+        {
             $spreadsheet->getActiveSheet()->setTitle('B2B Sales Invoice');
-        } else {
+        }
+        else
+        {
             $spreadsheet->getActiveSheet()->setTitle('B2B General Sales Invoice');
         }
         $spreadsheet->createSheet();
@@ -2116,32 +2205,39 @@ class GstModel extends Model
     public function b2c_large_xls_export_data($post)
     {
         //print_r($post);exit;
-        $data = get_b2b_b2c_detail($post['from'], $post['to']);
-        if ($post['type'] == 'sales') {
+        $data = get_b2b_b2c_detail($post['from'],$post['to']);
+        if($post['type'] == 'sales')
+        {
             $sale = $data['sales_b2c_large']['data'];
-        } else {
+        }
+        else
+        {
             $sale = $data['gnrl_sale_b2c_large']['data'];
         }
-
+        
         $gmodel = new GeneralModel();
 
         $acc = $gmodel->get_data_table('account', array('id' => @$post['ac_id']), 'id,name');
         // $from = $post['from'];
         // $to = $post['to'];
-        //echo '<pre>';print_r($data);exit;
+       //echo '<pre>';print_r($data);exit;
 
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
+
         $spreadsheet->getActiveSheet()->getStyle('A4:I4')->getFill()
-            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-            ->getStartColor()->setARGB('F8CBAD');
-        if ($post['type'] == 'sales') {
+        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+        ->getStartColor()->setARGB('F8CBAD');
+        if($post['type'] == 'sales')
+        {
             $spreadsheet->setActiveSheetIndex(0)->setCellValue('A1', 'B2C Sales Large Register Report');
-        } else {
+        }
+        else
+        {
             $spreadsheet->setActiveSheetIndex(0)->setCellValue('A1', 'B2C General Sales Large Register Report');
         }
-        // $spreadsheet->setActiveSheetIndex(0)->setCellValue('A2', @$acc['name']);
+       // $spreadsheet->setActiveSheetIndex(0)->setCellValue('A2', @$acc['name']);
         $spreadsheet->setActiveSheetIndex(0)->setCellValue('A2', @$post['from']);
         $spreadsheet->setActiveSheetIndex(0)->setCellValue('B2', @$post['to']);
 
@@ -2158,31 +2254,36 @@ class GstModel extends Model
         $i = 5;
         $closing = 0;
         foreach ($sale as $row) {
-
+        
             $spreadsheet->setActiveSheetIndex(0)->setCellValue('A' . $i, @$row['invoice_no']);
             $spreadsheet->setActiveSheetIndex(0)->setCellValue('B' . $i, @$row['name']);
-
-            $spreadsheet->setActiveSheetIndex(0)->setCellValue('C' . $i, isset($row['return_no']) || @$row['v_type'] == 'return' ? '-' : '' . number_format(@$row['taxable'], 2));
+            
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('C' . $i, isset($row['return_no']) || @$row['v_type']=='return' ? '-' : ''.number_format(@$row['taxable'],2));
             $taxes = json_decode($row['taxes']);
 
-            if (in_array('igst', $taxes)) {
-                $spreadsheet->setActiveSheetIndex(0)->setCellValue('D' . $i, '');
+            if(in_array('igst',$taxes)){
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue('D' . $i,'');
                 $spreadsheet->setActiveSheetIndex(0)->setCellValue('E' . $i, '');
-                $spreadsheet->setActiveSheetIndex(0)->setCellValue('F' . $i, number_format(@$row['tot_igst'], 2));
-            } else {
-                $spreadsheet->setActiveSheetIndex(0)->setCellValue('D' . $i, number_format(@$row['tot_cgst'], 2));
-                $spreadsheet->setActiveSheetIndex(0)->setCellValue('E' . $i, number_format(@$row['tot_sgst'], 2));
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue('F' . $i, number_format(@$row['tot_igst'],2));  
+            }
+            else
+            {
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue('D' . $i, number_format(@$row['tot_cgst'],2));
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue('E' . $i, number_format(@$row['tot_sgst'],2));
                 $spreadsheet->setActiveSheetIndex(0)->setCellValue('F' . $i, '');
             }
-            $spreadsheet->setActiveSheetIndex(0)->setCellValue('G' . $i, number_format(@$row['tot_cess'], 2));
-            $spreadsheet->setActiveSheetIndex(0)->setCellValue('H' . $i, number_format(@$row['tot_igst'], 2));
-            $spreadsheet->setActiveSheetIndex(0)->setCellValue('I' . $i, number_format(@$row['net_amount'], 2));
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('G' . $i, number_format(@$row['tot_cess'],2));
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('H' . $i, number_format(@$row['tot_igst'],2));
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('I' . $i, number_format(@$row['net_amount'],2));
 
             $i++;
         }
-        if ($post['type'] == 'sales') {
+        if($post['type'] == 'sales')
+        {
             $spreadsheet->getActiveSheet()->setTitle('B2C Sales Large');
-        } else {
+        }
+        else
+        {
             $spreadsheet->getActiveSheet()->setTitle('B2C General Sales Large');
         }
         $spreadsheet->createSheet();
@@ -2194,32 +2295,40 @@ class GstModel extends Model
     public function b2c_small_xls_export_data($post)
     {
         //print_r($post);exit;
-        $data = get_b2b_b2c_detail($post['from'], $post['to']);
+        $data = get_b2b_b2c_detail($post['from'],$post['to']);
         //echo '<pre>';print_r($data);exit;
-        if ($post['type'] == 'sales') {
+        if($post['type'] == 'sales')
+        {
             $sale = $data['sale_b2c_small']['data'];
-        } else {
+        }
+        else
+        {
             $sale = $data['gnrl_sale_b2c_small']['data'];
         }
-
+        
         $gmodel = new GeneralModel();
 
         $acc = $gmodel->get_data_table('account', array('id' => @$post['ac_id']), 'id,name');
         // $from = $post['from'];
         // $to = $post['to'];
+    
 
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
+
         $spreadsheet->getActiveSheet()->getStyle('A4:I4')->getFill()
-            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-            ->getStartColor()->setARGB('F8CBAD');
-        if ($post['type'] == 'sales') {
+        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+        ->getStartColor()->setARGB('F8CBAD');
+        if($post['type'] == 'sales')
+        {
             $spreadsheet->setActiveSheetIndex(0)->setCellValue('A1', 'B2C Sales Small Register Report');
-        } else {
+        }
+        else
+        {
             $spreadsheet->setActiveSheetIndex(0)->setCellValue('A1', 'B2C General Sales Small Register Report');
         }
-        // $spreadsheet->setActiveSheetIndex(0)->setCellValue('A2', @$acc['name']);
+       // $spreadsheet->setActiveSheetIndex(0)->setCellValue('A2', @$acc['name']);
         $spreadsheet->setActiveSheetIndex(0)->setCellValue('A2', @$post['from']);
         $spreadsheet->setActiveSheetIndex(0)->setCellValue('B2', @$post['to']);
 
@@ -2236,31 +2345,36 @@ class GstModel extends Model
         $i = 5;
         $closing = 0;
         foreach ($sale as $row) {
-
+        
             $spreadsheet->setActiveSheetIndex(0)->setCellValue('A' . $i, @$row['invoice_no']);
             $spreadsheet->setActiveSheetIndex(0)->setCellValue('B' . $i, @$row['name']);
-
-            $spreadsheet->setActiveSheetIndex(0)->setCellValue('C' . $i, isset($row['return_no']) || @$row['v_type'] == 'return' ? '-' : '' . number_format(@$row['taxable'], 2));
+            
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('C' . $i, isset($row['return_no']) || @$row['v_type']=='return' ? '-' : ''.number_format(@$row['taxable'],2));
             $taxes = json_decode($row['taxes']);
 
-            if (in_array('igst', $taxes)) {
-                $spreadsheet->setActiveSheetIndex(0)->setCellValue('D' . $i, '');
+            if(in_array('igst',$taxes)){
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue('D' . $i,'');
                 $spreadsheet->setActiveSheetIndex(0)->setCellValue('E' . $i, '');
-                $spreadsheet->setActiveSheetIndex(0)->setCellValue('F' . $i, number_format(@$row['tot_igst'], 2));
-            } else {
-                $spreadsheet->setActiveSheetIndex(0)->setCellValue('D' . $i, number_format(@$row['tot_cgst'], 2));
-                $spreadsheet->setActiveSheetIndex(0)->setCellValue('E' . $i, number_format(@$row['tot_sgst'], 2));
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue('F' . $i, number_format(@$row['tot_igst'],2));  
+            }
+            else
+            {
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue('D' . $i, number_format(@$row['tot_cgst'],2));
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue('E' . $i, number_format(@$row['tot_sgst'],2));
                 $spreadsheet->setActiveSheetIndex(0)->setCellValue('F' . $i, '');
             }
-            $spreadsheet->setActiveSheetIndex(0)->setCellValue('G' . $i, number_format(@$row['tot_cess'], 2));
-            $spreadsheet->setActiveSheetIndex(0)->setCellValue('H' . $i, number_format(@$row['tot_igst'], 2));
-            $spreadsheet->setActiveSheetIndex(0)->setCellValue('I' . $i, number_format(@$row['net_amount'], 2));
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('G' . $i, number_format(@$row['tot_cess'],2));
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('H' . $i, number_format(@$row['tot_igst'],2));
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('I' . $i, number_format(@$row['net_amount'],2));
 
             $i++;
         }
-        if ($post['type'] == 'sales') {
+        if($post['type'] == 'sales')
+        {
             $spreadsheet->getActiveSheet()->setTitle('B2C Sales Small');
-        } else {
+        }
+        else
+        {
             $spreadsheet->getActiveSheet()->setTitle('B2C General Sales Small');
         }
         $spreadsheet->createSheet();
@@ -2272,11 +2386,14 @@ class GstModel extends Model
     public function cr_dr_invoice_xls_export_data($post)
     {
         //print_r($post);exit;
-        $data = get_cr_dr_detail($post['from'], $post['to']);
-
-        if ($post['type'] == 'sales') {
+        $data = get_cr_dr_detail($post['from'],$post['to']);
+       
+        if($post['type'] == 'sales')
+        {
             $sale = $data['sale_return_Reg']['data'];
-        } else {
+        }
+        else
+        {
             $sale = $data['ac_return_Reg']['data'];
         }
         //echo '<pre>';print_r($sale);exit;
@@ -2285,19 +2402,24 @@ class GstModel extends Model
         $acc = $gmodel->get_data_table('account', array('id' => @$post['ac_id']), 'id,name');
         // $from = $post['from'];
         // $to = $post['to'];
+    
 
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
+
         $spreadsheet->getActiveSheet()->getStyle('A4:I4')->getFill()
-            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-            ->getStartColor()->setARGB('F8CBAD');
-        if ($post['type'] == 'sales') {
+        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+        ->getStartColor()->setARGB('F8CBAD');
+        if($post['type'] == 'sales')
+        {
             $spreadsheet->setActiveSheetIndex(0)->setCellValue('A1', 'Credit/Debit Register Report');
-        } else {
+        }
+        else
+        {
             $spreadsheet->setActiveSheetIndex(0)->setCellValue('A1', 'Credit/Debit General Register Report');
         }
-        // $spreadsheet->setActiveSheetIndex(0)->setCellValue('A2', @$acc['name']);
+       // $spreadsheet->setActiveSheetIndex(0)->setCellValue('A2', @$acc['name']);
         $spreadsheet->setActiveSheetIndex(0)->setCellValue('A2', @$post['from']);
         $spreadsheet->setActiveSheetIndex(0)->setCellValue('B2', @$post['to']);
 
@@ -2314,31 +2436,36 @@ class GstModel extends Model
         $i = 5;
         $closing = 0;
         foreach ($sale as $row) {
-
+        
             $spreadsheet->setActiveSheetIndex(0)->setCellValue('A' . $i, @$row['invoice_no']);
             $spreadsheet->setActiveSheetIndex(0)->setCellValue('B' . $i, @$row['name']);
-
-            $spreadsheet->setActiveSheetIndex(0)->setCellValue('C' . $i, isset($row['return_no']) || @$row['v_type'] == 'return' ? '-' : '' . number_format(@$row['taxable'], 2));
+            
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('C' . $i, isset($row['return_no']) || @$row['v_type']=='return' ? '-' : ''.number_format(@$row['taxable'],2));
             $taxes = json_decode($row['taxes']);
 
-            if (in_array('igst', $taxes)) {
-                $spreadsheet->setActiveSheetIndex(0)->setCellValue('D' . $i, '');
+            if(in_array('igst',$taxes)){
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue('D' . $i,'');
                 $spreadsheet->setActiveSheetIndex(0)->setCellValue('E' . $i, '');
-                $spreadsheet->setActiveSheetIndex(0)->setCellValue('F' . $i, number_format(@$row['tot_igst'], 2));
-            } else {
-                $spreadsheet->setActiveSheetIndex(0)->setCellValue('D' . $i, number_format(@$row['tot_cgst'], 2));
-                $spreadsheet->setActiveSheetIndex(0)->setCellValue('E' . $i, number_format(@$row['tot_sgst'], 2));
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue('F' . $i, number_format(@$row['tot_igst'],2));  
+            }
+            else
+            {
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue('D' . $i, number_format(@$row['tot_cgst'],2));
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue('E' . $i, number_format(@$row['tot_sgst'],2));
                 $spreadsheet->setActiveSheetIndex(0)->setCellValue('F' . $i, '');
             }
-            $spreadsheet->setActiveSheetIndex(0)->setCellValue('G' . $i, number_format(@$row['tot_cess'], 2));
-            $spreadsheet->setActiveSheetIndex(0)->setCellValue('H' . $i, number_format(@$row['tot_igst'], 2));
-            $spreadsheet->setActiveSheetIndex(0)->setCellValue('I' . $i, number_format(@$row['net_amount'], 2));
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('G' . $i, number_format(@$row['tot_cess'],2));
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('H' . $i, number_format(@$row['tot_igst'],2));
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('I' . $i, number_format(@$row['net_amount'],2));
 
             $i++;
         }
-        if ($post['type'] == 'sales') {
+        if($post['type'] == 'sales')
+        {
             $spreadsheet->getActiveSheet()->setTitle('Cr Dr Reg Invoice');
-        } else {
+        }
+        else
+        {
             $spreadsheet->getActiveSheet()->setTitle('General Cr Dr Reg Invoice');
         }
         $spreadsheet->createSheet();
@@ -2350,32 +2477,40 @@ class GstModel extends Model
     public function cr_dr_invoice_unreg_xls_export_data($post)
     {
         //print_r($post);exit;
-        $data = get_cr_dr_detail($post['from'], $post['to']);
+        $data = get_cr_dr_detail($post['from'],$post['to']);
         //echo '<pre>';print_r($data);exit;
-        if ($post['type'] == 'sales') {
+        if($post['type'] == 'sales')
+        {
             $sale = $data['sale_return_UnReg']['data'];
-        } else {
+        }
+        else
+        {
             $sale = $data['ac_return_UnReg']['data'];
         }
-
+        
         $gmodel = new GeneralModel();
 
         $acc = $gmodel->get_data_table('account', array('id' => @$post['ac_id']), 'id,name');
         // $from = $post['from'];
         // $to = $post['to'];
+    
 
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
+
         $spreadsheet->getActiveSheet()->getStyle('A4:I4')->getFill()
-            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-            ->getStartColor()->setARGB('F8CBAD');
-        if ($post['type'] == 'sales') {
+        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+        ->getStartColor()->setARGB('F8CBAD');
+        if($post['type'] == 'sales')
+        {
             $spreadsheet->setActiveSheetIndex(0)->setCellValue('A1', 'Credit/Debit UnRegister Report');
-        } else {
+        }
+        else
+        {
             $spreadsheet->setActiveSheetIndex(0)->setCellValue('A1', 'Credit/Debit General UnRegister Report');
         }
-        // $spreadsheet->setActiveSheetIndex(0)->setCellValue('A2', @$acc['name']);
+       // $spreadsheet->setActiveSheetIndex(0)->setCellValue('A2', @$acc['name']);
         $spreadsheet->setActiveSheetIndex(0)->setCellValue('A2', @$post['from']);
         $spreadsheet->setActiveSheetIndex(0)->setCellValue('B2', @$post['to']);
 
@@ -2392,31 +2527,36 @@ class GstModel extends Model
         $i = 5;
         $closing = 0;
         foreach ($sale as $row) {
-
+        
             $spreadsheet->setActiveSheetIndex(0)->setCellValue('A' . $i, @$row['invoice_no']);
             $spreadsheet->setActiveSheetIndex(0)->setCellValue('B' . $i, @$row['name']);
-
-            $spreadsheet->setActiveSheetIndex(0)->setCellValue('C' . $i, isset($row['return_no']) || @$row['v_type'] == 'return' ? '-' : '' . number_format(@$row['taxable'], 2));
+            
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('C' . $i, isset($row['return_no']) || @$row['v_type']=='return' ? '-' : ''.number_format(@$row['taxable'],2));
             $taxes = json_decode($row['taxes']);
 
-            if (in_array('igst', $taxes)) {
-                $spreadsheet->setActiveSheetIndex(0)->setCellValue('D' . $i, '');
+            if(in_array('igst',$taxes)){
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue('D' . $i,'');
                 $spreadsheet->setActiveSheetIndex(0)->setCellValue('E' . $i, '');
-                $spreadsheet->setActiveSheetIndex(0)->setCellValue('F' . $i, number_format(@$row['tot_igst'], 2));
-            } else {
-                $spreadsheet->setActiveSheetIndex(0)->setCellValue('D' . $i, number_format(@$row['tot_cgst'], 2));
-                $spreadsheet->setActiveSheetIndex(0)->setCellValue('E' . $i, number_format(@$row['tot_sgst'], 2));
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue('F' . $i, number_format(@$row['tot_igst'],2));  
+            }
+            else
+            {
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue('D' . $i, number_format(@$row['tot_cgst'],2));
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue('E' . $i, number_format(@$row['tot_sgst'],2));
                 $spreadsheet->setActiveSheetIndex(0)->setCellValue('F' . $i, '');
             }
-            $spreadsheet->setActiveSheetIndex(0)->setCellValue('G' . $i, number_format(@$row['tot_cess'], 2));
-            $spreadsheet->setActiveSheetIndex(0)->setCellValue('H' . $i, number_format(@$row['tot_igst'], 2));
-            $spreadsheet->setActiveSheetIndex(0)->setCellValue('I' . $i, number_format(@$row['net_amount'], 2));
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('G' . $i, number_format(@$row['tot_cess'],2));
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('H' . $i, number_format(@$row['tot_igst'],2));
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('I' . $i, number_format(@$row['net_amount'],2));
 
             $i++;
         }
-        if ($post['type'] == 'sales') {
+        if($post['type'] == 'sales')
+        {
             $spreadsheet->getActiveSheet()->setTitle('Cr Dr UnReg Invoice');
-        } else {
+        }
+        else
+        {
             $spreadsheet->getActiveSheet()->setTitle('General Cr Dr UnReg Invoice');
         }
         $spreadsheet->createSheet();
@@ -2428,46 +2568,51 @@ class GstModel extends Model
     public function gstr1_nill_xls_export_data($post)
     {
         //print_r($post);exit;
-        $data = get_nill_detail($post['from'], $post['to']);
+        $data = get_nill_detail($post['from'],$post['to']);
         //echo '<pre>';print_r($data);exit;
-        if ($post['type'] == 'inter_reg') {
+        if($post['type'] == 'inter_reg')
+        {
             $sale = $data['inter_reg']['data'];
-        } elseif ($post['type'] == 'intera_reg') {
+        }elseif($post['type'] == 'intera_reg'){
             $sale = $data['intera_reg']['data'];
-        } elseif ($post['type'] == 'inter_unreg') {
+        }elseif($post['type'] == 'inter_unreg'){
             $sale = $data['inter_unreg']['data'];
-        } else {
+        }else{
             $sale = $data['intera_unreg']['data'];
         }
 
+        
         $gmodel = new GeneralModel();
 
-        // $acc = $gmodel->get_data_table('account', array('id' => @$post['ac_id']), 'id,name');
+       // $acc = $gmodel->get_data_table('account', array('id' => @$post['ac_id']), 'id,name');
         // $from = $post['from'];
         // $to = $post['to'];
+    
 
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
-        $spreadsheet->getActiveSheet()->getStyle('A4:D4')->getFill()
-            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-            ->getStartColor()->setARGB('F8CBAD');
 
-        if ($post['type'] == 'inter_reg') {
+        $spreadsheet->getActiveSheet()->getStyle('A4:D4')->getFill()
+        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+        ->getStartColor()->setARGB('F8CBAD');
+       
+        if($post['type'] == 'inter_reg')
+        {
             $spreadsheet->setActiveSheetIndex(0)->setCellValue('A1', 'Nil Rated Invoices Inter Register Report');
 
-        } elseif ($post['type'] == 'intera_reg') {
+        }elseif($post['type'] == 'intera_reg'){
             $spreadsheet->setActiveSheetIndex(0)->setCellValue('A1', 'Nil Rated Invoices Intera Register Report');
 
-        } elseif ($post['type'] == 'inter_unreg') {
+        }elseif($post['type'] == 'inter_unreg'){
             $spreadsheet->setActiveSheetIndex(0)->setCellValue('A1', 'Nil Rated Invoices Inter UnRegister Report');
 
-        } else {
+        }else{
             $spreadsheet->setActiveSheetIndex(0)->setCellValue('A1', 'Nil Rated Invoices Intera UnRegister Report');
 
         }
 
-        // $spreadsheet->setActiveSheetIndex(0)->setCellValue('A2', @$acc['name']);
+       // $spreadsheet->setActiveSheetIndex(0)->setCellValue('A2', @$acc['name']);
         $spreadsheet->setActiveSheetIndex(0)->setCellValue('A2', @$post['from']);
         $spreadsheet->setActiveSheetIndex(0)->setCellValue('B2', @$post['to']);
 
@@ -2479,44 +2624,49 @@ class GstModel extends Model
         $i = 5;
         $closing = 0;
         foreach ($sale as $row) {
-
+        
             $spreadsheet->setActiveSheetIndex(0)->setCellValue('A' . $i, @$row['invoice_no'] ? $row['invoice_no'] : $row['return_no']);
             $spreadsheet->setActiveSheetIndex(0)->setCellValue('B' . $i, @$row['name']);
-            $spreadsheet->setActiveSheetIndex(0)->setCellValue('C' . $i, isset($row['return_no']) || @$row['v_type'] == 'return' ? '-' : '' . number_format(@$row['taxable'], 2));
-            $spreadsheet->setActiveSheetIndex(0)->setCellValue('D' . $i, isset($row['return_no']) || @$row['v_type'] == 'return' ? '-' : '' . number_format(@$row['net_amount'], 2));
-
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('C' . $i, isset($row['return_no']) || @$row['v_type'] == 'return' ? '-' :''.number_format(@$row['taxable'],2));
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('D' . $i, isset($row['return_no']) || @$row['v_type'] == 'return' ? '-' :''.number_format(@$row['net_amount'],2));
+            
             $i++;
         }
-
-        $spreadsheet->getActiveSheet()->setTitle('Nil Rated Invoices');
-
+       
+            $spreadsheet->getActiveSheet()->setTitle('Nil Rated Invoices');
+       
         $spreadsheet->createSheet();
 
         $spreadsheet->setActiveSheetIndex(0);
         $writer = new Xlsx($spreadsheet);
         $writer->save('php://output');
-    }
+    } 
     public function gstr2_b2b_invoices_excel_export_data($post)
     {
-        $data = get_gstr2_b2b_b2c_detail(db_date($post['from']), db_date($post['to']));
+        $data = get_gstr2_b2b_b2c_detail(db_date($post['from']),db_date($post['to']));
         //echo '<pre>';print_r($data);exit;
-        if ($post['type'] == 'purchase') {
+        if($post['type'] == 'purchase')
+        {
             $result = $data['purchase_b2b']['data'];
-        } else {
+        }else{
             $result = $data['gnrl_purchase_b2b']['data'];
         }
-        // echo '<pre>';print_r($result);exit;
+      // echo '<pre>';print_r($result);exit;
 
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
-        $spreadsheet->getActiveSheet()->getStyle('A5:I5')->getFill()
-            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-            ->getStartColor()->setARGB('F8CBAD');
 
+        $spreadsheet->getActiveSheet()->getStyle('A5:I5')->getFill()
+        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+        ->getStartColor()->setARGB('F8CBAD');
+       
+       
         $spreadsheet->setActiveSheetIndex(0)->setCellValue('A1', 'GSTR-2 B2B Invoice detail Report');
 
-        // $spreadsheet->setActiveSheetIndex(0)->setCellValue('A2', @$acc['name']);
+        
+
+       // $spreadsheet->setActiveSheetIndex(0)->setCellValue('A2', @$acc['name']);
         $spreadsheet->setActiveSheetIndex(0)->setCellValue('A2', @$post['from']);
         $spreadsheet->setActiveSheetIndex(0)->setCellValue('B2', @$post['to']);
         $spreadsheet->setActiveSheetIndex(0)->setCellValue('A3', @$hsn);
@@ -2530,27 +2680,29 @@ class GstModel extends Model
         $spreadsheet->setActiveSheetIndex(0)->setCellValue('G5', 'Cess Amount');
         $spreadsheet->setActiveSheetIndex(0)->setCellValue('H5', 'Tax Amount');
         $spreadsheet->setActiveSheetIndex(0)->setCellValue('I5', 'Invoice Amount');
+      
 
         $i = 6;
         $closing = 0;
 
+      
         foreach ($result as $row) {
-
+        
             $spreadsheet->setActiveSheetIndex(0)->setCellValue('A' . $i, @$row['invoice_no']);
             $spreadsheet->setActiveSheetIndex(0)->setCellValue('B' . $i, @$row['name']);
-            $spreadsheet->setActiveSheetIndex(0)->setCellValue('C' . $i, number_format(@$row['taxable'], 2));
-            $spreadsheet->setActiveSheetIndex(0)->setCellValue('D' . $i, number_format(@$row['tot_igst'], 2));
-            $spreadsheet->setActiveSheetIndex(0)->setCellValue('E' . $i, number_format(@$row['tot_cgst'], 2));
-            $spreadsheet->setActiveSheetIndex(0)->setCellValue('F' . $i, number_format(@$row['tot_sgst'], 2));
-            $spreadsheet->setActiveSheetIndex(0)->setCellValue('G' . $i, number_format(@$row['tot_cess'], 2));
-            $spreadsheet->setActiveSheetIndex(0)->setCellValue('H' . $i, number_format(@$row['tot_igst'], 2));
-            $spreadsheet->setActiveSheetIndex(0)->setCellValue('I' . $i, number_format(@$row['net_amount'], 2));
-
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('C' . $i,  number_format(@$row['taxable'],2));
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('D' . $i, number_format(@$row['tot_igst'],2));
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('E' . $i, number_format(@$row['tot_cgst'],2));
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('F' . $i, number_format(@$row['tot_sgst'],2));
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('G' . $i, number_format(@$row['tot_cess'],2));
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('H' . $i, number_format(@$row['tot_igst'],2));
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('I' . $i, number_format(@$row['net_amount'],2));
+           
             $i++;
         }
-
-        $spreadsheet->getActiveSheet()->setTitle('GSTR-2 B2B Invoices');
-
+       
+            $spreadsheet->getActiveSheet()->setTitle('GSTR-2 B2B Invoices');
+       
         $spreadsheet->createSheet();
 
         $spreadsheet->setActiveSheetIndex(0);
@@ -2560,25 +2712,30 @@ class GstModel extends Model
     public function gstr2_dr_cr_invoices_excel_export_data($post)
     {
         $result = array();
-        $data = get_gstr2_cr_dr_detail(db_date($post['from']), db_date($post['to']));
+        $data = get_gstr2_cr_dr_detail(db_date($post['from']),db_date($post['to']));
         //echo '<pre>';print_r($data);exit;
-        if ($post['type'] == 'purchase') {
+        if($post['type'] == 'purchase')
+        {
             $result = $data['purchase_ret_cr_dr_reg'];
-        } else {
+        }else{
             $result = $data['gnrl_ret_cr_dr_reg'];
         }
-        // echo '<pre>';print_r($result);exit;
+      // echo '<pre>';print_r($result);exit;
 
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
-        $spreadsheet->getActiveSheet()->getStyle('A5:I5')->getFill()
-            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-            ->getStartColor()->setARGB('F8CBAD');
 
+        $spreadsheet->getActiveSheet()->getStyle('A5:I5')->getFill()
+        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+        ->getStartColor()->setARGB('F8CBAD');
+       
+       
         $spreadsheet->setActiveSheetIndex(0)->setCellValue('A1', 'GSTR-2 DR-CR Invoice detail Report');
 
-        // $spreadsheet->setActiveSheetIndex(0)->setCellValue('A2', @$acc['name']);
+        
+
+       // $spreadsheet->setActiveSheetIndex(0)->setCellValue('A2', @$acc['name']);
         $spreadsheet->setActiveSheetIndex(0)->setCellValue('A2', @$post['from']);
         $spreadsheet->setActiveSheetIndex(0)->setCellValue('B2', @$post['to']);
         $spreadsheet->setActiveSheetIndex(0)->setCellValue('A3', @$hsn);
@@ -2592,36 +2749,41 @@ class GstModel extends Model
         $spreadsheet->setActiveSheetIndex(0)->setCellValue('G5', 'Cess Amount');
         $spreadsheet->setActiveSheetIndex(0)->setCellValue('H5', 'Tax Amount');
         $spreadsheet->setActiveSheetIndex(0)->setCellValue('I5', 'Invoice Amount');
+      
 
         $i = 6;
         $closing = 0;
 
-        if (!empty($result['data'])) {
-            foreach ($result['data'] as $row) {
-                if ($post['type'] == 'purchase') {
-                    $spreadsheet->setActiveSheetIndex(0)->setCellValue('A' . $i, @$row['return_no']);
-                } else {
-                    $spreadsheet->setActiveSheetIndex(0)->setCellValue('A' . $i, @$row['invoice_no']);
-                }
-                $spreadsheet->setActiveSheetIndex(0)->setCellValue('B' . $i, @$row['name']);
-                $spreadsheet->setActiveSheetIndex(0)->setCellValue('C' . $i, number_format(@$row['taxable'], 2));
-                $spreadsheet->setActiveSheetIndex(0)->setCellValue('D' . $i, number_format(@$row['tot_igst'], 2));
-                $spreadsheet->setActiveSheetIndex(0)->setCellValue('E' . $i, number_format(@$row['tot_cgst'], 2));
-                $spreadsheet->setActiveSheetIndex(0)->setCellValue('F' . $i, number_format(@$row['tot_sgst'], 2));
-                $spreadsheet->setActiveSheetIndex(0)->setCellValue('G' . $i, number_format(@$row['tot_cess'], 2));
-                $spreadsheet->setActiveSheetIndex(0)->setCellValue('H' . $i, number_format(@$row['tot_igst'], 2));
-                $spreadsheet->setActiveSheetIndex(0)->setCellValue('I' . $i, number_format(@$row['net_amount'], 2));
-
-                $i++;
+      if(!empty($result['data']))
+      {
+        foreach ($result['data'] as $row) {
+            if($post['type'] == 'purchase')
+            {
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue('A' . $i, @$row['return_no']);
             }
+            else
+            {
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue('A' . $i, @$row['invoice_no']);
+            }
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('B' . $i, @$row['name']);
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('C' . $i,  number_format(@$row['taxable'],2));
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('D' . $i, number_format(@$row['tot_igst'],2));
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('E' . $i, number_format(@$row['tot_cgst'],2));
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('F' . $i, number_format(@$row['tot_sgst'],2));
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('G' . $i, number_format(@$row['tot_cess'],2));
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('H' . $i, number_format(@$row['tot_igst'],2));
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('I' . $i, number_format(@$row['net_amount'],2));
+           
+            $i++;
         }
-        $spreadsheet->getActiveSheet()->setTitle('GSTR-2 DR-CR Invoices');
-
+      }
+            $spreadsheet->getActiveSheet()->setTitle('GSTR-2 DR-CR Invoices');
+       
         $spreadsheet->createSheet();
 
         $spreadsheet->setActiveSheetIndex(0);
         $writer = new Xlsx($spreadsheet);
         $writer->save('php://output');
     }
-
+  
 }

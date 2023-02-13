@@ -106,8 +106,6 @@ class Gst extends BaseController
             $data['state_data'] = $this->model->get_state_wise_voucher($post);
         }
 
-        // echo '<pre>';print_r($data);exit;
-
         // else{
 
         //     $company_from = session('financial_form');

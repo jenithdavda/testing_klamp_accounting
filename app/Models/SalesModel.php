@@ -1813,7 +1813,7 @@ class SalesModel extends Model
                 $pdata['voucher'] = $post['voucher'];
             }
         }
-
+        $gnmodel = new GeneralModel();
         if (!empty($result_array)) {
 
             $pdata['update_at'] = date('Y-m-d H:i:s');
@@ -1821,6 +1821,8 @@ class SalesModel extends Model
             if (empty($msg)) {
                 $builder->where(array("id" => $post['id']));
                 $result = $builder->Update($pdata);
+
+                $result1 = $gnmodel->update_data_table('jv_management', array('invoice_no' => $post['id'],'type' => "invoice"), array('is_update' => '1'));
 
                 $item_builder = $db->table('sales_item');
                 $item_result = $item_builder->select('GROUP_CONCAT(item_id) as item_id')->where(array("parent_id" => $post['id'], "type" => 'invoice', "is_delete" => 0, "is_expence" => 0))->get();
@@ -2167,6 +2169,20 @@ class SalesModel extends Model
                     );
                     $platform_builder = $db->table('platform_voucher');
                     $sstatus = $platform_builder->Insert($platform_data);
+
+                    $jv_data = array(
+                        'invoice_no' => $id,
+                        'type' => "invoice",
+                        'platform_id' => 1,
+                        'invoice_date' => db_date(@$post['invoice_date']),
+                        'party_account' => $post['account'],
+                        'gst' => $post['gst'],
+                        'amount' => round($netamount),
+                        'created_at' => date('Y-m-d H:i:s'),
+                        'created_by' => 0,
+                    );
+                    $jv_builder = $db->table('jv_management');
+                    $jv_add = $jv_builder->Insert($jv_data);
                 }
 
                 if ($result &&  $result1) {
@@ -2805,6 +2821,7 @@ class SalesModel extends Model
                             'igst_amt' => $new_item[$i]['igst_amt'],
                             'cgst_amt' => $new_item[$i]['cgst_amt'],
                             'sgst_amt' => $new_item[$i]['sgst_amt'],
+                            'taxability' => $new_item[$i]['taxability'],
                             //update discount column 17-01-2023
                             'total' => $new_item[$i]['total'],
                             'item_disc' => $new_item[$i]['item_disc'],

@@ -568,18 +568,20 @@ $(document).ready(function() {
     $('#invoices').on('select2:select', function(e) {
         //alert("jfhkrej");
         var suggestion = e.params.data.data;
-        console.log(suggestion);
+        
         var vch_name = $('input[name="voucher_name[]"]').val();
         var vch_id = $('input[name="vch_id[]"]').val();
-        
-        if (vch_id != '' && vch_id != 'undefined' ) {
+        //console.log(vch_id);
+        if(vch_id != undefined){
+           
             for (i = 0; i <= vch_id.length; i++) {
-                if (suggestion.id == vch_id[i] && suggestion.voucher_name == vch_name[i]) {
-                    $('.tbl-error-msg').html('Voucher was Already Added..!');
+                 if (suggestion.id == vch_id[i] && suggestion.voucher_name == vch_name[i]) {
+                     $('.tbl-error-msg').html('Voucher was Already Added..!');
                     return;
                 }
             }
         }
+      
 
         var id_inp = '<input type="hidden" name ="vch_id[]" value="' + suggestion.id + '">';
         var tds = '<tr class="item_row">';
@@ -736,7 +738,8 @@ $(document).ready(function() {
 
     });
 
-    $('#adjustment').on('select2:select', function(e) {
+    //$('#adjustment').on('select2:select', function(e) {
+    $('#adjustment').off('select2:select').on('select2:select', function(e) {
         var adjust = $('#adjustment').val();
         var particular_id = $('#particular').val();
 
@@ -775,10 +778,10 @@ $(document).ready(function() {
                     }
                 });
 
-                $('#invoices').on('select2:select', function(e) {
-
+               // $('#invoices').on('select2:select', function(e) {
+                $('#invoices').off('select2:select').on('select2:select', function(e) {
                     var suggestion = e.params.data.data;
-
+                   
                     var vch_name = $('input[name="voucher_name[]"]').map(function() {
                                         return this.value;
                                     }).get();
@@ -787,6 +790,7 @@ $(document).ready(function() {
                                         return this.value;
                                     }).get();
                     
+                                   // console.log(vch_name);
                     if (typeof vch_id !== "undefined" ) {
                         for (i = 0; i <= vch_id.length; i++) {
                             if (suggestion.id == vch_id[i] && suggestion.voucher_name == vch_name[i]) {

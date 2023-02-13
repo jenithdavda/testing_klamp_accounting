@@ -30,16 +30,16 @@
                 <div class="row align-items-center">
                     <div class="col-md-12">
                         <div class="row">
-                            <!-- <div class="col-md-4">
+                            <div class="col-md-4">
                                 <div class="form-group mb-lg-0">
-                                    <label class="">Account :</label>
+                                    <label class="">Plateform :</label>
                                     <div class="input-group">
-                                        <select class="form-control select2" id="party_account" onchange="" name="account_id" required>
+                                        <select class="form-control select2" id="plateform" onchange="" name="platform_id" required>
 
                                         </select>
                                     </div>
                                 </div>
-                            </div> -->
+                            </div>
                             <div class="col-md-4">
                                 <div class="form-group mb-lg-0">
                                     <label class="">Month :</label>
@@ -216,6 +216,7 @@
                                 <input type="hidden" name="credit_party_account" id="account_new_id" value="">
                                 <input type="hidden" name="month" value="<?= @$month; ?>">
                                 <input type="hidden" name="year" value="<?= @$year; ?>">
+                                <input type="hidden" name="platform_id" value="<?= @$platform_id; ?>">
 
                                 <button type="submit" class="btn btn-primary">Add JV</button>
                             </form>
@@ -270,7 +271,7 @@
                                 <input type="hidden" name="debit_party_account" id="daccount_new_id" value="">
                                 <input type="hidden" name="month" value="<?= @$month; ?>">
                                 <input type="hidden" name="year" value="<?= @$year; ?>">
-
+                                <input type="hidden" name="platform_id" value="<?= @$platform_id; ?>">
                                 <button type="submit" class="btn btn-primary">Add JV</button>
                             </form>
 
@@ -284,6 +285,7 @@
                                     <tr>
                                         <th>Id</th>
                                         <th>Jv Id</th>
+                                        <th>Plateform</th>
                                         <th>Account</th>
                                         <th>Invoice Type</th>
                                         <th>Log Date</th>
@@ -311,35 +313,6 @@
     $('#table_list_data').DataTable();
     $('#table_list_data1').DataTable();
 
-    // $('#table_list_data').DataTable({
-    //     columnDefs: [{
-    //         orderable: false,
-    //         className: 'select-checkbox',
-    //         targets: 0
-    //     }],
-    //     select: {
-    //         style: 'os',
-    //         selector: 'td:first-child'
-    //     },
-    //     order: [
-    //         [1, 'asc']
-    //     ]
-    // });
-    // $('#table_list_data1').DataTable({
-    //     columnDefs: [{
-    //         orderable: false,
-    //         className: 'select-checkbox',
-    //         targets: 0
-    //     }],
-    //     select: {
-    //         style: 'os',
-    //         selector: 'td:first-child'
-    //     },
-    //     order: [
-    //         [1, 'asc']
-    //     ]
-    // });
-
     $(document).ready(function() {
         $('.fc-datepicker').datepicker({
             dateFormat: 'yy-mm-dd',
@@ -354,12 +327,12 @@
             placeholder: 'Choose one',
             width: '100%'
         });
-        $("#party_account").select2({
+        $("#plateform").select2({
 
             width: '100%',
-            placeholder: 'Type Party Account',
+            placeholder: 'Search Plateform',
             ajax: {
-                url: PATH + "Master/Getdata/search_account",
+                url: PATH + "Testing/Getdata/search_plateform",
                 type: "post",
                 allowClear: true,
                 dataType: 'json',

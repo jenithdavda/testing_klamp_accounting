@@ -430,6 +430,20 @@ class ApiModel extends Model
 
                     $platform_builder = $db->table('platform_voucher');
                     $sstatus = $platform_builder->Insert($platform_data);
+
+                    $jv_data = array(
+                        'invoice_no' => $id,
+                        'type' => "invoice",
+                        'platform_id' => @$post['platform'],
+                        'invoice_date' => db_date(@$post['invoice_date']),
+                        'party_account' => $post['account'],
+                        'gst' => $post['gst'],
+                        'amount' => round($netamount),
+                        'created_at' => date('Y-m-d H:i:s'),
+                        'created_by' => 0,
+                    );
+                    $jv_builder = $db->table('jv_management');
+                    $jv_add = $jv_builder->Insert($jv_data);
                 
 
                 for ($i = 0; $i < count($pid); $i++) {

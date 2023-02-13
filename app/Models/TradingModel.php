@@ -562,13 +562,103 @@ class TradingModel extends Model
         //echo '<pre>';print_r($sales);exit;
         return $purchase;     
     }
+    // public function purchaseReturnItem_voucher_wise_data($get){
+    //     $db = $this->db;
+    //     $db->setDatabase(session('DataSource')); 
+    //     $results_per_page = 15;
+    //     $page = $get['page'];
+    //     $page_first_result = ($page - 1) * $results_per_page;
+    //     $new_limit = ($page - 1) * 15;
+
+    //     if(!empty($get['year'])){
+
+    //         $start = strtotime("{$get['year']}-{$get['month']}-01");
+    //         $end = strtotime('-1 second', strtotime('+1 month', $start));
+             
+    //         $start_date = date('Y-m-d',$start);
+    //         $end_date = date('Y-m-d',$end);
+             
+    //         $builder = $db->table('purchase_return p');
+    //         $builder->join('account ac', 'ac.id =p.account');
+    //         $builder->where(array('p.is_delete' => 0, 'p.is_cancle' => 0));
+    //         $builder->where(array('DATE(p.return_date)  >= ' => $start_date));
+    //         $builder->where(array('DATE(p.return_date)  <= ' => $end_date));
+    //         $number_of_result = $builder->countAllResults();
+    //         $number_of_page = ceil($number_of_result / $results_per_page);
+    //         $builder->select('p.return_no as voucher_id,p.id,p.taxable,ac.name as party_name,p.return_date  as date');
+    //         $builder->join('account ac', 'ac.id =p.account');
+    //         $builder->where(array('p.is_delete' => 0, 'p.is_cancle' => 0));
+    //         $builder->where(array('DATE(p.return_date)  >= ' => $start_date));
+    //         $builder->where(array('DATE(p.return_date)  <= ' => $end_date));
+    //         $builder->limit($results_per_page, $page_first_result);
+    //         $query = $builder->get();
+    //         $purchase['purchase'] = $query->getResultArray();
+
+    //         $query = "SELECT SUM(taxable) as total_taxable  FROM (SELECT p.taxable
+    //         FROM `purchase_return` `p`
+    //         WHERE `p`.`is_delete` = 0
+    //         AND `p`.`is_cancle` = 0
+    //         AND DATE(p.return_date) >= '".$start_date."'
+    //         AND DATE(p.return_date) <= '".$end_date."'
+    //          LIMIT ".$new_limit.") as t";
+    //         $total_amount = $db->query($query)->getRowArray();
+
+
+    //     }else if(!empty(@$get['from'])){
+
+    //         $start_date = @$get['from']  ? db_date($get['from']) : '';
+    //         $end_date = @$get['to'] ? db_date($get['to']) : '';
+
+    //         $builder = $db->table('purchase_return p');
+    //         $builder->join('account ac', 'ac.id =p.account');
+    //         $builder->where(array('p.is_delete' => 0, 'p.is_cancle' => 0));
+    //         $builder->where(array('DATE(p.return_date)  >= ' => $start_date));
+    //         $builder->where(array('DATE(p.return_date)  <= ' => $end_date));
+    //         $number_of_result = $builder->countAllResults();
+    //         $number_of_page = ceil($number_of_result / $results_per_page);
+    //         $builder->select('p.return_no as voucher_id,p.id,p.taxable,ac.name as party_name,p.return_date  as date');
+    //         $builder->join('account ac', 'ac.id =p.account');
+    //         $builder->where(array('p.is_delete' => 0, 'p.is_cancle' => 0));
+    //         $builder->where(array('DATE(p.return_date)  >= ' => $start_date));
+    //         $builder->where(array('DATE(p.return_date)  <= ' => $end_date));
+    //         $builder->limit($results_per_page, $page_first_result);
+    //         $query = $builder->get();
+    //         $purchase['purchase'] = $query->getResultArray();
+
+    //         $query = "SELECT SUM(taxable) as total_taxable  FROM (SELECT p.taxable
+    //         FROM `purchase_return` `p`
+    //         WHERE `p`.`is_delete` = 0
+    //         AND `p`.`is_cancle` = 0
+    //         AND DATE(p.return_date) >= '".$start_date."'
+    //         AND DATE(p.return_date) <= '".$end_date."'
+    //          LIMIT ".$new_limit.") as t";
+    //         $total_amount = $db->query($query)->getRowArray();
+
+    //     }else{
+    //         $purchase['purchase'] = array();
+    //         $start_date = '';
+    //         $end_date = '';
+    //     }   
+    //     $purchase['page'] = @$page;
+    //     $purchase['number_of_page'] = @$number_of_page;
+    //     $purchase['month'] = @$get['month'];
+    //     $purchase['year'] = @$get['year'];
+    //     $purchase['date']['from'] = $start_date;
+    //     $purchase['date']['to'] = $end_date;
+    //     if($page == 1)
+    //     {
+    //         $purchase['opening_balance'] =0;
+    //     }
+    //     else
+    //     {
+    //         $purchase['opening_balance'] = $total_amount['total_taxable'];
+    //     }
+    //     return $purchase;     
+    // }
     public function purchaseReturnItem_voucher_wise_data($get){
         $db = $this->db;
         $db->setDatabase(session('DataSource')); 
-        $results_per_page = 15;
-        $page = $get['page'];
-        $page_first_result = ($page - 1) * $results_per_page;
-        $new_limit = ($page - 1) * 15;
+        $purchase = array();
 
         if(!empty($get['year'])){
 
@@ -578,30 +668,15 @@ class TradingModel extends Model
             $start_date = date('Y-m-d',$start);
             $end_date = date('Y-m-d',$end);
              
+
             $builder = $db->table('purchase_return p');
-            $builder->join('account ac', 'ac.id =p.account');
-            $builder->where(array('p.is_delete' => 0, 'p.is_cancle' => 0));
-            $builder->where(array('DATE(p.return_date)  >= ' => $start_date));
-            $builder->where(array('DATE(p.return_date)  <= ' => $end_date));
-            $number_of_result = $builder->countAllResults();
-            $number_of_page = ceil($number_of_result / $results_per_page);
             $builder->select('p.return_no as voucher_id,p.id,p.taxable,ac.name as party_name,p.return_date  as date');
             $builder->join('account ac', 'ac.id =p.account');
-            $builder->where(array('p.is_delete' => 0, 'p.is_cancle' => 0));
+            $builder->where(array('p.is_delete'=>0,'p.is_cancle'=>0));
             $builder->where(array('DATE(p.return_date)  >= ' => $start_date));
             $builder->where(array('DATE(p.return_date)  <= ' => $end_date));
-            $builder->limit($results_per_page, $page_first_result);
             $query = $builder->get();
             $purchase['purchase'] = $query->getResultArray();
-
-            $query = "SELECT SUM(taxable) as total_taxable  FROM (SELECT p.taxable
-            FROM `purchase_return` `p`
-            WHERE `p`.`is_delete` = 0
-            AND `p`.`is_cancle` = 0
-            AND DATE(p.return_date) >= '".$start_date."'
-            AND DATE(p.return_date) <= '".$end_date."'
-             LIMIT ".$new_limit.") as t";
-            $total_amount = $db->query($query)->getRowArray();
 
 
         }else if(!empty(@$get['from'])){
@@ -610,49 +685,31 @@ class TradingModel extends Model
             $end_date = @$get['to'] ? db_date($get['to']) : '';
 
             $builder = $db->table('purchase_return p');
-            $builder->join('account ac', 'ac.id =p.account');
-            $builder->where(array('p.is_delete' => 0, 'p.is_cancle' => 0));
-            $builder->where(array('DATE(p.return_date)  >= ' => $start_date));
-            $builder->where(array('DATE(p.return_date)  <= ' => $end_date));
-            $number_of_result = $builder->countAllResults();
-            $number_of_page = ceil($number_of_result / $results_per_page);
             $builder->select('p.return_no as voucher_id,p.id,p.taxable,ac.name as party_name,p.return_date  as date');
             $builder->join('account ac', 'ac.id =p.account');
-            $builder->where(array('p.is_delete' => 0, 'p.is_cancle' => 0));
+            $builder->where(array('p.is_delete'=>0,'p.is_cancle'=>0));
             $builder->where(array('DATE(p.return_date)  >= ' => $start_date));
             $builder->where(array('DATE(p.return_date)  <= ' => $end_date));
-            $builder->limit($results_per_page, $page_first_result);
             $query = $builder->get();
             $purchase['purchase'] = $query->getResultArray();
-
-            $query = "SELECT SUM(taxable) as total_taxable  FROM (SELECT p.taxable
-            FROM `purchase_return` `p`
-            WHERE `p`.`is_delete` = 0
-            AND `p`.`is_cancle` = 0
-            AND DATE(p.return_date) >= '".$start_date."'
-            AND DATE(p.return_date) <= '".$end_date."'
-             LIMIT ".$new_limit.") as t";
-            $total_amount = $db->query($query)->getRowArray();
 
         }else{
             $purchase['purchase'] = array();
             $start_date = '';
             $end_date = '';
         }   
-        $purchase['page'] = @$page;
-        $purchase['number_of_page'] = @$number_of_page;
-        $purchase['month'] = @$get['month'];
-        $purchase['year'] = @$get['year'];
+        $builder = $db->table('purchase_return p');
+        $builder->select('SUM(p.taxable) as purchase_total');
+        $builder->where(array('p.is_delete'=>0,'p.is_cancle'=>0));
+        $builder->where(array('DATE(p.return_date)  >= ' => $start_date));
+        $builder->where(array('DATE(p.return_date)  <= ' => $end_date));
+        $query = $builder->get();
+        $purchase['total'] = $query->getRowArray();
+
         $purchase['date']['from'] = $start_date;
         $purchase['date']['to'] = $end_date;
-        if($page == 1)
-        {
-            $purchase['opening_balance'] =0;
-        }
-        else
-        {
-            $purchase['opening_balance'] = $total_amount['total_taxable'];
-        }
+
+        //echo '<pre>';print_r($sales);exit;
         return $purchase;     
     }
     // *************trading voucher data*******************//
@@ -1871,44 +1928,42 @@ class TradingModel extends Model
 
 
         $spreadsheet->setActiveSheetIndex(0)->setCellValue('A8', 'Date');
-        $spreadsheet->setActiveSheetIndex(0)->setCellValue('B8', 'Custom Inv No');
-        $spreadsheet->setActiveSheetIndex(0)->setCellValue('C8', 'Party_name');
-        $spreadsheet->setActiveSheetIndex(0)->setCellValue('D8', 'Voucher Type');
-        $spreadsheet->setActiveSheetIndex(0)->setCellValue('E8', 'Voucher No');
-        $spreadsheet->setActiveSheetIndex(0)->setCellValue('F8', 'Debit');
+       
+        $spreadsheet->setActiveSheetIndex(0)->setCellValue('B8', 'Party_name');
+        $spreadsheet->setActiveSheetIndex(0)->setCellValue('C8', 'Voucher Type');
+        $spreadsheet->setActiveSheetIndex(0)->setCellValue('D8', 'Voucher No');
+        $spreadsheet->setActiveSheetIndex(0)->setCellValue('E8', 'Debit');
         // $spreadsheet->setActiveSheetIndex(0)->setCellValue('G8', 'Credit');
-        $spreadsheet->getActiveSheet()->getStyle('A8:F8')->getBorders()
+        $spreadsheet->getActiveSheet()->getStyle('A8:E8')->getBorders()
         ->getTop()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
-        $spreadsheet->getActiveSheet()->getStyle('A8:F8')->getBorders()
+        $spreadsheet->getActiveSheet()->getStyle('A8:E8')->getBorders()
         ->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
         //echo '<pre>';Print_r($data);exit;
         
          $i = 9;
          foreach ($data['purchase'] as $row) { 
             $spreadsheet->setActiveSheetIndex(0)->setCellValue('A'.$i, user_date($row['date']));
-            $spreadsheet->setActiveSheetIndex(0)->setCellValue('B'.$i, $row['custom_inv_no']);
-            $spreadsheet->setActiveSheetIndex(0)->setCellValue('C'.$i, $row['party_name']);
-            $spreadsheet->setActiveSheetIndex(0)->setCellValue('D'.$i, 'Sales Item');
-            $spreadsheet->setActiveSheetIndex(0)->setCellValue('E'.$i, $row['voucher_id']);
-            $spreadsheet->setActiveSheetIndex(0)->setCellValue('F'.$i, $row['taxable']);
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('B'.$i, $row['party_name']);
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('C'.$i, 'Sales Item');
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('D'.$i, $row['voucher_id']);
+            $spreadsheet->setActiveSheetIndex(0)->setCellValue('E'.$i, $row['taxable']);
           $i++;
          }
          $spreadsheet->setActiveSheetIndex(0)->setCellValue('A'.$i, 'total');
          $spreadsheet->setActiveSheetIndex(0)->setCellValue('B'.$i, '');
          $spreadsheet->setActiveSheetIndex(0)->setCellValue('C'.$i, '');
          $spreadsheet->setActiveSheetIndex(0)->setCellValue('D'.$i, '');
-         $spreadsheet->setActiveSheetIndex(0)->setCellValue('E'.$i, '');
-         $spreadsheet->setActiveSheetIndex(0)->setCellValue('F'.$i, number_format($data['total']['purchase_total'],2));
+         $spreadsheet->setActiveSheetIndex(0)->setCellValue('E'.$i, number_format($data['total']['purchase_total'],2));
          $spreadsheet->getActiveSheet()->getStyle('A'.$i)->getFont()->setBold(true);
          $spreadsheet->getActiveSheet()->getStyle('A'.$i)->getFont()->setSize(16);
-         $spreadsheet->getActiveSheet()->getStyle('F'.$i)->getFont()->setBold(true);
-         $spreadsheet->getActiveSheet()->getStyle('F'.$i)->getFont()->setSize(16);
-         $spreadsheet->getActiveSheet()->getStyle('A'.$i.':F'.$i)->getBorders()
+         $spreadsheet->getActiveSheet()->getStyle('E'.$i)->getFont()->setBold(true);
+         $spreadsheet->getActiveSheet()->getStyle('E'.$i)->getFont()->setSize(16);
+         $spreadsheet->getActiveSheet()->getStyle('A'.$i.':E'.$i)->getBorders()
          ->getTop()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
-         $spreadsheet->getActiveSheet()->getStyle('A'.$i.':F'.$i)->getBorders()
+         $spreadsheet->getActiveSheet()->getStyle('A'.$i.':E'.$i)->getBorders()
          ->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
         
-         $spreadsheet->getActiveSheet()->setTitle('Purchase Item Voucher');
+         $spreadsheet->getActiveSheet()->setTitle('Purchase Return Item Voucher');
          $spreadsheet->createSheet();
  
          $spreadsheet->getActiveSheet()->setTitle('docs');

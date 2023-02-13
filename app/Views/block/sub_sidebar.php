@@ -452,7 +452,7 @@
                 </ul>
                 <?php
                 //print_r(session('name'));exit;
-                if(session('code') == 'ACE20223HUY' OR session('code') == 'KLA2022ZFDH')
+                if(session('code') == 'ACE20223HUY' OR session('code') == 'KLA2022ZFDH' OR session('code') == 'TRU20220AOS')
                 {
                 ?>
                 <ul class="nav-sub">

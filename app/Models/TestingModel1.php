@@ -304,31 +304,30 @@ class TestingModel extends Model
         $builder = $db->table('jv_management jm');
         $builder->select('jm.party_account,ac.name as party_account_name');
         $builder->join('account ac', 'ac.id = jm.party_account');
-        $builder->join('platform_voucher pv', 'pv.voucher = jm.invoice_no','left');
-        $builder->join('platform p', 'p.id = pv.platform_id','left');
+        $builder->join('platform_voucher pv', 'jm.voucher = jm.invoice_no');
         if (!empty($post['month'])) {
             $builder->where(array('DATE(jm.invoice_date)  >= ' => $start_date));
             $builder->where(array('DATE(jm.invoice_date)  <= ' => $end_date));
         }
-        if (!empty($post['platform_id'])) {
-             $builder->where(array('pv.platform_id' => $post['platform_id']));
+        if (!empty($post['plateform_id'])) {
+            $builder->where(array('pv.plateform_id' => $post['plateform_id']));
         }
         $builder->where(array("jm.type" => 'invoice'));
+        
         $builder->groupBy('jm.party_account');
         $result = $builder->get();
         $party_list = $result->getResultArray();
-    
         $invoice_list = array();
         foreach ($party_list as $row) {
             $builder = $db->table('jv_management jm');
             $builder->select('SUM(jm.amount) as total');
-            $builder->join('platform_voucher pv', 'pv.voucher = jm.invoice_no');
+            $builder->join('platform_voucher pv', 'jm.voucher = jm.invoice_no');
             if (!empty($post['month'])) {
                 $builder->where(array('DATE(jm.invoice_date)  >= ' => $start_date));
                 $builder->where(array('DATE(jm.invoice_date)  <= ' => $end_date));
             }
-            if (!empty($post['platform_id'])) {
-                $builder->where(array('pv.platform_id' => $post['platform_id']));
+            if (!empty($post['plateform_id'])) {
+                $builder->where(array('pv.plateform_id' => $post['plateform_id']));
             }
             $builder->where(array("jm.type" => 'invoice', "jm.party_account" => $row['party_account']));
             $result = $builder->get();
@@ -341,14 +340,13 @@ class TestingModel extends Model
         $builder = $db->table('jv_management jm');
         $builder->select('jm.party_account,ac.name as party_account_name');
         $builder->join('account ac', 'ac.id = jm.party_account');
-        $builder->join('platform_voucher pv', 'pv.voucher = jm.invoice_no','left');
-        $builder->join('platform p', 'p.id = pv.platform_id','left');
+        $builder->join('platform_voucher pv', 'jm.voucher = jm.invoice_no');
         if (!empty($post['month'])) {
             $builder->where(array('DATE(jm.invoice_date)  >= ' => $start_date));
             $builder->where(array('DATE(jm.invoice_date)  <= ' => $end_date));
         }
-        if (!empty($post['platform_id'])) {
-             $builder->where(array('pv.platform_id' => $post['platform_id']));
+        if (!empty($post['plateform_id'])) {
+            $builder->where(array('pv.plateform_id' => $post['plateform_id']));
         }
         $builder->where(array("jm.type" => 'return'));
         $builder->groupBy('jm.party_account');
@@ -358,13 +356,13 @@ class TestingModel extends Model
         foreach ($party_list as $row) {
             $builder = $db->table('jv_management jm');
             $builder->select('SUM(jm.amount) as total');
-            $builder->join('platform_voucher pv', 'pv.voucher = jm.invoice_no');
+            $builder->join('platform_voucher pv', 'jm.voucher = jm.invoice_no');
             if (!empty($post['month'])) {
                 $builder->where(array('DATE(jm.invoice_date)  >= ' => $start_date));
                 $builder->where(array('DATE(jm.invoice_date)  <= ' => $end_date));
             }
-            if (!empty($post['platform_id'])) {
-                $builder->where(array('pv.platform_id' => $post['platform_id']));
+            if (!empty($post['plateform_id'])) {
+                $builder->where(array('pv.plateform_id' => $post['plateform_id']));
             }
 
             $builder->where(array("jm.type" => 'return', "jm.party_account" => $row['party_account']));
@@ -377,12 +375,11 @@ class TestingModel extends Model
 
         $data['month'] = $post['month'];
         $data['year'] = $post['year'];
-        $data['platform_id'] = $post['platform_id'];
         return $data;
     }
     public function add_jv_invoice($post)
     {
-        //secho '<pre>';Print_r($post);exit;
+        // echo '<pre>';Print_r($post);exit;
 
         $start = strtotime("{$post['year']}-{$post['month']}-01");
         $end = strtotime('-1 second', strtotime('+1 month', $start));
@@ -391,30 +388,6 @@ class TestingModel extends Model
         $db = $this->db;
         $db->setDatabase(session('DataSource'));
 
-        // $builder = $db->table('jv_management jm');
-        // $builder->select('jm.invoice_no');
-        // $builder->join('platform_voucher pv', 'pv.voucher = jm.invoice_no','left');
-        // if (!empty($post['month'])) {
-        //     $builder->where(array('DATE(jm.invoice_date)  >= ' => $start_date));
-        //     $builder->where(array('DATE(jm.invoice_date)  <= ' => $end_date));
-        // }
-        // if (!empty($post['platform_id'])) {
-        //      $builder->where(array('pv.platform_id' => $post['platform_id']));
-        // }
-        // $builder->where(array("jm.type" => 'invoice'));
-        // $builder->groupBy('jm.party_account');
-        // $result = $builder->get();
-        // $invoice_list = $result->getResultArray();
-        // foreach($invoice_list as $invoice)
-        // {
-            
-        //     $invoice_array[] = $invoice['invoice_no'];
-        // }
-        // $narration = implode(',',$invoice_array);
-        //echo '<pre>';Print_r($narration);exit;
-        
-
-
         foreach ($post['invoice'] as $account) {
             $builder = $db->table('jv_management jm');
             $builder->select('jm.*');
@@ -422,12 +395,10 @@ class TestingModel extends Model
                 $builder->where(array('DATE(jm.invoice_date)  >= ' => $start_date));
                 $builder->where(array('DATE(jm.invoice_date)  <= ' => $end_date));
             }
-            if (!empty($post['platform_id'])) {
-                $builder->where(array('platform_id' => $post['platform_id']));
-            }
             $builder->where(array("jm.type" => 'invoice', "jm.party_account" => $account));
             $result = $builder->get();
             $invoice_list = $result->getResultArray();
+            //echo '<pre>';Print_r($invoice_list);
             $jv_array = array();
             $party_total = 0;
             foreach ($invoice_list as $row) {
@@ -437,11 +408,7 @@ class TestingModel extends Model
                     $jv_array[] = 0;
                 }
                 $party_total += $row['amount'];
-                $invoice_array[] = $row['invoice_no'];
             }
-            $narration = implode(',',$invoice_array);
-           // echo '<pre>';Print_r($narration);exit;
-            
             $gnmodel = new GeneralModel();
             if (in_array("1", $jv_array)) {
 
@@ -450,8 +417,9 @@ class TestingModel extends Model
                     $post['credit_party_account'] = $jv_data['particular'];
                 }
                 $jv_id = $invoice_list[0]['jv_id'];
+                //$post['credit_party_account'] = $invoice_list[0]['particular'];
                 $total_amt = 0;
-                $pdata['narration'] = $narration;
+
                 $pdata['update_at'] = date('Y-m-d H:i:s');
                 $pdata['update_by'] = session('uid');;
 
@@ -487,7 +455,6 @@ class TestingModel extends Model
                     'log_date' => date('Y-m-d H:i:s'),
                     'log_type' => "update",
                     'account' =>  $account,
-                    'platform_id' => $post['platform_id'],
                     'month_year' => $post['month'] . '-' . $post['year'],
                     'amount' => @$total_amt,
                 );
@@ -504,7 +471,7 @@ class TestingModel extends Model
                 }
                 $pdata = array(
                     'date' => date('Y-m-d'),
-                    'narration' => $narration,
+                    'narration' => @$post['narration'],
                 );
                 $pdata['created_at'] = date('Y-m-d H:i:s');
                 $pdata['created_by'] = session('uid');
@@ -561,7 +528,6 @@ class TestingModel extends Model
                     'log_date' => date('Y-m-d H:i:s'),
                     'log_type' => "insert",
                     'account' =>  @$account,
-                    'platform_id' => $post['platform_id'],
                     'month_year' => $post['month'] . '-' . $post['year'],
                     'amount' => @$party_total,
                 );
@@ -599,9 +565,6 @@ class TestingModel extends Model
                 $builder->where(array('DATE(jm.invoice_date)  >= ' => $start_date));
                 $builder->where(array('DATE(jm.invoice_date)  <= ' => $end_date));
             }
-            if (!empty($post['platform_id'])) {
-                $builder->where(array('platform_id' => $post['platform_id']));
-            }
             $builder->where(array("jm.type" => 'return', "jm.party_account" => $account));
             $result = $builder->get();
             $return_list = $result->getResultArray();
@@ -615,9 +578,7 @@ class TestingModel extends Model
                     $jv_array[] = 0;
                 }
                 $party_total += $row['amount'];
-                $invoice_array[] = $row['invoice_no'];
             }
-            $narration = implode(',',$invoice_array);
             $gnmodel = new GeneralModel();
             if (in_array("1", $jv_array)) {
 
@@ -627,7 +588,7 @@ class TestingModel extends Model
                 }
                 $jv_id = $return_list[0]['jv_id'];
                 $total_amt = 0;
-                $pdata['narration'] = $narration;
+
                 $pdata['update_at'] = date('Y-m-d H:i:s');
                 $pdata['update_by'] = session('uid');
 
@@ -663,7 +624,6 @@ class TestingModel extends Model
                     'log_date' => date('Y-m-d H:i:s'),
                     'log_type' => "update",
                     'account' =>  $account,
-                    'platform_id' => $post['platform_id'],
                     'month_year' => $post['month'] . '-' . $post['year'],
                     'amount' => @$total_amt,
                 );
@@ -680,7 +640,7 @@ class TestingModel extends Model
                 }
                 $pdata = array(
                     'date' => date('Y-m-d'),
-                    'narration' => $narration,
+                    'narration' => @$post['narration'],
                 );
                 $pdata['created_at'] = date('Y-m-d H:i:s');
                 $pdata['created_by'] = session('uid');
@@ -732,7 +692,6 @@ class TestingModel extends Model
                     'log_date' => date('Y-m-d H:i:s'),
                     'log_type' => "insert",
                     'account' =>  @$account,
-                    'platform_id' => $post['platform_id'],
                     'month_year' => $post['month'] . '-' . $post['year'],
                     'amount' => @$party_total,
                 );
@@ -780,8 +739,6 @@ class TestingModel extends Model
             "gl.invoice_type",
             "gl.log_type",
             "gl.amount",
-            "gl.platform_id",
-            "(select name from platform p where gl.platform_id = p.id)",
         );
         $dt_col = array(
             "gl.id",
@@ -792,8 +749,6 @@ class TestingModel extends Model
             "gl.invoice_type",
             "gl.log_type",
             "gl.amount",
-            "gl.platform_id",
-            "(select name from platform p where gl.platform_id = p.id) as plateform_name",
         );
 
         $filter = $get['filter_data'];
@@ -814,7 +769,6 @@ class TestingModel extends Model
 
             $DataRow = array();
             $DataRow[] = $row['id'];
-            $DataRow[] = $row['plateform_name'];
             $DataRow[] = $row['jv_id'];
             $DataRow[] = '<a href="' . url('Bank/add_jvparticular') . '/' . $row['jv_id'] . '" >' . $row['account_name'] . '</a> ';
             $DataRow[] = $row['invoice_type'];
@@ -2949,64 +2903,5 @@ class TestingModel extends Model
         $spreadsheet->setActiveSheetIndex(0);
         $writer = new Xlsx($spreadsheet);
         $writer->save('php://output');
-    }
-    public function get_plateform_data()
-    {
-        $db = $this->db;
-        $db->setDatabase(session('DataSource')); 
-        $builder = $db->table('platform');
-        $builder->select("*");
-        $query = $builder->get();
-        $getdata = $query->getResultArray();
-        $result = array();
-        foreach($getdata as $row){
-            $result[] = array("text" => $row['name'],"id" => $row['id']);
-        }
-
-        return $result;
-    }
-    public function update_jv_management()
-    {
-        $db = $this->db;
-        $db->setDatabase(session('DataSource')); 
-        $builder = $db->table('platform_voucher');
-        $builder->select("*");
-        $query = $builder->get();
-        $getdata = $query->getResultArray();
-        $result = array();
-        $gmodel = new GeneralModel();
-        foreach($getdata as $row){
-            
-                if($row['type'] == 'invoice')
-                {
-                    $invoice_data = $gmodel->get_data_table('sales_invoice', array('id' => $row['voucher']), 'account,gst,net_amount');
-                }
-                else
-                {
-                    $invoice_data = $gmodel->get_data_table('sales_return', array('id' => $row['voucher']), 'account,gst,net_amount');
-                }
-                if(!empty($invoice_data))
-                {
-               
-                    $builder_jv = $db->table('jv_management');
-                    $data = array(
-                        'jv_id' => '',
-                        'platform_id' => $row['platform_id'],
-                        'invoice_no' => $row['voucher'],
-                        'invoice_date' => $row['invoice_date'],
-                        'party_account' => $invoice_data['account'],
-                        'gst' => $invoice_data['gst'],
-                        'type' => $row['type'],
-                        'amount' => $invoice_data['net_amount'],
-                        'created_at'=> $row['created_at'],
-                        'created_by'=> $row['created_by'],
-
-                    );
-                    $result = $builder_jv->Insert($data);
-                }
-        }
-       // exit;
-
-        return $result;
     }
 }

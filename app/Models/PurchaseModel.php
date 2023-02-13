@@ -1515,11 +1515,12 @@ class PurchaseModel extends Model
             $btndelete = '<a data-toggle="modal" target="_blank"   title="Purchase return: ' . $row['account'] . '"  onclick="editable_remove(this)"  data-val="' . $row['id'] . '"  data-pk="' . $row['id'] . '" tabindex="-1" class="btn btn-link pd-10"><i class="far fa-trash-alt"></i></a> ';
             $btn_cancle = '<a data-toggle="modal" target="_blank"   title="Cancle Return Invoice: ' . $row['id'] . '"  onclick="editable_os(this)"  data-val="' . $row['id'] . '"  data-pk="' . $row['id'] . '" tabindex="-1" class="btn btn-link pd-10"><i class="far fa-times-circle"></i></a> ';
             $getMax = $gmodel->get_data_table('purchase_return', array('is_delete' => 0), 'MAX(return_no) as max_no');
-
+            $btnpdf = '<a href="' . url('Purchase/pdf_return/') . $row['id'] . '" class="btn btn-link pd-6"><i class="fas fa-print"></i></a> ';
+           
             if ($row['is_cancle'] == 1 || $row['is_delete'] == 1) {
-                $btn =  $btnview;
+                $btn =  $btnview . $btnpdf;
             } else {
-                $btn =  $btnedit . $btnview;
+                $btn =  $btnedit . $btnview . $btnpdf;
             }
 
             if ($getMax['max_no'] == $row['return_no']) {
@@ -2448,7 +2449,7 @@ class PurchaseModel extends Model
                             'item_id' => $new_item[$i]['pid'],
                             'type' => 'invoice',
                             'hsn' => @$post['hsn'][$i] ? $post['hsn'][$i]  : '',
-                            'item_disc' => $new_item[$i]['item_disc'],
+                            //'item_disc' => $new_item[$i]['item_disc'],
                             'uom' => $new_item[$i]['uom'],
                             'rate' => $new_item[$i]['rate'],
                             'qty' => $new_item[$i]['qty'],
@@ -2459,10 +2460,16 @@ class PurchaseModel extends Model
                             'cgst_amt' => $new_item[$i]['cgst_amt'],
                             'sgst_amt' => $new_item[$i]['sgst_amt'],
                             'taxability' => $new_item[$i]['taxability'],
-                            'sub_total' => $new_item[$i]['sub_total'],
-                            'remark' => $new_item[$i]['remark'],
-                            'discount' => $new_item[$i]['discount'],
-                            'added_amt' => $new_item[$i]['added_amt'],
+                              //update discount column 17-01-2023
+                              'total' => $new_item[$i]['total'],
+                              'item_disc' => $new_item[$i]['item_disc'],
+                              'discount' => $new_item[$i]['discount'],
+                              'divide_disc_item_per' => $new_item[$i]['divide_disc_item_per'],
+                              'divide_disc_item_amt' => $new_item[$i]['divide_disc_item_amt'],
+                              'sub_total' => $new_item[$i]['sub_total'],
+                              // end
+                              'added_amt' => $new_item[$i]['added_amt'],
+                              'remark' => $new_item[$i]['remark'],
                             'update_at' => date('Y-m-d H:i:s'),
                             'update_by' => session('uid'),
                         );
@@ -2490,10 +2497,16 @@ class PurchaseModel extends Model
                             'cgst_amt' => $new_account[$i]['cgst_amt'],
                             'sgst_amt' => $new_account[$i]['sgst_amt'],
                             'taxability' => $new_account[$i]['taxability'],
-                            'sub_total' => $new_account[$i]['sub_total'],
-                            'remark' => $new_account[$i]['remark'],
-                            'discount' => $new_account[$i]['discount'],
-                            'added_amt' => $new_account[$i]['added_amt'],
+                             //update discount column 17-01-2023
+                             'total' => $new_account[$i]['total'],
+                             'item_disc' => $new_account[$i]['item_disc'],
+                             'discount' => $new_account[$i]['discount'],
+                             'divide_disc_item_per' => $new_account[$i]['divide_disc_item_per'],
+                             'divide_disc_item_amt' => $new_account[$i]['divide_disc_item_amt'],
+                             'sub_total' => $new_account[$i]['sub_total'],
+                             // end
+                             'added_amt' => $new_account[$i]['added_amt'],
+                             'remark' => $new_account[$i]['remark'],
                             'update_at' => date('Y-m-d H:i:s'),
                             'update_by' => session('uid'),
                         );
@@ -2516,10 +2529,16 @@ class PurchaseModel extends Model
                             'cgst_amt' => $new_account[$i]['cgst_amt'],
                             'sgst_amt' => $new_account[$i]['sgst_amt'],
                             'taxability' => $new_account[$i]['taxability'],
-                            'sub_total' => $new_account[$i]['sub_total'],
-                            'remark' => $new_account[$i]['remark'],
-                            'discount' => $new_account[$i]['discount'],
-                            'added_amt' => $new_account[$i]['added_amt'],
+                             //update discount column 17-01-2023
+                             'total' => $new_account[$i]['total'],
+                             'item_disc' => $new_account[$i]['item_disc'],
+                             'discount' => $new_account[$i]['discount'],
+                             'divide_disc_item_per' => $new_account[$i]['divide_disc_item_per'],
+                             'divide_disc_item_amt' => $new_account[$i]['divide_disc_item_amt'],
+                             'sub_total' => $new_account[$i]['sub_total'],
+                             // end
+                             'added_amt' => $new_account[$i]['added_amt'],
+                             'remark' => $new_account[$i]['remark'],
                             'created_at' => date('Y-m-d H:i:s'),
                             'created_by' => session('uid'),
                         );
@@ -2559,7 +2578,6 @@ class PurchaseModel extends Model
                             'parent_id' => $id,
                             'is_expence' => 0,
                             'item_id' => $post['pid'][$i],
-                            'item_disc' => $post['item_disc'][$i],
                             'hsn' => @$post['hsn'][$i] ? $post['hsn'][$i]  : '',
                             'type' => 'invoice',
                             'uom' => $post['uom'][$i],
@@ -2572,10 +2590,16 @@ class PurchaseModel extends Model
                             'cgst_amt' => $post['cgst_amt'][$i],
                             'sgst_amt' => $post['sgst_amt'][$i],
                             'taxability' => $post['taxability'][$i],
-                            'sub_total' => $sub_total,
-                            'remark' => $post['remark'][$i],
+                            //update discount column 17-01-2023
+                            'total' => $total,
+                            'item_disc' => $post['item_disc'][$i],
                             'discount' => $post['item_discount_hidden'][$i],
+                            'divide_disc_item_per' => $post['item_per'][$i],
+                            'divide_disc_item_amt' => $post['divide_disc_amt'][$i],
+                            'sub_total' => $sub_total,
+                            // end
                             'added_amt' => $post['item_added_amt_hidden'][$i],
+                            'remark' => $post['remark'][$i],
                             'created_at' => date('Y-m-d H:i:s'),
                             'created_by' => session('uid'),
                         );
@@ -2584,7 +2608,6 @@ class PurchaseModel extends Model
                             'parent_id' => $id,
                             'is_expence' => 1,
                             'item_id' => $post['pid'][$i],
-                            'item_disc' => $post['item_disc'][$i],
                             'hsn' => @$post['hsn'][$i] ? $post['hsn'][$i]  : '',
                             'type' => 'invoice',
                             'uom' => '',
@@ -2597,10 +2620,16 @@ class PurchaseModel extends Model
                             'cgst_amt' => $post['cgst_amt'][$i],
                             'sgst_amt' => $post['sgst_amt'][$i],
                             'taxability' => $post['taxability'][$i],
-                            'sub_total' => $post['price'][$i],
-                            'remark' => $post['remark'][$i],
+                            //update discount column 17-01-2023
+                            'total' => $post['price'][$i],
+                            'item_disc' => 0,
                             'discount' => 0,
+                            'divide_disc_item_per' => 0,
+                            'divide_disc_item_amt' => 0,
+                            'sub_total' => $post['price'][$i],
+                            // end
                             'added_amt' => $post['item_added_amt_hidden'][$i],
+                            'remark' => $post['remark'][$i],
                             'created_at' => date('Y-m-d H:i:s'),
                             'created_by' => session('uid'),
                         );

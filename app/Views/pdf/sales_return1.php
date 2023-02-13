@@ -1,4 +1,8 @@
 <!DOCTYPE html>
+
+
+
+
 <html lang="en">
 
 <head>
@@ -81,7 +85,7 @@
             </thead>
         <tbody>
             <tr>
-                <td rowspan="3" colspan="6"><center><h3>TAX INVOICE</h3></center> <br>
+                <td rowspan="3" colspan="6"><center><h3>Credit Note</h3></center> <br>
 
                 </td>
                 <td>&nbsp;</td>
@@ -109,33 +113,34 @@
 
                 <td colspan="3">Ship To : <?=@$delivery['name']?>
                     <br><?=@$account['gst_add']?>
-                    <br><?=@$salesinvoice['ship_city']?> &nbsp;<?=@$salesinvoice['ship_pin']?>
-                    <br><?=@$salesinvoice['ship_state']?>
-                    <br><?=@$salesinvoice['ship_country']?>
+                    <br><?=@$s_return['ship_city']?> &nbsp;<?=@$s_return['ship_pin']?>
+                    <br><?=@$s_return['ship_state']?>
+                    <br><?=@$s_return['ship_country']?>
                     <br>GSTIN :<?=@$delivery['gst']?>
                     <br>State Code : <?=@$ship_state['state_code']?>
                     <br>State :<?=@$ship_state['name']?>
 
                 </td>
                 <td colspan="3">
-                    <b>Invoice No : <?=@$salesinvoice['custom_inv_no']?></b><br>
-                    <b>Voucher No : <?=@$salesinvoice['invoice_no']?></b>
-                    <br><b>Invoice Date : <?=user_date(@$salesinvoice['invoice_date'])?></b>
+                    <b>Invoice No : <?=@$s_return['supp_inv']?></b><br>
+                    <b>Voucher No : <?=@$s_return['invoice_no']?></b>
+                    <br><b>Invoice Date : <?=user_date(@$s_return['return_date'])?></b>
                     <br>Place Of Supply : <?=@$ship_state['name']?>
                 </td>
+
             </tr>
 
             <tr>
-                <td colspan="4">Broker :<?=@$salesinvoice['broker_name']?></td>
+                <td colspan="4">Broker :<?=@$s_return['broker_name']?></td>
                 <td colspan="5">Transporter Name :<?=@$transport['name']?></td>
             </tr>
             <tr>
                 <td colspan="3">
-                    L.R.No :<?=@$salesinvoice['lr_no']?>
+                    L.R.No :<?=@$s_return['lr_no']?>
                     <br>Transport :
                 </td>
-                <td colspan="3">L.R.Date : <?=@$salesinvoice['lr_date']?>
-                    <br>Transport Type : <?=@$salesinvoice['transport_mode']?>
+                <td colspan="3">L.R.Date : <?=@$s_return['lr_date']?>
+                    <br>Transport Type : <?=@$s_return['transport_mode']?>
                 </td>
                 <td colspan="3">Weight :<?=@$challan_detail['weight']?>
                     <br>Freight :<?=@$challan_detail['freight']?>
@@ -159,49 +164,26 @@
             </tr>
 
             <?php 
-             
-              $total_qty = 0;
               $i = 1;
+              $total_qty = 0;
+      
               $total = 0.0;
               $igst_amt = 0.0;
               $sub = 0;
-              $total_disc_amt = 0.00;
-              $total_added_amt = 0.00;
-              $discountable_amt = 0.00;
+      
+              if($s_return['discount'] > 0){
+                  
+              }
 
-             
                 foreach($item as $row)
                 {
-                    
                     $total_qty +=$row['qty'];
+
                     $sub = $row['qty'] * $row['rate'];
                     $disc_amt = $sub * $row['item_disc'] / 100;
-                    if($row['is_expence'] == 1){
-                        $final_sub = $row['rate'];
-                    }else{
-                        $final_sub = $sub - $disc_amt;                        
-                    }
             
+                    $final_sub = $sub - $disc_amt;
                     $total += $final_sub;
-
-
-                    if($salesinvoice['discount'] > 0)
-                    {
-                        $total_disc_amt += $row['divide_disc_item_amt'];
-                    }
-                    else
-                    {
-                        $total_disc_amt += $row['discount'];
-                    }
-                    if($salesinvoice['amty'] > 0)
-                    {
-                        $total_added_amt += $row['added_amt'];
-                    }
-                    $discountable_amt += $row['sub_total'];
-
-
-                    
-
         
             ?>
 
@@ -236,36 +218,87 @@
             </tr>
     </table>
         <?php
-                            $gst_amt = $salesinvoice['tot_igst'];
-                            $round_amt = $salesinvoice['round_diff'];
-                            $taxable_amt = $discountable_amt + round($total_added_amt);
-                            $grand_total = $taxable_amt + $gst_amt + $round_amt;
-                            $tax = json_decode($salesinvoice['taxes']);
+                if($total != 0 ){
+                    if ($s_return['disc_type'] == '%') {
+                        $discount_amount = ($total * ($s_return['discount'] / 100));
+                        $disc_avg_per = $discount_amount / $total;
+                    } else {
+                        $disc_avg_per = ($s_return['discount'] ? (float)$s_return['discount'] : 0) / ($total ? $total : 0);
+                    }
+                    if ($s_return['amty'] > 0) {
+                        if ($s_return['amty_type'] == '%') {
+                            $amty_amount = ($total * ($s_return['amty'] / 100));
+                            $add_amt_per = $amty_amount / $total;
+                        } else {
+                            $add_amt_per = $s_return['amty'] / $total;
+                        }
+                    } else {
+                        $add_amt_per = 0;
+                    }
+
+                }else{
+                    $add_amt_per = 0;
+                    $disc_avg_per = 0;
+                }
             
-                            $fin_igst = 0;
-                            $fin_sgst = 0;
-                            $fin_cgst = 0;
-                            if(in_array('igst',$tax)){
-                                $fin_igst = $salesinvoice['tot_igst'];
-        
-                            }
+                    $total = 0;
+                    $igst_amt = 0;
+                    $grand_total =0;
+                    $total_discount=0;
+                    $total_add=0;
+                
+                    for ($i = 0; $i < count($item); $i++) {
+                        $sub = $item[$i]['qty'] * $item[$i]['rate'];
+                
+                        if ($s_return['discount'] > 0) {
+                            $discount_amt = $sub * $disc_avg_per;
+                            $final_sub = $sub - $discount_amt;
+                            $add_amt = $sub * $add_amt_per;
+                        } else {
+                            $discount_amt = $sub * $item[$i]['item_disc'] / 100;
+                            $final_sub = $sub - $discount_amt;
+                            $add_amt = $final_sub * $add_amt_per;
+                        }
+                
+                        $final_tot = $final_sub + $add_amt;    
+                        $igst_amt += $final_tot * $item[$i]['igst'] / 100;    
+                        $total += $final_tot;
+            
+                        $total_discount +=$discount_amt; 
+                        $total_add +=$add_amt; 
+                
+                    }
                     
-                            if(in_array('sgst',$tax)){
-                                $fin_sgst = $salesinvoice['tot_sgst'];
-                                $fin_cgst = $salesinvoice['tot_sgst'];
-                            }
-           
-               
+                    $grand_total = $total;
+                    $tax = json_decode($s_return['taxes']);
+            
+                    $fin_igst = 0;
+                    $fin_sgst = 0;
+                    $fin_cgst = 0;
+            
+                    if(in_array('igst',$tax)){
+                        $fin_igst = $igst_amt;
+
+                    }
+            
+                    if(in_array('sgst',$tax)){
+                        $fin_sgst = $igst_amt/2;
+                        $fin_cgst = $igst_amt/2;
+                    }
+            
+                    $grand_total +=$igst_amt;
+                    
+                    $grand_total +=$s_return['round_diff'];
                 ?>
     <table class="T-border2" style="width:100%">
         <tr>
             <td colspan="6"
                 style="border-right: 1px solid black; border-bottom: 1px solid black; border-top: 1px solid black; text-align: start;">
-                Narration - <?=@$salesinvoice['other']?></td>
+                Narration - <?=@$s_return['other']?></td>
             <td colspan="2" style="border-right: 1px solid black; border-top: 1px solid black; text-align:end;">
                 Less:Discount <br></td>
             <td style="border-right: 1px solid black; border-top: 1px solid black;text-align: right;">
-            <b>(-)<?=@$total_disc_amt?></b><br></td>
+            <b>(-)<?=@$total_discount?></b><br></td>
 
         </tr>
         <tr>
@@ -277,34 +310,34 @@
 
             </td>
             <td style="border-right: 1px solid black; border-top: 1px solid black;text-align: right;">
-            <b>(+)<?=round(@$total_added_amt)?></b><br>
+            <b>(+)<?=@$total_add?></b><br>
 
             </td>
         </tr>
         <tr>
             <td colspan="6" style="border-right: 1px solid black; border-top: 1px solid black; text-align: start;">
-                Bank Name: <?=@$salesinvoice['bank_name'];?>
+                Bank Name: <?=@$s_return['bank_name'];?>
             </td>
             <td colspan="2" style="border-right: 1px solid black; border-top: 1px solid black; text-align:end;">Amount:
                 <br>
 
             </td>
-            <td style="border-right: 1px solid black; border-top: 1px solid black;text-align: right;"> <?=number_format(@$taxable_amt,2)?><br></td>
+            <td style="border-right: 1px solid black; border-top: 1px solid black;text-align: right;"> <?=number_format(@$total,2)?><br></td>
         </tr>
         <tr>
 
             <td colspan="6" style="border-right: 1px solid black; border-top: 1px solid white; text-align: start;">
-                ACC.No: <?=@$salesinvoice['bank_ac'];?>
+                ACC.No: <?=@$s_return['bank_ac'];?>
             </td>
             <?php if($fin_igst > 0 ) {?>
-            <td colspan="2" style="border-right: 1px solid black; border-top: 1px solid black; text-align:end;"><?=@$salesinvoice['igst_acc_name']?>:
+            <td colspan="2" style="border-right: 1px solid black; border-top: 1px solid black; text-align:end;">IGST:
                 <br>
             </td>
-            <td style="border-right: 1px solid black; border-top: 1px solid black;text-align: right;"> <b><?=number_format(@$salesinvoice['tot_igst'],2)?></b><br>
+            <td style="border-right: 1px solid black; border-top: 1px solid black;text-align: right;"> <b><?=number_format(@$fin_igst,2)?></b><br>
             <?php }else{?>
-            <td colspan="2" style="border-right: 1px solid black; border-top: 1px solid black; text-align:end;"><?=@$salesinvoice['cgst_acc_name']?>:<br>
+            <td colspan="2" style="border-right: 1px solid black; border-top: 1px solid black; text-align:end;">CGST:<br>
             </td>
-            <td style="border-right: 1px solid black; border-top: 1px solid black;text-align: right;"> <b><?=number_format(@$salesinvoice['tot_cgst'],2)?></b><br>
+            <td style="border-right: 1px solid black; border-top: 1px solid black;text-align: right;"> <b><?=number_format(@$fin_cgst,2)?></b><br>
 
             <?php }?>
 
@@ -313,7 +346,7 @@
         <tr>
 
             <td colspan="6" style="border-right: 1px solid black; border-top: 1px solid white; text-align: start;">
-                IFSC CODE: <?=@$salesinvoice['bank_ifsc'];?>
+                IFSC CODE: <?=@$s_return['bank_ifsc'];?>
             </td>
             <?php if($fin_igst > 0 ) {?>
 
@@ -321,21 +354,21 @@
             <td colspan="1" style="border-right: 1px solid black; border-top: 1px solid black;text-align: right;"> 0</td>
             <?php }else {?>
 
-            <td colspan="2" style="border-right: 1px solid black; border-top: 1px solid black; text-align:end;"><?=@$salesinvoice['sgst_acc_name']?>:<br>
+            <td colspan="2" style="border-right: 1px solid black; border-top: 1px solid black; text-align:end;">SGST:<br>
             </td>
-            <td style="border-right: 1px solid black; border-top: 1px solid black;text-align: right;"> <b><?=number_format(@$salesinvoice['tot_sgst'],2)?></b><br>
+            <td style="border-right: 1px solid black; border-top: 1px solid black;text-align: right;"> <b><?=number_format(@$fin_sgst,2)?></b><br>
             <?php } ?>
         </tr>
         
         <tr>
             <td colspan="6" style="border-right: 1px solid black; border-top: 1px solid black; text-align: start;">
-                Due Days: <?=@$salesinvoice['due_days'];?>
+                Due Days: <?=@$s_return['due_days'];?>
             </td>
             <td colspan="2" style="border-right: 1px solid black; border-top: 1px solid black; text-align:end;">Round
                 Off:: <br>
 
             </td>
-            <td style="border-right: 1px solid black; border-top: 1px solid black;text-align: right;"> <b><?=@$salesinvoice['round_diff']?></b><br>
+            <td style="border-right: 1px solid black; border-top: 1px solid black;text-align: right;"> <b><?=@$s_return['round_diff']?></b><br>
             </td>
 
         </tr>
@@ -344,12 +377,12 @@
             <td colspan="6" style="border-right: 1px solid black; border-top: 1px solid black; text-align: start;">
                 RS In Word: <b><?php 
                     $gtotal  = round($grand_total); 
-                    echo strtoupper(inword($grand_total)); 
+                    echo strtoupper(inword($gtotal)); 
                 ?></b>
             </td>
             <td colspan="2"
                 style="border-top: 1px solid black; border-bottom: 1px solid black; border-right: 1px solid black; font-size:15px;">
-                Grand total:
+                <b>Grant total:</b>
             </td>
             <td colspan="1"
                 style=" border-top: 1px solid black; border-bottom: 1px solid black; border-right: 1px solid black;text-align: right; font-size:20px;">
@@ -421,32 +454,32 @@
                         foreach($item as $row){
                             if($row['hsn'] != ''){
                                 
-                                // $item_disc = 0;
-                                // $total_taxable = ($row['qty'] * $row['rate']);
+                                $item_disc = 0;
+                                $total_taxable = ($row['qty'] * $row['rate']);
 
-                                // if(!empty($row['item_disc'])){
-                                //     $item_disc = $total_taxable * ($row['item_disc']/100) ;
-                                // }
+                                if(!empty($row['item_disc'])){
+                                    $item_disc = $total_taxable * ($row['item_disc']/100) ;
+                                }
                                 
-                                $total_taxable = $row['sub_total']; 
+                                $total_taxable = $total_taxable - $item_disc; 
                             
                                 $arr[$row['hsn']]['taxable'] = (@$arr[$row['hsn']]['taxable'] ? @$arr[$row['hsn']]['taxable'] : 0) + $total_taxable;
                                 $arr[$row['hsn']]['igst'] = $row['igst'];
                                 $arr[$row['hsn']]['cgst'] = $row['cgst'];
                                 $arr[$row['hsn']]['sgst'] = $row['sgst'];
                         
-                                $arr[$row['hsn']]['igst_amount'] =  (@$arr[$row['hsn']]['igst_amount'] ? $arr[$row['hsn']]['igst_amount'] : 0) + (float)$row['igst_amt'];
-                                $arr[$row['hsn']]['cgst_amount'] = (@$arr[$row['hsn']]['cgst_amount'] ? $arr[$row['hsn']]['cgst_amount'] : 0) + (float)$row['cgst_amt'];
-                                $arr[$row['hsn']]['sgst_amount'] = (@$arr[$row['hsn']]['sgst_amount'] ? $arr[$row['hsn']]['sgst_amount'] : 0) + (float)$row['sgst_amt'];
+                                $arr[$row['hsn']]['igst_amount'] =  (@$arr[$row['hsn']]['igst_amount'] ? $arr[$row['hsn']]['igst_amount'] : 0) + @$total_taxable * $arr[$row['hsn']]['igst']/100;
+                                $arr[$row['hsn']]['cgst_amount'] = (@$arr[$row['hsn']]['cgst_amount'] ? $arr[$row['hsn']]['cgst_amount'] : 0) + @$total_taxable * $arr[$row['hsn']]['cgst']/100;
+                                $arr[$row['hsn']]['sgst_amount'] = (@$arr[$row['hsn']]['sgst_amount'] ? $arr[$row['hsn']]['sgst_amount'] : 0) + @$total_taxable * $arr[$row['hsn']]['sgst']/100;
                             
                                 $total_igst +=  $arr[$row['hsn']]['igst_amount'];
                                 $total_cgst +=   $arr[$row['hsn']]['cgst_amount'];
                                 $total_sgst +=   $arr[$row['hsn']]['sgst_amount'];
 
-                                //$total_taxable = 0;
+                                $total_taxable = 0;
                                
-                               // $sub = $row['qty'] * $row['rate'] - $item_disc - $row['discount'];
-                                $total_sub += $total_taxable;
+                                $sub = $row['qty'] * $row['rate'] - $item_disc;
+                                $total_sub += $sub;
 
                             }else{
                             

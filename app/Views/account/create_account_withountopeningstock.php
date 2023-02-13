@@ -306,13 +306,6 @@
                                     <input class="form-control" name="taxpan" value="<?= @$account_view['tax_pan']; ?>" minlength="10" maxlength="10" style="text-transform: uppercase;" placeholder="Enter Income Tax PAN" type="text">
                                 </div>
 
-                                <!-- <div class="col-lg-4 form-group">
-                                    <label class="form-label"><b>TAN NO:</b></label>
-                                    <input class="form-control" name="tanno" value="<?= @$account_view['tan_no']; ?>"
-                                        placeholder="Enter TAN NO" type="text">
-                                </div> -->
-
-
                                 <div class="col-lg-4 form-group alt_gst">
                                     <label class="form-label"><b>SET ALT GST DETAIL:</b></label>
                                     <select class="form-control select2" name="alt_gst">
@@ -377,18 +370,6 @@
                                         <option <?= (@$account_view['taxability'] == "Exempt" ? 'selected' : '') ?> value="Exempt">Exempt</option>
                                     </select>
                                 </div>
-
-                                <!--<div class="col-lg-6 form-group">
-                                    <label class="form-label"><b>GST Date:</b></label>
-                                    <div class="input-group">
-                                        <div class="input-group-prepend">
-                                            <div class="input-group-text">
-                                                <i class="fe fe-calendar lh--9 op-6"></i>
-                                            </div>
-                                        </div><input class="form-control fc-datepicker" placeholder="MM/DD/YYYY"
-                                            type="text" name="gst_date" value="<?= @$account_view['gst_date']; ?>">
-                                    </div>
-                                </div>-->
                                 <div class="col-lg-4 form-group" id="hsn_div">
                                     <label class="form-label"><b>HSN No:</b></label>
                                     <input class="form-control" name="hsn" value="<?= @$account_view['hsn']; ?>" placeholder="Enter HSN No" type="text">
@@ -764,7 +745,7 @@
 
                 if (text == 'Expenses' || text == 'Incomes' || data.new_hide == data.expense_id || data
                     .parent_id == data.income_id) {
-                    glDiv.style.display = "block";
+                    glDiv.style.display = "none";
                     //hsn_div.style.display = "none";
 
                 } else {
@@ -779,20 +760,11 @@
                     console.log("no");
                     $("#state").attr("required", "false");
                 }
-                //alert(text)
-
+               
                 if (text == 'Duties and taxes') {
-                    //HideName.style.display = "none";
-                    //Name.style.display = "block";
-                    $("#tax_type").css("display", "block");
-                    //$("#taxation_show").css("display", "none");
-                    //$('#name').attr('disabled');
+                    $("#tax_type").css("display", "block");    
                 } else {
-                    //Name.style.display = "none";
-                    //HideName.style.display = "block";
                     $("#tax_type").css("display", "none");
-                    //$("#taxation_show").css("display", "none");
-                    //$('#taxes_name').attr('disabled');
                 }
             },
             error: function(xhr) {
@@ -1069,17 +1041,14 @@
             }
             if (text == 'Expenses' || text == 'Incomes' || data.parent_id == data.expense_id || data
                 .parent_id == data.income_id) {
-                glDiv.style.display = "block";
-                // temp solution for this
-                //glDiv.style.display = "none";
+                glDiv.style.display = "none";
 
             } else {
                 glDiv.style.display = "block";
 
             }
             if (text == 'Expenses' || text == 'Incomes' || data.new_hide == data.expense_id || data.tx_bn_hide == data.income_id) {
-                // temp solution for this
-                //glDiv.style.display = "none";
+                glDiv.style.display = "none";
             } else {
                 glDiv.style.display = "block";
             }
@@ -1450,15 +1419,13 @@
        if(name == "gst")
        {
          $("#taxation_show").css("display", "block");
-        
        }
        else
        {
         $("#taxation_show").css("display", "none");
-      
        }
     }
-  
+   
     function pageload() {
 
     }
