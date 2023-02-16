@@ -317,11 +317,12 @@ class TestingModel extends Model
         $builder->groupBy('jm.party_account');
         $result = $builder->get();
         $party_list = $result->getResultArray();
+       // echo $db->getLastQuery();exit;
     
         $invoice_list = array();
         foreach ($party_list as $row) {
             $builder = $db->table('jv_management jm');
-            $builder->select('SUM(jm.amount) as total');
+            $builder->select('jm.*');
             $builder->join('platform_voucher pv', 'pv.voucher = jm.invoice_no');
             if (!empty($post['month'])) {
                 $builder->where(array('DATE(jm.invoice_date)  >= ' => $start_date));
@@ -332,11 +333,84 @@ class TestingModel extends Model
             }
             $builder->where(array("jm.type" => 'invoice', "jm.party_account" => $row['party_account']));
             $result = $builder->get();
-            $party_total = $result->getRowArray();
-            $row['total'] = $party_total['total'];
+            $jv_invoice_list = $result->getResultArray();
+            $jv_invoice_list_new = array();
+            foreach($jv_invoice_list as $jv_inv_row)
+            {
+                if($jv_inv_row['is_update'] == 0 AND ($jv_inv_row['is_delete'] == 1 OR $jv_inv_row['is_cancle'] == 1))
+                {
+                    
+                }
+                else
+                {
+                    $jv_invoice_list_new[] = $jv_inv_row;
+                } 
+            }
+           
+
+            
+            $total =0;
+            $jv_pass = array();
+            $is_upadte = array();
+            $is_delete = array();
+            $is_cancel = array();
+            foreach($jv_invoice_list_new as $row1)
+            {
+                $jv_pass[] = $row1['jv_pass'];
+                $total += $row1['amount'];
+                $is_upadte[] = $row1['is_update'];
+                $is_delete[] = $row1['is_delete'];
+                $is_cancel[] = $row1['is_cancle']; 
+
+            }
+            $get_arrayunique = array_unique($jv_pass);
+            $count_arrayunique = count($get_arrayunique);
+
+            $is_updateunique = array_unique($is_upadte);
+            $count_is_updateunique = count($is_updateunique);
+            
+            $is_cancelunique = array_unique($is_cancel);
+            $count_is_cancelunique = count($is_cancelunique);
+
+            $is_deleteunique = array_unique($is_delete);
+            $count_is_deleteunique = count($is_deleteunique);
+            // echo '<br>';
+            // echo '<pre>';Print_r('$account'.$row['party_account']);
+            // echo '<pre>';Print_r('$count_arrayunique'.$count_arrayunique);
+            // echo '<pre>';Print_r('$get_arrayunique[0]'.$get_arrayunique[0]);
+            
+
+            if($count_arrayunique == 1 AND $get_arrayunique[0] == 0)
+            {
+               $status = '<span style="color: blue;"> New </span>';
+            }
+            // elseif($count_arrayunique == 1 AND $get_arrayunique[0] == 1 AND $count_is_updateunique == 1
+            //  AND $is_updateunique[0] == 0 AND $count_is_cancelunique == 1 AND $is_cancelunique[0] == 0
+            //  AND $count_is_deleteunique == 1 AND $is_deleteunique[0] == 0)
+            elseif($count_arrayunique == 1 AND $get_arrayunique[0] == 1 AND $count_is_updateunique == 1 AND $is_updateunique[0] == 0)
+            
+            {
+                $status = '<span style="color: green;"> Updated </span>';
+            }
+            else
+            {
+                $status = '<span style="color: orange;"> Remaining </span>';
+            }
+            //echo '<pre>';Print_r($jv_pass);exit;
+            
+            //$check_status = array_unique($jv_pass);
+            //echo '<pre>';Print_r($check_status);
+            
+            $row['total'] = $total;
+            $row['status'] = $status;
             $invoice_list[] = $row;
         }
+         //exit;
+        //echo '<pre>';Print_r($invoice_list);exit;
+        
         $data['invoice_list'] = $invoice_list;
+
+
         $return_list = array();
         $builder = $db->table('jv_management jm');
         $builder->select('jm.party_account,ac.name as party_account_name');
@@ -357,7 +431,7 @@ class TestingModel extends Model
 
         foreach ($party_list as $row) {
             $builder = $db->table('jv_management jm');
-            $builder->select('SUM(jm.amount) as total');
+            $builder->select('jm.*');
             $builder->join('platform_voucher pv', 'pv.voucher = jm.invoice_no');
             if (!empty($post['month'])) {
                 $builder->where(array('DATE(jm.invoice_date)  >= ' => $start_date));
@@ -369,10 +443,79 @@ class TestingModel extends Model
 
             $builder->where(array("jm.type" => 'return', "jm.party_account" => $row['party_account']));
             $result = $builder->get();
-            $party_total = $result->getRowArray();
-            $row['total'] = $party_total['total'];
+            $jv_return_list = $result->getResultArray();
+        
+            
+            $jv_return_list_new = array();
+            foreach($jv_return_list as $jv_ret_row)
+            {
+                if($jv_ret_row['is_update'] == 0 AND ($jv_ret_row['is_delete'] == 1 OR $jv_ret_row['is_cancle'] == 1))
+                {
+                   
+                }
+                else
+                {
+                    $jv_return_list_new[] = $jv_ret_row;
+                }
+            }
+            $total =0;
+            $jv_pass_ret = array();
+            $is_upadte_ret = array();
+            $is_delete_ret = array();
+            $is_cancel_ret = array();
+            //echo '<pre>';Print_r($jv_return_list_new);
+             foreach($jv_return_list_new as $row1)
+             {
+                 $jv_pass_ret[] = $row1['jv_pass'];
+                 $total += $row1['amount'];
+                 $is_upadte_ret[] = $row1['is_update'];
+                 $is_delete_ret[] = $row1['is_delete'];
+                 $is_cancel_ret[] = $row1['is_cancle']; 
+ 
+             }
+             //echo '<pre>';Print_r($is_upadte);
+             
+             $get_arrayunique = array_unique($jv_pass_ret);
+             $count_arrayunique = count($get_arrayunique);
+ 
+             $is_updateunique = array_unique($is_upadte_ret);
+             $count_is_updateunique = count($is_updateunique);
+             
+             $is_cancelunique = array_unique($is_cancel_ret);
+             $count_is_cancelunique = count($is_cancelunique);
+ 
+             $is_deleteunique = array_unique($is_delete_ret);
+             $count_is_deleteunique = count($is_deleteunique);
+            //   echo '<br>';
+            // echo '<pre>';Print_r('$account'.$row['party_account']);
+            // echo '<pre>';Print_r('$count_arrayunique'.$is_updateunique);
+           // echo '<pre>';Print_r('$get_arrayunique[0]'.$is_updateunique[0]);
+ 
+             if($count_arrayunique == 1 AND $get_arrayunique[0] == 0)
+             {
+                $status = '<span style="color: blue;"> New </span>';
+             }
+            //  elseif($count_arrayunique == 1 AND $get_arrayunique[0] == 1 AND $count_is_updateunique == 1
+            //   AND $is_updateunique[0] == 0 AND $count_is_cancelunique == 1 AND $is_cancelunique[0] == 0
+            //   AND $count_is_deleteunique == 1 AND $is_deleteunique[0] == 0)
+            elseif($count_arrayunique == 1 AND $get_arrayunique[0] == 1 AND $count_is_updateunique == 1 AND $is_updateunique[0] == 0)
+            //   AND $is_updateunique[0] == 0 
+             {
+                 $status = '<span style="color: green;"> Updated </span>';
+             }
+            
+             else
+             {
+                 $status = '<span style="color: orange;"> Remaining </span>';
+             }
+           
+             
+             $row['total'] = $total;
+             $row['status'] = $status;
+             
             $return_list[] = $row;
         }
+        //exit;
         $data['return_list'] = $return_list;
 
         $data['month'] = $post['month'];
@@ -464,11 +607,21 @@ class TestingModel extends Model
                             $invoice = $gnmodel->get_data_table('sales_invoice', array('id' => $row['invoice_no']), 'net_amount');
                             $total_amt += $invoice['net_amount'];
                             $update_at = date('Y-m-d H:i:s');
-                            $update_by = session('uid');;
+                            $update_by = session('uid');
                             $result1 = $gnmodel->update_data_table('jv_management', array('invoice_no' => $row['invoice_no'], 'type' => "invoice"), array('amount' => $invoice['net_amount'], 'is_update' => 0, 'updated_at' => $update_at, 'updated_by' => $update_by));
-                        } elseif ($row['is_update'] == 1 && ($row['is_cancle'] == 1 || $row['is_delete'] == 1)) {
+                        } elseif ($row['is_update'] == 1 AND ($row['is_cancle'] == 1 || $row['is_delete'] == 1)) {
+                            $update_at = date('Y-m-d H:i:s');
+                            $update_by = session('uid');
                             $total_amt += 0;
-                        } else {
+                            $result1 = $gnmodel->update_data_table('jv_management', array('invoice_no' => $row['invoice_no'], 'type' => "invoice"), array('is_update' => 0, 'updated_at' => $update_at, 'updated_by' => $update_by));
+                
+                        } 
+                        elseif ($row['is_update'] == 0 AND ($row['is_cancle'] == 1 || $row['is_delete'] == 1)) {
+                        
+                            $total_amt += 0;
+                         }
+                       
+                        else {
                             $total_amt += $row['amount'];
                         }
                     } else {
@@ -642,11 +795,23 @@ class TestingModel extends Model
                             $updated_at = date('Y-m-d H:i:s');
                             $updated_by = session('uid');
                             $result1 = $gnmodel->update_data_table('jv_management', array('invoice_no' => $row['invoice_no'], 'type' => "return"), array('amount' => $invoice['net_amount'], 'is_update' => 0, 'updated_at' => $updated_at, 'updated_by' => $updated_by));
-                        } elseif ($row['is_update'] == 1 && ($row['is_cancle'] == 1 || $row['is_delete'] == 1)) {
+                        }elseif ($row['is_update'] == 1 AND ($row['is_cancle'] == 1 || $row['is_delete'] == 1)) {
+                            $update_at = date('Y-m-d H:i:s');
+                            $update_by = session('uid');
                             $total_amt += 0;
-                        } else {
+                            $result1 = $gnmodel->update_data_table('jv_management', array('invoice_no' => $row['invoice_no'], 'type' => "return"), array('is_update' => 0, 'updated_at' => $update_at, 'updated_by' => $update_by));
+                
+                        } 
+                        elseif ($row['is_update'] == 0 AND ($row['is_cancle'] == 1 || $row['is_delete'] == 1)) {
+                        
+                            $total_amt += 0;
+                         }
+                       
+                        else {
                             $total_amt += $row['amount'];
                         }
+                       
+                        
                     } else {
                         $created_at = date('Y-m-d H:i:s');
                         $created_by = session('uid');
@@ -852,6 +1017,10 @@ class TestingModel extends Model
             "gl.invoice_date",
             "gl.amount",
             "gl.jv_pass",
+            "gl.is_update",
+            "gl.is_delete",
+            "gl.is_cancle",
+
         );
 
         $filter = $get['filter_data'];
@@ -860,7 +1029,7 @@ class TestingModel extends Model
         if ($filter != '' && $filter != 'undefined') {
             $where .= ' and jv_id ="' . $filter . '"';
         }
-        //$where .= " and gl.jv_pass = 1";
+        $where .= " and gl.is_delete = 0 and gl.is_cancle = 0";
 
         $rResult = getManagedData($tablename, $dt_col, $dt_search, $where);
         $sEcho = $rResult['draw'];
@@ -868,16 +1037,19 @@ class TestingModel extends Model
         $encode = array();
         foreach ($rResult['table'] as $row) {
             $DataRow = array();
-            $DataRow[] = $row['id'];
-            $DataRow[] = $row['jv_id'];
-            $DataRow[] = $row['account_name'];
-            $DataRow[] = $row['invoice_no'];
-            $DataRow[] = $row['type'];
-            $DataRow[] = user_date($row['invoice_date']);
-            $DataRow[] = $row['amount'];
-            //$DataRow[] = '';
+            
+                $DataRow[] = $row['id'];
+                $DataRow[] = $row['jv_id'];
+                $DataRow[] = $row['account_name'];
+                $DataRow[] = $row['invoice_no'];
+                $DataRow[] = $row['type'];
+                $DataRow[] = user_date($row['invoice_date']);
+                $DataRow[] = $row['amount'];
+                $encode[] = $DataRow;
+                //$DataRow[] = '';
+            
 
-            $encode[] = $DataRow;
+           
         }
         $json = json_encode($encode);
         echo '{ "draw": ' . intval($sEcho) . ',"recordsTotal": ' . $rResult['total'] . ',"recordsFiltered": ' . $rResult['total'] . ',"data":' . $json . '}';

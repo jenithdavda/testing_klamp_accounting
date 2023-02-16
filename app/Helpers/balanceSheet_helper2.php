@@ -938,7 +938,6 @@ function pl_tot_data_bl($start_date = '', $end_date = '')
 //capital data
 function capital_data($id, $start_date = '', $end_date = '')
 {
-
     if ($start_date == '') {
         if (date('m') < '03') {
             $year = date('Y') - 1;
@@ -985,10 +984,6 @@ function capital_data($id, $start_date = '', $end_date = '')
     }
 
     $bank_income = array();
-//     echo '<pre>';Print_r($start_date);
-// echo '<pre>';Print_r($end_date);exit;
-
-    
 
     $builder = $db->table('gl_group gl');
     $builder->select('ac.id as account_id,gl.name as gl_name,bt.payment_type,gl.parent,gl.id as gl_id,ac.name as account_name,bt.amount as bt_total,bt.mode');
@@ -5212,84 +5207,84 @@ function get_sub_sub_glgroup($parent_id)
     }
     return  $categories;
 }
-// function new_get_sub_sub_glgroup($parent_id)
-// {
-//     $categories = array();
+function new_get_sub_sub_glgroup($parent_id)
+{
+    $categories = array();
 
-//     $db = \Config\Database::connect();
+    $db = \Config\Database::connect();
 
-//     if (session('DataSource')) {
-//         $db->setDatabase(session('DataSource'));
-//     }
+    if (session('DataSource')) {
+        $db->setDatabase(session('DataSource'));
+    }
 
-//     $builder = $db->table('gl_group');
-//     $builder->select('id,name,parent');
-//     $builder->where('is_delete', 0);
-//     $query = $builder->get();
-//     $builder->orderBy('id', 'desc');
-//     $result = $query->getResult();
-//     //echo '<pre>';Print_r($result);exit;
+    $builder = $db->table('gl_group');
+    $builder->select('id,name,parent');
+    $builder->where('is_delete', 0);
+    $query = $builder->get();
+    $builder->orderBy('id', 'desc');
+    $result = $query->getResult();
+    //echo '<pre>';Print_r($result);exit;
 
     
-//     foreach ($result as $mainCategory) {
-//         //$category = array();
+    foreach ($result as $mainCategory) {
+        //$category = array();
 
-//             $category = gl_list_new($mainCategory->id);
-//             //$category['name'] = $mainCategory->name;
-//             $sub_category = get_sub_sub_glgroup($mainCategory->id);
-//             if(!empty($sub_category))
-//             {
-//                 foreach($sub_category as $key=>$value)
-//                 {
-//                     $category[$key] = $value;
-//                     //if(!empty($value as ))
-//                 }
-//             }
-//             //$new_Array = array_merge($category,$sub_category);
-//             // echo '<pre>id';Print_r($mainCategory->id);
-//             // echo '<pre>main';Print_r($category);
-//             // echo '<pre>sub';Print_r($sub_category);
+            $category = gl_list_new($mainCategory->id);
+            //$category['name'] = $mainCategory->name;
+            $sub_category = get_sub_sub_glgroup($mainCategory->id);
+            if(!empty($sub_category))
+            {
+                foreach($sub_category as $key=>$value)
+                {
+                    $category[$key] = $value;
+                    //if(!empty($value as ))
+                }
+            }
+            //$new_Array = array_merge($category,$sub_category);
+            // echo '<pre>id';Print_r($mainCategory->id);
+            // echo '<pre>main';Print_r($category);
+            // echo '<pre>sub';Print_r($sub_category);
             
         
 
-//        $categories[$mainCategory->id] = $category;
-//     }
-//     return  $categories;
-// }
-// function new_new_get_sub_sub_glgroup($id)
-// {
+       $categories[$mainCategory->id] = $category;
+    }
+    return  $categories;
+}
+function new_new_get_sub_sub_glgroup($id)
+{
     
-//     $categories = array();
+    $categories = array();
 
-//     $db = \Config\Database::connect();
+    $db = \Config\Database::connect();
 
-//     if (session('DataSource')) {
-//         $db->setDatabase(session('DataSource'));
-//     }
+    if (session('DataSource')) {
+        $db->setDatabase(session('DataSource'));
+    }
 
-//     $builder = $db->table('gl_group');
-//     $builder->select('id,name,parent');
-//     $builder->where('is_delete', 0);
-//     $builder->orderBy('id', 'desc');
-//     $builder->where('id', $id);
-//     $query = $builder->get();
-//     $result = $query->getResultArray();
-//     $data = new_parent_get_sub_sub_glgroup($result[0]['parent']);
-//     if($result[0]['parent'] != 0)
-//     {
-//         $data[$id]  = new_new_get_sub_sub_glgroup($result[0]['id']);
-//     }
-//     return $data;
-//     //echo '<pre>';Print_r($result);exit;
+    $builder = $db->table('gl_group');
+    $builder->select('id,name,parent');
+    $builder->where('is_delete', 0);
+    $builder->orderBy('id', 'desc');
+    $builder->where('id', $id);
+    $query = $builder->get();
+    $result = $query->getResultArray();
+    $data = new_parent_get_sub_sub_glgroup($result[0]['parent']);
+    if($result[0]['parent'] != 0)
+    {
+        $data[$id]  = new_new_get_sub_sub_glgroup($result[0]['id']);
+    }
+    return $data;
+    //echo '<pre>';Print_r($result);exit;
     
-//     // $data = array();
-//     // foreach($result as $row)
-//     // {
-//     //     //$data[$row['id']] = new_parent_get_sub_sub_glgroup($row['parent']);
-//     // }
-//     //echo '<pre>';Print_r($data);exit;
+    // $data = array();
+    // foreach($result as $row)
+    // {
+    //     //$data[$row['id']] = new_parent_get_sub_sub_glgroup($row['parent']);
+    // }
+    //echo '<pre>';Print_r($data);exit;
     
-// }
+}
 function new_parent_get_sub_sub_glgroup($pid)
 {
     $categories = array();
@@ -5310,7 +5305,7 @@ function new_parent_get_sub_sub_glgroup($pid)
     
   
 
-    $main = get_parent_gl_group_old($pid);
+    $main = get_parent_gl_group($pid);
     $parent_id = floatval($main['parent']);
     // echo '<pre>';Print_r($main);
     //$parent_data = get_parent_gl_group($pid);
@@ -5319,7 +5314,7 @@ function new_parent_get_sub_sub_glgroup($pid)
         while($parent_id > 0){  
             // $new_array[] = $pid; 
             //echo "test";
-           $get_pid = get_parent_gl_group_old($parent_id);
+           $get_pid = get_parent_gl_group($parent_id);
            //print_r($get_pid);
             // $result = new_parent_get_sub_sub_glgroup($pid);
             $result[] = $get_pid;
@@ -5361,9 +5356,9 @@ function new_parent_get_sub_sub_glgroup($pid)
 
     //    $categories[$mainCategory->id] = $sub_category;
     // }
-    return  $result;
+    return  $get_pid;
 }
-function get_parent_gl_group_old($id)
+function get_parent_gl_group($id)
 {
     $db = \Config\Database::connect();
 

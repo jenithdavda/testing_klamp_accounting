@@ -291,7 +291,7 @@ class ApiModel extends Model
                 $pdata['inv_taxability'] = 'N/A';
             }
         }
-
+       
         if (!empty($result_array)) {
 
             $pdata['update_at'] = date('Y-m-d H:i:s');
@@ -301,6 +301,9 @@ class ApiModel extends Model
                 $builder = $db->table('sales_invoice');
                 $builder->where(array("id" => $post['id']));
                 $result = $builder->Update($pdata);
+
+                $result_jv = $gmodel->update_data_table('jv_management', array('invoice_no' => $post['id'],'type' => "invoice"), array('is_update' => '1'));
+       
 
                 $item_builder = $db->table('sales_item');
                 $item_result = $item_builder->select('GROUP_CONCAT(item_id) as item_id')->where(array("parent_id" => $post['id'], "type" => 'invoice'))->get();
@@ -755,6 +758,8 @@ class ApiModel extends Model
                 $builder->where(array("id" => $post['id']));
                 $result = $builder->Update($pdata);
 
+                $result_jv = $gmodel->update_data_table('jv_management', array('invoice_no' => $post['id'],'type' => "invoice"), array('is_update' => '1'));
+
                 $item_builder = $db->table('sales_item');
                 $item_result = $item_builder->select('GROUP_CONCAT(item_id) as item_id')->where(array("parent_id" => $post['id'], "type" => 'invoice'))->get();
                 $getItem = $item_result->getRow();
@@ -933,6 +938,20 @@ class ApiModel extends Model
                 );
                 $platform_builder = $db->table('platform_voucher');
                 $sstatus = $platform_builder->Insert($platform_data);
+
+                $jv_data = array(
+                    'invoice_no' => $id,
+                    'type' => "invoice",
+                    'platform_id' => 1,
+                    'invoice_date' => db_date(@$post['invoice_date']),
+                    'party_account' => $post['account'],
+                    'gst' => $post['gst'],
+                    'amount' => round($netamount),
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'created_by' => 0,
+                );
+                $jv_builder = $db->table('jv_management');
+                $jv_add = $jv_builder->Insert($jv_data);
             }
         }
 
@@ -1226,6 +1245,9 @@ class ApiModel extends Model
                 $builder->where(array("id" => $post['id']));
                 $result = $builder->Update($pdata);
 
+                $result_jv = $gmodel->update_data_table('jv_management', array('invoice_no' => $post['id'],'type' => "return"), array('is_update' => '1'));
+
+
                 $item_builder = $db->table('sales_item');
                 $item_result = $item_builder->select('GROUP_CONCAT(item_id) as item_id')->where(array("parent_id" => $post['id'], "type" => 'return'))->get();
                 $getItem = $item_result->getRow();
@@ -1417,6 +1439,20 @@ class ApiModel extends Model
                 );
                 $platform_builder = $db->table('platform_voucher');
                 $sstatus = $platform_builder->Insert($platform_data);
+
+                $jv_data = array(
+                    'invoice_no' => $id,
+                    'type' => "return",
+                    'platform_id' => !empty(@$post['platform']) ? @$post['platform'] : 1,
+                    'invoice_date' => db_date(@$post['return_date']),
+                    'party_account' => $post['account'],
+                    'gst' => $post['gst'],
+                    'amount' => round($netamount),
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'created_by' => 0,
+                );
+                $jv_builder = $db->table('jv_management');
+                $jv_add = $jv_builder->Insert($jv_data);
             }
         }
 
@@ -4146,13 +4182,13 @@ class ApiModel extends Model
             if ($post['method'] == 'salesinvoice') {
                 $gnmodel = new GeneralModel();
                 $result = $gnmodel->update_api_data_table($post['database'], 'sales_invoice', array('id' => $post['id']), array('is_delete' => '1', 'update_at' => date('Y-m-d H:i:s'), 'update_by' => 0));
-                $result1 = $gnmodel->update_api_data_table($post['database'], 'platform_voucher', array('voucher' => $post['id'], 'type' => 'invoice'), array('is_delete' => '1'));
+                $result1 = $gnmodel->update_api_data_table($post['database'], 'platform_voucher', array('voucher' => $post['id'], 'type' => 'invoice'), array('is_delete' => '1','is_update'=>1));
             }
 
             if ($post['method'] == 'salesreturn') {
                 $gnmodel = new GeneralModel();
                 $result = $gnmodel->update_api_data_table($post['database'], 'sales_return', array('id' => $post['id']), array('is_delete' => '1', 'update_at' => date('Y-m-d H:i:s'), 'update_by' => 0));
-                $result1 = $gnmodel->update_api_data_table($post['database'], 'platform_voucher', array('voucher' => $post['id'], 'type' => 'return'), array('is_delete' => '1'));
+                $result1 = $gnmodel->update_api_data_table($post['database'], 'platform_voucher', array('voucher' => $post['id'], 'type' => 'return'), array('is_delete' => '1','is_update'=>1));
             }
 
             if ($post['method'] == 'purchasechallan') {

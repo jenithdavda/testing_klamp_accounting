@@ -78,6 +78,8 @@ function gl_list($abc,$test = array()){
         
         return $xyz;
 }
+
+
 function validateDate($date, $format = 'Y-m-d')
 {
     $d = DateTime::createFromFormat($format, $date);
@@ -604,5 +606,47 @@ function get_unreconsilation_data($account, $start_date = '', $end_date = '')
     $getdata['to'] = $end_date;
 
     return $getdata;
+}
+function gl_group_summary_array($id)
+{
+    
+    $db = \Config\Database::connect();
+
+    if (session('DataSource')) {
+        $db->setDatabase(session('DataSource'));
+    }
+    $main = get_parent_gl_group($id);
+    $parent_id = floatval($main['parent']);
+  
+    $result = array();
+        while($parent_id > 0){  
+         
+           $get_pid = get_parent_gl_group($parent_id);
+            $result[] = $get_pid;
+            if(!empty($get_pid)){
+                $parent_id = floatval($get_pid['parent']);
+             }
+           else {
+            $parent_id = 0;
+           }    
+        }
+
+    return  $result;
+}
+function get_parent_gl_group($id)
+{
+    $db = \Config\Database::connect();
+
+    if (session('DataSource')) {
+        $db->setDatabase(session('DataSource'));
+    }
+    $builder = $db->table('gl_group');
+    $builder->select('id,name,parent');
+    $builder->where('id', $id);
+    $builder->where('is_delete', 0);
+    $query = $builder->get();
+    $result = $query->getRowArray();
+    
+    return $result;
 }
 

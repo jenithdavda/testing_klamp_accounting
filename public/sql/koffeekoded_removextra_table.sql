@@ -138,7 +138,14 @@ INSERT INTO `account` (`id`, `code`, `name`, `owner`, `gl_group`, `tax_type`, `t
 (51, 'SAL20220SHD', 'Sales Taxable', '', '43', '', '', NULL, '', '', '', 'Debit', 0, '', '0', '0', '0', '', '', '', NULL, '12', '101', '', '', '', NULL, NULL, '', '', '', 'Unregister', '', 'N/A', 'N/A', 0, 0, '', '', '', '', 0, 0, '', '', '', '', '', '', 0, '', '', '', '', '', '', '', '', '', 'Current', '', 1, '2022-02-05 04:00:18', 0, NULL, 0, 1),
 (52, 'SAL2022FZWX', 'Sales Taxable Return', '', '44', '', '', NULL, '', '', '', 'Debit', 0, '', '0', '0', '0', '', '', '', NULL, '12', '101', '', '', '', NULL, NULL, '', '', '', 'Unregister', '', 'N/A', 'Taxable', 0, 0, '', '', '', '', 0, 0, '', '', '', '', '', '', 0, '', '', '', '', '', '', '', '', '', 'Current', '', 1, '2022-02-05 04:00:32', 0, NULL, 0, 1),
 (53, 'PUR202257EN', 'Purchase Taxable', '', '45', '', '', NULL, '', '', '', 'Credit', 0, '', '0', '0', '0', '', '', '', NULL, '12', '101', '', '', '', NULL, NULL, '', '', '', 'Unregister', '', 'N/A', 'N/A', 0, 0, '', '', '', '', 0, 0, '', '', '', '', '', '', 0, '', '', '', '', '', '', '', '', '', 'Current', '', 1, '2022-02-05 04:00:47', 0, NULL, 0, 1),
-(54, 'PUR20227FG0', 'Purchase Taxable Return', '', '46', '', '', NULL, '', '', '', 'Credit', 0, '', '0', '0', '0', '', '', '', NULL, '12', '101', '', '', '', NULL, NULL, '', '', '', 'Unregister', '', 'N/A', 'N/A', 0, 0, '', '', '', '', 0, 0, '', '', '', '', '', '', 0, '', '', '', '', '', '', '', '', '', 'Current', '', 1, '2022-02-05 04:01:03', 0, NULL, 0, 1);
+(54, 'PUR20227FG0', 'Purchase Taxable Return', '', '46', '', '', NULL, '', '', '', 'Credit', 0, '', '0', '0', '0', '', '', '', NULL, '12', '101', '', '', '', NULL, NULL, '', '', '', 'Unregister', '', 'N/A', 'N/A', 0, 0, '', '', '', '', 0, 0, '', '', '', '', '', '', 0, '', '', '', '', '', '', '', '', '', 'Current', '', 1, '2022-02-05 04:01:03', 0, NULL, 0, 1),
+(55, 'GRA2022GZFQ', 'Gray Purchase Return', '', '46', '', '', NULL, '', '', '', 'Credit', 0, '', '0', '0', '0', '', '', '', NULL, '12', '101', '', '', '', NULL, NULL, '', '', '', 'Unregister', '', 'N/A', 'N/A', 0, 0, '', '', '', '', 0, 0, '', '', '', '', '', '', 0, '', '', '', '', '', '', '', '', '', 'Current', '', 1, '2022-02-22 04:02:56', 0, NULL, 0, 1),
+(56, 'FIN2022T3G3', 'Finish Sale', '', '43', '', '', NULL, '', '', '', 'Debit', 0, '', '0', '0', '0', '', '', '', NULL, '12', '101', '', '', '', NULL, NULL, '', '', '', 'Unregister', '', 'N/A', 'N/A', 0, 0, '', '', '', '', 0, 0, '', '', '', '', '', '', 0, '', '', '', '', '', '', '', '', '', 'Current', '', 1, '2022-02-22 03:52:27', 0, NULL, 0, 1),
+(57, 'GRA2022YUYT', 'Gray Sale Return', '', '44', '', '', NULL, '', '', '', 'Debit', 0, '', '0', '0', '0', '', '', '', NULL, '12', '101', '', '', '', NULL, NULL, '', '', '', 'Unregister', '', 'N/A', 'N/A', 0, 0, '', '', '', '', 0, 0, '', '', '', '', '', '', 0, '', '', '', '', '', '', '', '', '', 'Current', '', 1, '2022-02-22 03:59:27', 0, NULL, 0, 1),
+(58, 'FIN2022R7OO', 'Finish Sale Return', '', '44', '', '', NULL, '', '', '', 'Debit', 0, '', '0', '0', '0', '', '', '', NULL, '12', '101', '', '', '', NULL, NULL, '', '', '', 'Unregister', '', 'N/A', 'N/A', 0, 0, '', '', '', '', 0, 0, '', '', '', '', '', '', 0, '', '', '', '', '', '', '', '', '', 'Current', '', 1, '2022-02-22 03:59:41', 0, NULL, 0, 1),
+(59, 'GRA2022MLB8', 'Gray Purchase', '', '45', '', '', NULL, '', '', '', 'Credit', 0, '', '0', '0', '0', '', '', '', NULL, '12', '101', '', '', '', NULL, NULL, '', '', '', 'Unregister', '', 'N/A', 'N/A', 0, 0, '', '', '', '', 0, 0, '', '', '', '', '', '', 0, '', '', '', '', '', '', '', '', '', 'Current', '', 1, '2022-02-22 04:02:11', 0, NULL, 0, 1),
+(60, 'FIN20221SDM', 'Finish Purchase', '', '45', '', '', NULL, '', '', '', 'Credit', 0, '', '0', '0', '0', '', '', '', NULL, '12', '101', '', '', '', NULL, NULL, '', '', '', 'Unregister', '', 'N/A', 'N/A', 0, 0, '', '', '', '', 0, 0, '', '', '', '', '', '', 0, '', '', '', '', '', '', '', '', '', 'Current', '', 1, '2022-02-22 04:02:25', 0, NULL, 0, 1),
+(61, 'FIN20222IVT', 'Finish Purchase Return', '', '46', '', '', NULL, '', '', '', 'Credit', 0, '', '0', '0', '0', '', '', '', NULL, '12', '101', '', '', '', NULL, NULL, '', '', '', 'Unregister', '', 'N/A', 'N/A', 0, 0, '', '', '', '', 0, 0, '', '', '', '', '', '', 0, '', '', '', '', '', '', '', '', '', 'Current', '', 1, '2022-02-22 04:03:15', 0, NULL, 0, 1);
 
 
 CREATE TABLE `b2b_json` (
@@ -48244,6 +48251,84 @@ INSERT INTO `cities` (`id`, `name`, `state_id`) VALUES
 (48355, 'Yumbo', 805),
 (48356, 'Zarzal', 805);
 
+CREATE TABLE `company` (
+  `id` int NOT NULL,
+  `uid` int NOT NULL,
+  `code` varchar(120) NOT NULL,
+  `company_group` varchar(50) NOT NULL,
+  `name` varchar(80) NOT NULL,
+  `financial_form` date NOT NULL,
+  `financial_to` date NOT NULL,
+  `localtax_no` varchar(120) NOT NULL,
+  `localtax_date` date DEFAULT NULL,
+  `centraltax_no` varchar(120) NOT NULL,
+  `centraltax_date` date DEFAULT NULL,
+  `servicetax_no` varchar(120) NOT NULL,
+  `servicetax_date` date DEFAULT NULL,
+  `service_classifi` varchar(120) NOT NULL,
+  `cin` varchar(120) NOT NULL,
+  `vat_reg_no` varchar(120) NOT NULL,
+  `vat_reg_date` date DEFAULT NULL,
+  `cst_no` varchar(120) NOT NULL,
+  `cst_date` date DEFAULT NULL,
+  `incomtax_pan` varchar(120) NOT NULL,
+  `ward_no` varchar(120) NOT NULL,
+  `sign_capture` longtext  NOT NULL,
+  `logo` longtext NOT NULL,
+  `buisness_code` varchar(120)  NOT NULL,
+  `form_company` varchar(100) NOT NULL,
+  `business_type` varchar(80) NOT NULL,
+  `contact_person` varchar(70) NOT NULL,
+  `alternate_contact` varchar(80) NOT NULL,
+  `address` varchar(255) NOT NULL,
+  `city` varchar(100) NOT NULL,
+  `state` varchar(100) NOT NULL,
+  `country` varchar(100) NOT NULL,
+  `pin` varchar(50) NOT NULL,
+  `phone` varchar(100) NOT NULL,
+  `alternate_phone` varchar(100) NOT NULL,
+  `fax` varchar(80) NOT NULL,
+  `whatsap` varchar(80)  NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `bank_ac_name` varchar(100) NOT NULL,
+  `bank_ac_no` varchar(80) NOT NULL,
+  `bank_name` varchar(80) NOT NULL,
+  `ifsc` varchar(80) NOT NULL,
+  `branch_address` varchar(255) NOT NULL,
+  `ac_type` varchar(80) NOT NULL,
+  `DataSource` varchar(200) NOT NULL,
+  `created_at` datetime DEFAULT NULL,
+  `created_by` int NOT NULL,
+  `update_at` datetime DEFAULT NULL,
+  `update_by` int NOT NULL,
+  `is_delete` int NOT NULL DEFAULT '0'
+);
+
+CREATE TABLE `companygrp` (
+  `id` int NOT NULL,
+  `code` varchar(50) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `sname` varchar(50) NOT NULL,
+  `pname` varchar(50) NOT NULL,
+  `address` varchar(100) NOT NULL,
+  `city` varchar(50) NOT NULL,
+  `state` varchar(50) NOT NULL,
+  `country` varchar(50) NOT NULL,
+  `pin` int NOT NULL,
+  `phone` varchar(20) NOT NULL,
+  `fax` varchar(50) NOT NULL,
+  `email` varchar(50) NOT NULL,
+  `weburl` varchar(50) NOT NULL,
+  `slogan` varchar(50) NOT NULL,
+  `notes` varchar(100) NOT NULL,
+  `status` tinyint NOT NULL DEFAULT '0',
+  `savelogo` varchar(50) NOT NULL,
+  `created_by` int NOT NULL,
+  `created_at` datetime NOT NULL,
+  `update_by` int NOT NULL,
+  `update_at` datetime NOT NULL,
+  `is_delete` int NOT NULL DEFAULT '0'
+);
 
 CREATE TABLE `countries` (
   `id` int NOT NULL,
@@ -49322,6 +49407,19 @@ CREATE TABLE `sales_return` (
   `is_update_glgroup` int(1) NOT NULL DEFAULT 0,
   `is_update_gst` int(1) NOT NULL DEFAULT 0,
   `is_update_discount` int(1) NOT NULL DEFAULT 0
+);
+
+CREATE TABLE `screenseries` (
+  `id` int NOT NULL,
+  `name` varchar(80) NOT NULL,
+  `code` varchar(90) NOT NULL,
+  `notes` varchar(180) NOT NULL,
+  `status` tinyint(1) NOT NULL,
+  `created_by` int NOT NULL,
+  `created_at` datetime NOT NULL,
+  `update_by` int NOT NULL,
+  `update_at` datetime NOT NULL,
+  `is_delete` tinyint(1) NOT NULL
 );
 
 
@@ -53569,6 +53667,868 @@ CREATE TABLE `warehouse` (
   `is_delete` varchar(10) NOT NULL DEFAULT '0'
 );
 
+CREATE TABLE `grayChallan_item` (
+  `id` int NOT NULL,
+  `voucher_id` int NOT NULL,
+  `takaTB_ids` varchar(255)  NOT NULL,
+  `pid` int NOT NULL,
+  `type` varchar(255) NOT NULL,
+  `pcs` int NOT NULL,
+  `meter` varchar(120) NOT NULL,
+  `cut` int NOT NULL,
+  `igst` varchar(200) NOT NULL,
+  `price` int NOT NULL,
+  `amount` int NOT NULL,
+  `extra` varchar(120) NOT NULL,
+  `purchase_type` varchar(80) NOT NULL,
+  `created_at` datetime NOT NULL,
+  `created_by` int NOT NULL,
+  `update_at` datetime NOT NULL,
+  `update_by` int NOT NULL,
+  `is_delete` int NOT NULL DEFAULT '0'
+);
+
+CREATE TABLE `gray_item` (
+  `id` int NOT NULL,
+  `voucher_id` int NOT NULL,
+  `pid` int NOT NULL,
+  `purchase_type` varchar(80) NOT NULL,
+  `type` varchar(255) NOT NULL,
+  `pcs` int NOT NULL,
+  `meter` varchar(120) NOT NULL,
+  `cut` int NOT NULL,
+  `igst` varchar(200) NOT NULL,
+  `price` int NOT NULL,
+  `amount` int NOT NULL,
+  `remark` varchar(120) NOT NULL,
+  `created_at` datetime NOT NULL,
+  `created_by` int NOT NULL,
+  `update_at` datetime NOT NULL,
+  `update_by` int NOT NULL,
+  `is_delete` int NOT NULL DEFAULT '0'
+);
+
+CREATE TABLE `grey` (
+  `id` int NOT NULL,
+  `voucher_type` int(255) NOT NULL,
+  `sr_no` varchar(200) NOT NULL,
+  `challan_no` varchar(200) NOT NULL,
+  `inv_no` varchar(200) NOT NULL,
+  `inv_date` date NOT NULL,
+  `purchase_type` varchar(80) NOT NULL,
+  `transport_mode` varchar(200) NOT NULL,
+  `lr_no` varchar(200) NOT NULL,
+  `lr_date` date NOT NULL,
+  `weight` varchar(200) NOT NULL,
+  `freight` varchar(200) NOT NULL,
+  `party_name` varchar(200) NOT NULL,
+  `delivery_ac` int NOT NULL,
+  `delivery_code` varchar(200) NOT NULL,
+  `warehouse` int NOT NULL,
+  `broker` int NOT NULL,
+  `transport` int NOT NULL,
+  `total_amount` varchar(200) NOT NULL,
+  `tot_igst` varchar(200) NOT NULL,
+  `tot_sgst` varchar(200) NOT NULL,
+  `tot_cgst` varchar(200) NOT NULL,
+  `disc_type` varchar(200) NOT NULL,
+  `amtx` varchar(200) NOT NULL,
+  `amtx_type` varchar(200) NOT NULL,
+  `amty` varchar(200) NOT NULL,
+  `amty_type` varchar(200) NOT NULL,
+  `cess` varchar(200) NOT NULL,
+  `cess_type` varchar(200) NOT NULL,
+  `tds_per` varchar(200) NOT NULL,
+  `tds_amt` varchar(200) NOT NULL,
+  `acc_state` varchar(200) NOT NULL,
+  `tds_limit` varchar(200) NOT NULL,
+  `taxes` varchar(200) NOT NULL,
+  `discount` varchar(100) NOT NULL,
+  `net_amount` varchar(200) NOT NULL,
+  `created_at` datetime NOT NULL,
+  `created_by` varchar(100) NOT NULL,
+  `update_at` datetime NOT NULL,
+  `update_by` varchar(100) NOT NULL,
+  `is_delete` tinyint(1) NOT NULL,
+  `is_cancle` tinyint(1) NOT NULL
+);
+
+CREATE TABLE `greyChallan_taka` (
+  `id` int NOT NULL,
+  `voucher_id` int NOT NULL,
+  `MillItem_id` int NOT NULL,
+  `tr_id_item` int NOT NULL,
+  `purchase_type` varchar(80) NOT NULL,
+  `taka_no` int NOT NULL,
+  `weaver_taka` int NOT NULL,
+  `quantity` int NOT NULL,
+  `accumulate` varchar(120) NOT NULL,
+  `cut` int NOT NULL,
+  `created_by` int NOT NULL,
+  `created_at` datetime NOT NULL,
+  `update_at` datetime NOT NULL,
+  `update_by` int NOT NULL,
+  `is_delete` tinyint NOT NULL,
+  `is_send_mill` tinyint(1) NOT NULL,
+  `is_sale` tinyint(1) NOT NULL,
+  `is_return` tinyint(1) NOT NULL,
+  `is_sendJob` tinyint(1) NOT NULL
+);
+
+CREATE TABLE `grey_challan` (
+  `id` int NOT NULL,
+  `voucher_type` int(255) NOT NULL,
+  `sr_no` varchar(200) NOT NULL,
+  `challan_no` varchar(200) NOT NULL,
+  `challan_date` date NOT NULL,
+  `purchase_type` varchar(80) NOT NULL,
+  `transport_mode` varchar(200) NOT NULL,
+  `lr_no` varchar(200) NOT NULL,
+  `lr_date` date NOT NULL,
+  `transport` int NOT NULL,
+  `weight` varchar(200) NOT NULL,
+  `freight` varchar(200) NOT NULL,
+  `party_name` varchar(200) NOT NULL,
+  `delivery_ac` int NOT NULL,
+  `delivery_code` varchar(200) NOT NULL,
+  `warehouse` int NOT NULL,
+  `broker` int NOT NULL,
+  `total_amount` varchar(200) NOT NULL,
+  `acc_state` varchar(200) NOT NULL,
+  `tds_per` varchar(120) NOT NULL,
+  `tds_limit` varchar(120) NOT NULL,
+  `created_at` datetime NOT NULL,
+  `created_by` varchar(100) NOT NULL,
+  `update_at` datetime NOT NULL,
+  `update_by` varchar(100) NOT NULL,
+  `is_delete` varchar(1001) NOT NULL DEFAULT '0',
+  `is_cancle` tinyint(1) NOT NULL,
+  `is_invoiced` tinyint(1) NOT NULL
+);
+
+
+CREATE TABLE `mill_item` (
+  `id` int NOT NULL,
+  `voucher_id` int NOT NULL,
+  `all_greyTakaTb_ids` varchar(250) NOT NULL,
+  `pid` int NOT NULL,
+  `pcs` int NOT NULL,
+  `meter` varchar(120) NOT NULL,
+  `price` int NOT NULL,
+  `remark` varchar(120) NOT NULL,
+  `created_at` datetime NOT NULL,
+  `created_by` int NOT NULL,
+  `update_at` datetime NOT NULL,
+  `update_by` int NOT NULL,
+  `is_delete` int NOT NULL DEFAULT '0'
+);
+
+
+CREATE TABLE `millChallan_taka` (
+  `id` int NOT NULL,
+  `voucher_id` int NOT NULL,
+  `mill_item_id` int NOT NULL,
+  `tr_id_item` int NOT NULL,
+  `greyTaka_Id` int NOT NULL,
+  `taka_no` int NOT NULL,
+  `weaver_taka` int NOT NULL,
+  `quantity` int NOT NULL,
+  `created_by` int NOT NULL,
+  `created_at` datetime NOT NULL,
+  `update_at` datetime NOT NULL,
+  `update_by` int NOT NULL,
+  `is_delete` tinyint NOT NULL,
+  `is_rec_mill` tinyint(1) NOT NULL,
+  `is_return` tinyint(1) NOT NULL
+);
+
+CREATE TABLE `millRec` (
+  `id` int NOT NULL,
+  `sr_no` int(255) NOT NULL,
+  `challan_no` varchar(200) NOT NULL,
+  `date` date NOT NULL,
+  `transport_mode` varchar(200) NOT NULL,
+  `lr_no` varchar(200) NOT NULL,
+  `lr_date` date NOT NULL,
+  `weight` varchar(200) NOT NULL,
+  `freight` varchar(200) NOT NULL,
+  `mill_ac` varchar(200) NOT NULL,
+  `delivery_ac` int NOT NULL,
+  `delivery_code` varchar(200) NOT NULL,
+  `warehouse` int NOT NULL,
+  `broker` int NOT NULL,
+  `transport` int NOT NULL,
+  `lot_no` varchar(80) NOT NULL,
+  `total_amount` varchar(200) NOT NULL,
+  `tot_igst` varchar(200) NOT NULL,
+  `tot_sgst` varchar(200) NOT NULL,
+  `tot_cgst` varchar(200) NOT NULL,
+  `disc_type` varchar(200) NOT NULL,
+  `amtx` varchar(200) NOT NULL,
+  `amtx_type` varchar(200) NOT NULL,
+  `amty` varchar(200) NOT NULL,
+  `amty_type` varchar(200) NOT NULL,
+  `cess` varchar(200) NOT NULL,
+  `cess_type` varchar(200) NOT NULL,
+  `tds_per` varchar(200) NOT NULL,
+  `tds_amt` varchar(200) NOT NULL,
+  `acc_state` varchar(200) NOT NULL,
+  `tds_limit` varchar(200) NOT NULL,
+  `taxes` varchar(200) NOT NULL,
+  `discount` varchar(100) NOT NULL,
+  `net_amount` varchar(200) NOT NULL,
+  `created_at` datetime NOT NULL,
+  `created_by` varchar(100) NOT NULL,
+  `update_at` datetime NOT NULL,
+  `update_by` varchar(100) NOT NULL,
+  `is_delete` tinyint(1) NOT NULL,
+  `is_cancle` tinyint(1) NOT NULL,
+  `is_lot_complete` tinyint(1) NOT NULL
+);
+
+CREATE TABLE `millRec_item` (
+  `id` int NOT NULL,
+  `voucher_id` int NOT NULL,
+  `millRecTb_ids` varchar(250) NOT NULL,
+  `pid` int NOT NULL,
+  `type` int NOT NULL,
+  `screen` int NOT NULL,
+  `gst` varchar(80) NOT NULL,
+  `pcs` int NOT NULL,
+  `meter` varchar(120) NOT NULL,
+  `ret_pcs` varchar(255) NOT NULL,
+  `ret_meter` varchar(255) NOT NULL,
+  `rec_pcs` int NOT NULL,
+  `rec_meter` varchar(120) NOT NULL,
+  `amount` varchar(200) NOT NULL,
+  `cut` varchar(120) NOT NULL,
+  `taka_tp` varchar(120) NOT NULL,
+  `price` int NOT NULL,
+  `remark` varchar(120) NOT NULL,
+  `created_at` datetime NOT NULL,
+  `created_by` int NOT NULL,
+  `update_at` datetime NOT NULL,
+  `update_by` int NOT NULL,
+  `is_delete` int NOT NULL DEFAULT '0'
+);
+
+CREATE TABLE `millRec_taka` (
+  `id` int NOT NULL,
+  `voucher_id` int NOT NULL,
+  `millRec_item` int NOT NULL,
+  `mill_item_id` int NOT NULL,
+  `tr_id_item` int NOT NULL,
+  `screen` int NOT NULL,
+  `millTaka_Id` int NOT NULL,
+  `taka_no` int NOT NULL,
+  `weaver_taka` int NOT NULL,
+  `quantity` int NOT NULL,
+  `edit_qty` varchar(255) NOT NULL,
+  `received_qty` varchar(255) NOT NULL,
+  `cut` varchar(180) NOT NULL,
+  `created_by` int NOT NULL,
+  `created_at` datetime NOT NULL,
+  `update_at` datetime NOT NULL,
+  `update_by` int NOT NULL,
+  `is_delete` tinyint NOT NULL,
+  `is_sendJob` tinyint(1) NOT NULL,
+  `is_sale` tinyint(1) NOT NULL
+);
+
+CREATE TABLE `mill_challan` (
+  `id` int NOT NULL,
+  `sr_no` int(11) NOT NULL,
+  `challan_no` varchar(200) NOT NULL,
+  `challan_date` date NOT NULL,
+  `transport_mode` varchar(200) NOT NULL,
+  `lr_no` varchar(200) NOT NULL,
+  `lr_date` date NOT NULL,
+  `transport` int NOT NULL,
+  `weight` varchar(200) NOT NULL,
+  `freight` varchar(200) NOT NULL,
+  `mill_ac` varchar(200) NOT NULL,
+  `delivery_code` varchar(200) NOT NULL,
+  `delivery_ac` int NOT NULL,
+  `warehouse` int NOT NULL,
+  `broker` int NOT NULL,
+  `acc_state` varchar(200) NOT NULL,
+  `tds_per` varchar(120) NOT NULL,
+  `tds_limit` varchar(120) NOT NULL,
+  `all_greyTakaTb_ids` varchar(250) NOT NULL,
+  `pid` int NOT NULL,
+  `pcs` int NOT NULL,
+  `meter` varchar(120) NOT NULL,
+  `price` int NOT NULL,
+  `remark` varchar(120) NOT NULL,
+  `created_at` datetime NOT NULL,
+  `created_by` int NOT NULL,
+  `update_at` datetime NOT NULL,
+  `update_by` int NOT NULL,
+  `is_delete` int NOT NULL DEFAULT '0',
+  `is_cancle` int NOT NULL DEFAULT '0'
+);
+
+
+
+
+
+CREATE TABLE `recJobwork` (
+  `id` int NOT NULL,
+  `sr_no` int(255) NOT NULL,
+  `challan_no` int NOT NULL,
+  `date` date NOT NULL,
+  `transport_mode` varchar(200) NOT NULL,
+  `lr_no` varchar(200) NOT NULL,
+  `lr_date` date NOT NULL,
+  `transport` int NOT NULL,
+  `weight` varchar(200) NOT NULL,
+  `freight` varchar(200) NOT NULL,
+  `account` varchar(200)  NOT NULL,
+  `delivery` varchar(200)  NOT NULL,
+  `delivery_ac` varchar(255) NOT NULL,
+  `warehouse` int NOT NULL,
+  `broker` int NOT NULL,
+  `acc_state` varchar(200) NOT NULL,
+  `tds_per` varchar(120) NOT NULL,
+  `tds_limit` varchar(120) NOT NULL,
+  `total_amount` varchar(180) NOT NULL,
+  `tot_igst` varchar(180) NOT NULL,
+  `tot_sgst` varchar(180) NOT NULL,
+  `tot_cgst` varchar(180) NOT NULL,
+  `disc_type` varchar(180) NOT NULL,
+  `amtx` varchar(180) NOT NULL,
+  `amtx_type` varchar(180) NOT NULL,
+  `amty` varchar(180) NOT NULL,
+  `amty_type` varchar(180) NOT NULL,
+  `cess` varchar(180) NOT NULL,
+  `cess_type` varchar(180) NOT NULL,
+  `tds_amt` varchar(180) NOT NULL,
+  `taxes` varchar(180) NOT NULL,
+  `discount` varchar(180) NOT NULL,
+  `net_amount` varchar(180) NOT NULL,
+  `created_at` datetime NOT NULL,
+  `created_by` varchar(100) NOT NULL,
+  `update_at` datetime NOT NULL,
+  `update_by` varchar(100) NOT NULL,
+  `is_delete` tinyint(1) NOT NULL,
+  `is_cancle` tinyint(1) NOT NULL
+);
+
+CREATE TABLE `recJob_Item` (
+  `id` int NOT NULL,
+  `voucher_id` int NOT NULL,
+  `send_challan_no` int NOT NULL,
+  `type` varchar(80) NOT NULL,
+  `pid` int NOT NULL,
+  `screen` int DEFAULT NULL,
+  `gst` int NOT NULL,
+  `unit` varchar(120)  NOT NULL,
+  `meter` varchar(120)  NOT NULL,
+  `cut` varchar(120)  NOT NULL,
+  `return_pcs` varchar(255) NOT NULL,
+  `return_meter` varchar(255) NOT NULL,
+  `remaining_pcs` varchar(120) NOT NULL,
+  `remaining_mtr` varchar(120) NOT NULL,
+  `pcs` varchar(120)  NOT NULL,
+  `price` varchar(120) NOT NULL,
+  `rec_pcs` varchar(120) NOT NULL,
+  `rec_mtr` varchar(120) NOT NULL,
+  `pending` varchar(120) NOT NULL,
+  `subtotal` varchar(120) NOT NULL,
+  `remark` varchar(120) NOT NULL,
+  `created_at` datetime NOT NULL,
+  `created_by` int NOT NULL,
+  `update_at` datetime NOT NULL,
+  `update_by` int NOT NULL,
+  `is_delete` int NOT NULL DEFAULT '0'
+);
+
+CREATE TABLE `retGrayFinish` (
+  `id` int NOT NULL,
+  `voucher_type` int(255) NOT NULL,
+  `sr_no` varchar(200) NOT NULL,
+  `challan_no` varchar(200) NOT NULL,
+  `credit_note` varchar(255) NOT NULL,
+  `weaver_invoice` varchar(200)  NOT NULL,
+  `date` date NOT NULL,
+  `purchase_type` varchar(80) NOT NULL,
+  `transport_mode` varchar(200) NOT NULL,
+  `lr_no` varchar(200) NOT NULL,
+  `lr_date` date NOT NULL,
+  `weight` varchar(200) NOT NULL,
+  `freight` varchar(200) NOT NULL,
+  `party_name` varchar(200) NOT NULL,
+  `delivery_ac` int NOT NULL,
+  `delivery_code` varchar(200) NOT NULL,
+  `warehouse` int NOT NULL,
+  `broker` int NOT NULL,
+  `transport` int NOT NULL,
+  `total_amount` varchar(200) NOT NULL,
+  `tot_igst` varchar(200) NOT NULL,
+  `tot_sgst` varchar(200) NOT NULL,
+  `tot_cgst` varchar(200) NOT NULL,
+  `disc_type` varchar(200) NOT NULL,
+  `amtx` varchar(200) NOT NULL,
+  `amtx_type` varchar(200) NOT NULL,
+  `amty` varchar(200) NOT NULL,
+  `amty_type` varchar(200) NOT NULL,
+  `cess` varchar(200) NOT NULL,
+  `cess_type` varchar(200) NOT NULL,
+  `tds_per` varchar(200) NOT NULL,
+  `tds_amt` varchar(200) NOT NULL,
+  `acc_state` varchar(200) NOT NULL,
+  `tds_limit` varchar(200) NOT NULL,
+  `taxes` varchar(200) NOT NULL,
+  `discount` varchar(100) NOT NULL,
+  `net_amount` varchar(200) NOT NULL,
+  `created_at` datetime NOT NULL,
+  `created_by` varchar(100) NOT NULL,
+  `update_at` datetime NOT NULL,
+  `update_by` varchar(100) NOT NULL,
+  `is_delete` varchar(1001) NOT NULL DEFAULT '0',
+  `is_cancle` tinyint(1) NOT NULL
+);
+
+CREATE TABLE `retGrayFinish_item` (
+  `id` int NOT NULL,
+  `voucher_id` int NOT NULL,
+  `purchase_type` varchar(80) NOT NULL,
+  `type` varchar(180)  NOT NULL,
+  `pid` int NOT NULL,
+  `gst` int NOT NULL,
+  `pcs` int NOT NULL,
+  `meter` varchar(120) NOT NULL,
+  `cut` varchar(120) NOT NULL,
+  `price` int NOT NULL,
+  `ret_taka` varchar(180) NOT NULL,
+  `ret_meter` varchar(180) NOT NULL,
+  `subtotal` decimal(19,2) NOT NULL,
+  `remark` varchar(120) NOT NULL,
+  `created_at` datetime NOT NULL,
+  `created_by` int NOT NULL,
+  `update_at` datetime NOT NULL,
+  `update_by` int NOT NULL,
+  `is_delete` int NOT NULL DEFAULT '0'
+);
+
+CREATE TABLE `retGrayFinish_taka` (
+  `id` int NOT NULL,
+  `voucher_id` int NOT NULL,
+  `purchase_challan_id` int NOT NULL,
+  `purchase_invoice_id` int NOT NULL,
+  `purchase_type` varchar(80) NOT NULL,
+  `item_id` int NOT NULL,
+  `tr_id_item` int NOT NULL,
+  `greyTaka_Id` int NOT NULL,
+  `taka_no` int NOT NULL,
+  `weaver_taka` int NOT NULL,
+  `quantity` int NOT NULL,
+  `created_by` int NOT NULL,
+  `created_at` datetime NOT NULL,
+  `update_at` datetime NOT NULL,
+  `update_by` int NOT NULL,
+  `is_delete` tinyint NOT NULL
+);
+
+CREATE TABLE `return_jobwork` (
+  `id` int NOT NULL,
+  `sr_no` int(255) NOT NULL,
+  `job_challan` varchar(200)  NOT NULL,
+  `date` date NOT NULL,
+  `transport_mode` varchar(200) NOT NULL,
+  `lr_no` varchar(200) NOT NULL,
+  `lr_date` date NOT NULL,
+  `transport` int NOT NULL,
+  `weight` varchar(200) NOT NULL,
+  `freight` varchar(200) NOT NULL,
+  `party_name` varchar(200)  NOT NULL,
+  `delivery_code` varchar(200) NOT NULL,
+  `delivery_ac` int NOT NULL,
+  `warehouse` int NOT NULL,
+  `broker` int NOT NULL,
+  `acc_state` varchar(200) NOT NULL,
+  `tds_per` varchar(120) NOT NULL,
+  `tds_limit` varchar(120) NOT NULL,
+  `created_at` datetime NOT NULL,
+  `created_by` varchar(100) NOT NULL,
+  `update_at` datetime NOT NULL,
+  `update_by` varchar(100) NOT NULL,
+  `is_delete` varchar(1001) NOT NULL DEFAULT '0',
+  `is_cancle` tinyint(1) NOT NULL
+);
+
+CREATE TABLE `return_jobwork_item` (
+  `id` int NOT NULL,
+  `voucher_id` int NOT NULL,
+  `type` varchar(180)  NOT NULL,
+  `screen` varchar(120) NOT NULL,
+  `pid` int NOT NULL,
+  `pcs` int NOT NULL,
+  `meter` varchar(120) NOT NULL,
+  `cut` varchar(120) NOT NULL,
+  `unit` varchar(120) NOT NULL,
+  `price` int NOT NULL,
+  `ret_taka` varchar(180) NOT NULL,
+  `ret_meter` varchar(180) NOT NULL,
+  `remark` varchar(120) NOT NULL,
+  `created_at` datetime NOT NULL,
+  `created_by` int NOT NULL,
+  `update_at` datetime NOT NULL,
+  `update_by` int NOT NULL,
+  `is_delete` int NOT NULL DEFAULT '0'
+);
+
+CREATE TABLE `return_mill` (
+  `id` int NOT NULL,
+  `sr_no` int(255) NOT NULL,
+  `mill_challan` varchar(200)  NOT NULL,
+  `weaver_challan` int NOT NULL,
+  `date` date NOT NULL,
+  `transport_mode` varchar(200) NOT NULL,
+  `lr_no` varchar(200) NOT NULL,
+  `lr_date` date NOT NULL,
+  `transport` int NOT NULL,
+  `weight` varchar(200) NOT NULL,
+  `freight` varchar(200) NOT NULL,
+  `party_name` varchar(200)  NOT NULL,
+  `delivery_code` varchar(200) NOT NULL,
+  `delivery_ac` int NOT NULL,
+  `warehouse` int NOT NULL,
+  `broker` int NOT NULL,
+  `acc_state` varchar(200) NOT NULL,
+  `tds_per` varchar(120) NOT NULL,
+  `tds_limit` varchar(120) NOT NULL,
+  `created_at` datetime NOT NULL,
+  `created_by` varchar(100) NOT NULL,
+  `update_at` datetime NOT NULL,
+  `update_by` varchar(100) NOT NULL,
+  `is_delete` varchar(1001) NOT NULL DEFAULT '0',
+  `is_cancle` tinyint(1) NOT NULL
+);
+
+CREATE TABLE `return_mill_item` (
+  `id` int NOT NULL,
+  `voucher_id` int NOT NULL,
+  `type` varchar(180)  NOT NULL,
+  `pid` int NOT NULL,
+  `pcs` int NOT NULL,
+  `meter` varchar(120) NOT NULL,
+  `price` int NOT NULL,
+  `ret_taka` varchar(180) NOT NULL,
+  `ret_meter` varchar(180) NOT NULL,
+  `remark` varchar(120) NOT NULL,
+  `created_at` datetime NOT NULL,
+  `created_by` int NOT NULL,
+  `update_at` datetime NOT NULL,
+  `update_by` int NOT NULL,
+  `is_delete` int NOT NULL DEFAULT '0'
+);
+
+CREATE TABLE `return_mill_taka` (
+  `id` int NOT NULL,
+  `voucher_id` int NOT NULL,
+  `item_id` int NOT NULL,
+  `tr_id_item` int NOT NULL,
+  `millTaka_Id` int NOT NULL,
+  `taka_no` int NOT NULL,
+  `weaver_taka` int NOT NULL,
+  `quantity` int NOT NULL,
+  `created_by` int NOT NULL,
+  `created_at` datetime NOT NULL,
+  `update_at` datetime NOT NULL,
+  `update_by` int NOT NULL,
+  `is_delete` tinyint NOT NULL
+);
+
+CREATE TABLE `saleMillChallan` (
+  `id` int NOT NULL,
+  `voucher_type` int(255) NOT NULL,
+  `sr_no` int(255) NOT NULL,
+  `date` date NOT NULL,
+  `item_type` varchar(20) NOT NULL,
+  `transport_mode` varchar(200) NOT NULL,
+  `lr_no` varchar(200) NOT NULL,
+  `lr_date` date NOT NULL,
+  `transport` int NOT NULL,
+  `weight` varchar(200) NOT NULL,
+  `freight` varchar(200) NOT NULL,
+  `account` varchar(200)  NOT NULL,
+  `vehicle` int NOT NULL,
+  `gst` varchar(20) NOT NULL,
+  `delivery_code` varchar(200) NOT NULL,
+  `warehouse` int NOT NULL,
+  `broker` int NOT NULL,
+  `acc_state` varchar(200) NOT NULL,
+  `tds_per` varchar(120) NOT NULL,
+  `tds_limit` varchar(120) NOT NULL,
+  `other` varchar(120) NOT NULL,
+  `created_at` datetime NOT NULL,
+  `created_by` varchar(100) NOT NULL,
+  `update_at` datetime NOT NULL,
+  `update_by` varchar(100) NOT NULL,
+  `is_delete` varchar(1001) NOT NULL DEFAULT '0',
+  `is_cancle` tinyint(1) NOT NULL,
+  `is_invoiced` tinyint(1) NOT NULL
+);
+
+CREATE TABLE `saleMillChallan_Item` (
+  `id` int NOT NULL,
+  `voucher_id` int NOT NULL,
+  `sale_TakaId` varchar(250)  NOT NULL,
+  `type` varchar(80) NOT NULL,
+  `pid` int NOT NULL,
+  `item_type` varchar(30) NOT NULL,
+  `gst` varchar(120) NOT NULL,
+  `taka` varchar(120)  NOT NULL,
+  `meter` varchar(120)  NOT NULL,
+  `price` varchar(120) NOT NULL,
+  `remark` varchar(120) NOT NULL,
+  `created_at` datetime NOT NULL,
+  `created_by` int NOT NULL,
+  `update_at` datetime NOT NULL,
+  `update_by` int NOT NULL,
+  `is_delete` int NOT NULL DEFAULT '0'
+);
+
+CREATE TABLE `saleMillChallan_taka` (
+  `id` int NOT NULL,
+  `voucher_id` int NOT NULL,
+  `sale_item_id` int NOT NULL,
+  `item_type` varchar(30) NOT NULL,
+  `tr_id_item` int NOT NULL,
+  `taka_no` int NOT NULL,
+  `weaver_taka` int NOT NULL,
+  `quantity` int NOT NULL,
+  `type` varchar(120) NOT NULL,
+  `created_by` int NOT NULL,
+  `created_at` datetime NOT NULL,
+  `update_at` datetime NOT NULL,
+  `update_by` int NOT NULL,
+  `is_delete` tinyint NOT NULL,
+  `is_return` tinyint(1) NOT NULL
+);
+
+CREATE TABLE `saleMillInvoice` (
+  `id` int NOT NULL,
+  `voucher_type` int(255) NOT NULL,
+  `sr_no` int(255) NOT NULL,
+  `date` date NOT NULL,
+  `item_type` varchar(20) NOT NULL,
+  `challan` int NOT NULL,
+  `transport_mode` varchar(200) NOT NULL,
+  `lr_no` varchar(200) NOT NULL,
+  `lr_date` date NOT NULL,
+  `transport` int NOT NULL,
+  `weight` varchar(200) NOT NULL,
+  `freight` varchar(200) NOT NULL,
+  `account` varchar(200)  NOT NULL,
+  `vehicle` int NOT NULL,
+  `gst` varchar(20) NOT NULL,
+  `delivery_code` varchar(200) NOT NULL,
+  `warehouse` int NOT NULL,
+  `broker` int NOT NULL,
+  `other` varchar(120) NOT NULL,
+  `total_amount` varchar(200) NOT NULL,
+  `tot_igst` varchar(200) NOT NULL,
+  `tot_sgst` varchar(200) NOT NULL,
+  `tot_cgst` varchar(200) NOT NULL,
+  `disc_type` varchar(200) NOT NULL,
+  `amtx` varchar(200) NOT NULL,
+  `amtx_type` varchar(200) NOT NULL,
+  `amty` varchar(200) NOT NULL,
+  `amty_type` varchar(200) NOT NULL,
+  `cess` varchar(200) NOT NULL,
+  `cess_type` varchar(200) NOT NULL,
+  `tds_per` varchar(200) NOT NULL,
+  `tds_amt` varchar(200) NOT NULL,
+  `acc_state` varchar(200) NOT NULL,
+  `tds_limit` varchar(200) NOT NULL,
+  `taxes` varchar(200) NOT NULL,
+  `discount` varchar(100) NOT NULL,
+  `net_amount` varchar(200) NOT NULL,
+  `created_at` datetime NOT NULL,
+  `created_by` varchar(100) NOT NULL,
+  `update_at` datetime NOT NULL,
+  `update_by` varchar(100) NOT NULL,
+  `is_delete` varchar(1001) NOT NULL DEFAULT '0',
+  `is_cancle` tinyint(1) NOT NULL
+);
+
+CREATE TABLE `saleMillInvoice_Item` (
+  `id` int NOT NULL,
+  `voucher_id` int NOT NULL,
+  `sale_TakaId` varchar(250)  NOT NULL,
+  `type` varchar(80) NOT NULL,
+  `pid` int NOT NULL,
+  `item_type` varchar(30) NOT NULL,
+  `gst` varchar(120) NOT NULL,
+  `taka` varchar(120)  NOT NULL,
+  `meter` varchar(120)  NOT NULL,
+  `price` varchar(120) NOT NULL,
+  `subtotal` varchar(120) NOT NULL,
+  `remark` varchar(120) NOT NULL,
+  `created_at` datetime NOT NULL,
+  `created_by` int NOT NULL,
+  `update_at` datetime NOT NULL,
+  `update_by` int NOT NULL,
+  `is_delete` int NOT NULL DEFAULT '0'
+);
+
+CREATE TABLE `saleMillReturn` (
+  `id` int NOT NULL,
+  `voucher_type` int(255) NOT NULL,
+  `sr_no` int(255) NOT NULL,
+  `date` date NOT NULL,
+  `item_type` varchar(20) NOT NULL,
+  `invoice_no` int NOT NULL,
+  `transport_mode` varchar(200) NOT NULL,
+  `lr_no` varchar(200) NOT NULL,
+  `lr_date` date NOT NULL,
+  `transport` int NOT NULL,
+  `weight` varchar(200) NOT NULL,
+  `freight` varchar(200) NOT NULL,
+  `account` varchar(200)  NOT NULL,
+  `vehicle` int NOT NULL,
+  `gst` varchar(20) NOT NULL,
+  `delivery_code` varchar(200) NOT NULL,
+  `warehouse` int NOT NULL,
+  `broker` int NOT NULL,
+  `other` varchar(120) NOT NULL,
+  `total_amount` varchar(200) NOT NULL,
+  `tot_igst` varchar(200) NOT NULL,
+  `tot_sgst` varchar(200) NOT NULL,
+  `tot_cgst` varchar(200) NOT NULL,
+  `disc_type` varchar(200) NOT NULL,
+  `amtx` varchar(200) NOT NULL,
+  `amtx_type` varchar(200) NOT NULL,
+  `amty` varchar(200) NOT NULL,
+  `amty_type` varchar(200) NOT NULL,
+  `cess` varchar(200) NOT NULL,
+  `cess_type` varchar(200) NOT NULL,
+  `tds_per` varchar(200) NOT NULL,
+  `tds_amt` varchar(200) NOT NULL,
+  `acc_state` varchar(200) NOT NULL,
+  `tds_limit` varchar(200) NOT NULL,
+  `taxes` varchar(200) NOT NULL,
+  `discount` varchar(100) NOT NULL,
+  `net_amount` varchar(200) NOT NULL,
+  `created_at` datetime NOT NULL,
+  `created_by` varchar(100) NOT NULL,
+  `update_at` datetime NOT NULL,
+  `update_by` varchar(100) NOT NULL,
+  `is_delete` varchar(1001) NOT NULL DEFAULT '0',
+  `is_cancle` tinyint(1) NOT NULL
+);
+
+CREATE TABLE `saleMillReturn_Item` (
+  `id` int NOT NULL,
+  `voucher_id` int NOT NULL,
+  `saleTakatbID` varchar(255) NOT NULL,
+  `type` varchar(80) NOT NULL,
+  `pid` int NOT NULL,
+  `item_type` varchar(30) NOT NULL,
+  `gst` varchar(120) NOT NULL,
+  `taka` varchar(120)  NOT NULL,
+  `meter` varchar(120)  NOT NULL,
+  `ret_taka` varchar(120) NOT NULL,
+  `ret_meter` varchar(120) NOT NULL,
+  `price` varchar(120) NOT NULL,
+  `subtotal` varchar(120) NOT NULL,
+  `remark` varchar(120) NOT NULL,
+  `created_at` datetime NOT NULL,
+  `created_by` int NOT NULL,
+  `update_at` datetime NOT NULL,
+  `update_by` int NOT NULL,
+  `is_delete` int NOT NULL DEFAULT '0'
+);
+
+CREATE TABLE `saleMillReturn_taka` (
+  `id` int NOT NULL,
+  `voucher_id` int NOT NULL,
+  `sale_item_id` int NOT NULL,
+  `item_type` varchar(30) NOT NULL,
+  `tr_id_item` int NOT NULL,
+  `saleTaka_Id` int NOT NULL,
+  `taka_no` int NOT NULL,
+  `weaver_taka` int NOT NULL,
+  `quantity` int NOT NULL,
+  `created_by` int NOT NULL,
+  `created_at` datetime NOT NULL,
+  `update_at` datetime NOT NULL,
+  `update_by` int NOT NULL,
+  `is_delete` tinyint NOT NULL
+);
+
+
+
+
+
+CREATE TABLE `sendJobwork` (
+  `id` int NOT NULL,
+  `sr_no` int(255) NOT NULL,
+  `date` date NOT NULL,
+  `transport_mode` varchar(200) NOT NULL,
+  `lr_no` varchar(200) NOT NULL,
+  `lr_date` date NOT NULL,
+  `transport` int NOT NULL,
+  `weight` varchar(200) NOT NULL,
+  `freight` varchar(200) NOT NULL,
+  `account` varchar(200)  NOT NULL,
+  `delivery_code` varchar(200) NOT NULL,
+  `delivery_ac` int NOT NULL,
+  `warehouse` int NOT NULL,
+  `broker` int NOT NULL,
+  `acc_state` varchar(200) NOT NULL,
+  `tds_per` varchar(120) NOT NULL,
+  `tds_limit` varchar(120) NOT NULL,
+  `created_at` datetime NOT NULL,
+  `created_by` varchar(100) NOT NULL,
+  `update_at` datetime NOT NULL,
+  `update_by` varchar(100) NOT NULL,
+  `is_delete` varchar(1001) NOT NULL DEFAULT '0',
+  `is_cancle` tinyint(1) NOT NULL
+);
+
+CREATE TABLE `sendJob_Item` (
+  `id` int NOT NULL,
+  `voucher_id` int NOT NULL,
+  `sedJob_TakaId` varchar(250)  NOT NULL,
+  `type` varchar(80) NOT NULL,
+  `pid` int NOT NULL,
+  `unit` varchar(120)  NOT NULL,
+  `meter` varchar(120)  NOT NULL,
+  `cut` varchar(120)  NOT NULL,
+  `pcs` int NOT NULL,
+  `sortage` varchar(120)  NOT NULL,
+  `price` varchar(120) NOT NULL,
+  `remark` varchar(120) NOT NULL,
+  `created_at` datetime NOT NULL,
+  `created_by` int NOT NULL,
+  `update_at` datetime NOT NULL,
+  `update_by` int NOT NULL,
+  `is_delete` int NOT NULL DEFAULT '0'
+);
+
+CREATE TABLE `sendJob_taka` (
+  `id` int NOT NULL,
+  `voucher_id` int NOT NULL,
+  `job_item_id` int NOT NULL,
+  `tr_id_item` int NOT NULL,
+  `taka_no` int NOT NULL,
+  `weaver_taka` int NOT NULL,
+  `quantity` int NOT NULL,
+  `type` varchar(120) NOT NULL,
+  `created_by` int NOT NULL,
+  `created_at` datetime NOT NULL,
+  `update_at` datetime NOT NULL,
+  `update_by` int NOT NULL,
+  `is_delete` tinyint NOT NULL,
+  `is_rec_job` tinyint(1) NOT NULL
+);
+
+
+
+
 ALTER TABLE `jv_main`
   ADD PRIMARY KEY (`id`);
 
@@ -53599,6 +54559,11 @@ ALTER TABLE `check_range`
 ALTER TABLE `cities`
   ADD PRIMARY KEY (`id`);
 
+ALTER TABLE `company`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `companygrp`
+  ADD PRIMARY KEY (`id`);
 
 ALTER TABLE `countries`
   ADD PRIMARY KEY (`id`);
@@ -53608,6 +54573,21 @@ ALTER TABLE `debit_note`
   ADD PRIMARY KEY (`id`);
 
 ALTER TABLE `gl_group`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `grayChallan_item`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `gray_item`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `grey`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `greyChallan_taka`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `grey_challan`
   ADD PRIMARY KEY (`id`);
 
 ALTER TABLE `hsn_code`
@@ -53623,6 +54603,24 @@ ALTER TABLE `jv_particular`
   ADD PRIMARY KEY (`id`);
 
 ALTER TABLE `labels_name`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `millChallan_taka`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `millRec`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `millRec_item`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `millRec_taka`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `mill_challan`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `mill_item`
   ADD PRIMARY KEY (`id`);
 
 ALTER TABLE `oc_stock`
@@ -53646,6 +54644,60 @@ ALTER TABLE `purchase_particu`
 ALTER TABLE `purchase_return`
   ADD PRIMARY KEY (`id`);
 
+ALTER TABLE `recJobwork`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `recJob_Item`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `retGrayFinish`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `retGrayFinish_item`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `retGrayFinish_taka`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `return_jobwork`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `return_jobwork_item`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `return_mill`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `return_mill_item`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `return_mill_taka`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `saleMillChallan`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `saleMillChallan_Item`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `saleMillChallan_taka`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `saleMillInvoice`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `saleMillInvoice_Item`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `saleMillReturn`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `saleMillReturn_Item`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `saleMillReturn_taka`
+  ADD PRIMARY KEY (`id`);
+
 ALTER TABLE `sales_ACinvoice`
   ADD PRIMARY KEY (`id`);
 
@@ -53663,6 +54715,18 @@ ALTER TABLE `sales_item`
   ADD PRIMARY KEY (`id`);
 
 ALTER TABLE `sales_return`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `screenseries`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `sendJobwork`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `sendJob_Item`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `sendJob_taka`
   ADD PRIMARY KEY (`id`);
 
 ALTER TABLE `states`
@@ -53716,6 +54780,12 @@ ALTER TABLE `check_range`
 ALTER TABLE `cities`
   MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48357;
 
+ALTER TABLE `company`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
+ALTER TABLE `companygrp`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
 ALTER TABLE `countries`
   MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=249;
 
@@ -53724,6 +54794,21 @@ ALTER TABLE `debit_note`
 
 ALTER TABLE `gl_group`
   MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
+
+ALTER TABLE `grayChallan_item`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
+ALTER TABLE `gray_item`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
+ALTER TABLE `grey`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
+ALTER TABLE `greyChallan_taka`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
+ALTER TABLE `grey_challan`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
 ALTER TABLE `hsn_code`
   MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
@@ -53739,6 +54824,24 @@ ALTER TABLE `jv_particular`
 
 ALTER TABLE `labels_name`
   MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+ALTER TABLE `millChallan_taka`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
+ALTER TABLE `millRec`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
+ALTER TABLE `millRec_item`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
+ALTER TABLE `millRec_taka`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
+ALTER TABLE `mill_challan`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
+ALTER TABLE `mill_item`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
 ALTER TABLE `oc_stock`
   MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
@@ -53761,6 +54864,60 @@ ALTER TABLE `purchase_particu`
 ALTER TABLE `purchase_return`
   MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
+ALTER TABLE `recJobwork`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
+ALTER TABLE `recJob_Item`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
+ALTER TABLE `retGrayFinish`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
+ALTER TABLE `retGrayFinish_item`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
+ALTER TABLE `retGrayFinish_taka`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
+ALTER TABLE `return_jobwork`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
+ALTER TABLE `return_jobwork_item`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
+ALTER TABLE `return_mill`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
+ALTER TABLE `return_mill_item`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
+ALTER TABLE `return_mill_taka`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
+ALTER TABLE `saleMillChallan`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
+ALTER TABLE `saleMillChallan_Item`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
+ALTER TABLE `saleMillChallan_taka`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
+ALTER TABLE `saleMillInvoice`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
+ALTER TABLE `saleMillInvoice_Item`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
+ALTER TABLE `saleMillReturn`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
+ALTER TABLE `saleMillReturn_Item`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
+ALTER TABLE `saleMillReturn_taka`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
 ALTER TABLE `sales_ACinvoice`
   MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
@@ -53777,6 +54934,18 @@ ALTER TABLE `sales_item`
   MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
 ALTER TABLE `sales_return`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
+ALTER TABLE `screenseries`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
+ALTER TABLE `sendJobwork`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
+ALTER TABLE `sendJob_Item`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
+ALTER TABLE `sendJob_taka`
   MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
 ALTER TABLE `states`

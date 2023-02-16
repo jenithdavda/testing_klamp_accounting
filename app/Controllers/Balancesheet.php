@@ -39,7 +39,8 @@ class Balancesheet extends BaseController
 
         $company_from = session('financial_form');
         $company_to = session('financial_to');
-
+       
+        
         if (!empty($post)) {
 
             $from = date_create($post['from']);
@@ -49,7 +50,7 @@ class Balancesheet extends BaseController
             $post['to'] = date_format($to, "Y-m-d");
 
             $balancesheet  = balancesheet_detail($post['from'], $post['to']);
-            $pl  = pl_tot_data_bl($post['from'], $post['to']);
+            $pl = pl_tot_data_bl($post['from'], $post['to']);
 
             // $closing_stock = $this->tmodel->get_closing_stock($post['from'], $post['to']);
             // $closing_bal = $this->tmodel->get_closing_bal($post['from'], $post['to']);

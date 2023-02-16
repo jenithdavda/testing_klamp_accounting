@@ -1822,8 +1822,11 @@ class SalesModel extends Model
                 $builder->where(array("id" => $post['id']));
                 $result = $builder->Update($pdata);
 
-                $result1 = $gnmodel->update_data_table('jv_management', array('invoice_no' => $post['id'],'type' => "invoice"), array('is_update' => '1'));
+                $result_jv = $gnmodel->update_data_table('jv_management', array('invoice_no' => $post['id'],'type' => "invoice"), array('is_update' => '1'));
+                // echo $db->getLastQuery();exit;
 
+                // echo '<pre>';Print_r($result_jv);exit;
+                
                 $item_builder = $db->table('sales_item');
                 $item_result = $item_builder->select('GROUP_CONCAT(item_id) as item_id')->where(array("parent_id" => $post['id'], "type" => 'invoice', "is_delete" => 0, "is_expence" => 0))->get();
                 $getItem = $item_result->getRow();
@@ -2663,6 +2666,7 @@ class SalesModel extends Model
             }
         }
         //print_r($post);exit;
+        $gnmodel = new GeneralModel();
         if (!empty($result_array)) {
 
             $pdata['update_at'] = date('Y-m-d H:i:s');
@@ -2670,6 +2674,9 @@ class SalesModel extends Model
             if (empty($msg)) {
                 $builder->where(array("id" => $post['id']));
                 $result = $builder->Update($pdata);
+
+                $result_jv = $gnmodel->update_data_table('jv_management', array('invoice_no' => $post['id'],'type' => "return"), array('is_update' => '1'));
+                
 
                 $item_builder = $db->table('sales_item');
                 $item_result = $item_builder->select('GROUP_CONCAT(item_id) as item_id')->where(array("parent_id" => $post['id'], "type" => 'return', "is_delete" => 0, "is_expence" => 0))->get();
@@ -3019,6 +3026,20 @@ class SalesModel extends Model
                     );
                     $platform_builder = $db->table('platform_voucher');
                     $sstatus = $platform_builder->Insert($platform_data);
+
+                    $jv_data = array(
+                        'invoice_no' => $id,
+                        'type' => "return",
+                        'platform_id' => 1,
+                        'invoice_date' => db_date(@$post['return_date']),
+                        'party_account' => $post['account'],
+                        'gst' => $post['gst'],
+                        'amount' => round($netamount),
+                        'created_at' => date('Y-m-d H:i:s'),
+                        'created_by' => 0,
+                    );
+                    $jv_builder = $db->table('jv_management');
+                    $jv_add = $jv_builder->Insert($jv_data);
                 }
 
                 if ($result &&  $result1) {
@@ -3149,11 +3170,14 @@ class SalesModel extends Model
             if ($post['method'] == 'salesinvoice') {
                 $gnmodel = new GeneralModel();
                 $result = $gnmodel->update_data_table('sales_invoice', array('id' => $post['pk']), array('is_delete' => '1', 'update_at' => date('Y-m-d H:i:s'), 'update_by' => session('uid')));
+                $result1 = $gnmodel->update_data_table('jv_management', array('invoice_no' => $post['pk'],'type' => "invoice"), array('is_delete' => '1','is_update' => '1'));
             }
 
             if ($post['method'] == 'salesreturn') {
                 $gnmodel = new GeneralModel();
                 $result = $gnmodel->update_data_table('sales_return', array('id' => $post['pk']), array('is_delete' => '1', 'update_at' => date('Y-m-d H:i:s'), 'update_by' => session('uid')));
+                $result1 = $gnmodel->update_data_table('jv_management', array('invoice_no' => $post['pk'],'type' => "return"), array('is_delete' => '1','is_update' => '1'));
+        
             }
 
             if ($post['method'] == 'ac_challan') {
@@ -3201,11 +3225,13 @@ class SalesModel extends Model
             if ($post['method'] == 'salesinvoice') {
                 $gnmodel = new GeneralModel();
                 $result = $gnmodel->update_data_table('sales_invoice', array('id' => $post['pk']), array('is_cancle' => 1));
+                $result1 = $gnmodel->update_data_table('jv_management', array('invoice_no' => $post['pk'],'type' => "invoice"), array('is_cancle' => '1','is_update' => '1'));
             }
 
             if ($post['method'] == 'salesreturn') {
                 $gnmodel = new GeneralModel();
                 $result = $gnmodel->update_data_table('sales_return', array('id' => $post['pk']), array('is_cancle' => 1));
+                $result1 = $gnmodel->update_data_table('jv_management', array('invoice_no' => $post['pk'],'type' => "return"), array('is_cancle' => '1','is_update' => '1'));
             }
 
 

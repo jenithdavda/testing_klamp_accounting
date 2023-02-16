@@ -186,7 +186,7 @@
                                             <th></th>
                                             <th>Party Account</th>
                                             <th>Net Amount</th>
-                                            <!-- <th>Action</th> -->
+                                            <th>Status</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -201,6 +201,7 @@
                                                     <td><input type="checkbox" name="invoice[]" value="<?= @$row['party_account']; ?>"></td>
                                                     <td><?= @$row['party_account_name']; ?></td>
                                                     <td><?= @$row['total']; ?></td>
+                                                    <td><?= @$row['status']; ?></td>
 
                                                 </tr>
                                             <?php
@@ -234,7 +235,7 @@
                                             <th></th>
                                             <th>Party Account</th>
                                             <th>Net Amount</th>
-                                            <!-- <th>Action</th> -->
+                                            <th>Status</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -251,7 +252,7 @@
                                                     <td><input type="checkbox" name="return[]" value="<?= @$row['party_account']; ?>"></td>
                                                     <td><?= @$row['party_account_name']; ?></td>
                                                     <td><?= @$row['total']; ?></td>
-
+                                                    <td><?= @$row['status']; ?></td>
                                                 </tr>
                                             <?php
 

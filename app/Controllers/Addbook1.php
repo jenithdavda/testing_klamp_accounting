@@ -302,6 +302,9 @@ class Addbook extends BaseController
         $data['title'] = "Sales Return Report Voucher Wise";
         return view('addbook/salesReturnItem_voucher',$data);
     }
+
+
+
     public function View_filter($type = '')
     {
         if (!session('uid')) {
@@ -419,6 +422,7 @@ class Addbook extends BaseController
 
         return view('addbook/view_bill', $data);
     }
+
     public function add_view()
     {
 
@@ -431,6 +435,7 @@ class Addbook extends BaseController
         //print_r($data);exit;
         return view('reporting/view_bill', $data);
     }
+
     public function Groupsummary()
     {
 
@@ -451,6 +456,7 @@ class Addbook extends BaseController
 
         return view('addbook/groupsummary', $data);
     }
+
     public function Outstanding($type = '')
     {
         $post = $this->request->getPost();
@@ -474,6 +480,7 @@ class Addbook extends BaseController
         $data['title'] = "Outstanding Report";
         return view('addbook/outstanding_report', $data);
     }
+
     public function Ledger_outstanding()
     {
         $data = array();
@@ -513,6 +520,7 @@ class Addbook extends BaseController
 
         return view('addbook/ledger_outstanding', $data);
     }
+
     public function ledgeroutstanding_xls_export(){
 
         if (!session('uid')) {
@@ -535,6 +543,30 @@ class Addbook extends BaseController
         ->setContentType('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
        
     }
+
+    public function ledgeroutstanding_report_xls_export(){
+
+        if (!session('uid')) {
+            return redirect()->to(url('auth'));
+        } 
+
+        $post = $this->request->getGet();
+       
+        if(!empty($post)){
+            $data = $this->model->ledgeroutstanding_report_xls_export_data($post);
+        }else{       
+            $post['from'] = session('financial_form'); 
+            $post['to'] = session('financial_to'); 
+
+            $data = $this->model->ledgeroutstanding_report_xls_export_data($post);   
+        }
+
+        return $this->response->setHeader('Contente-Disposition','attachment;filename=abc.xlsx')
+        ->setContentType('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+       
+    }
+
+
     public function Ledger_outstanding_report()
     {
         $data = array();
@@ -558,27 +590,60 @@ class Addbook extends BaseController
 
         return view('addbook/ledger_outstanding_report', $data);
     }
-    public function ledgeroutstanding_report_xls_export(){
 
+    public function Getdata($method = '')
+    {
         if (!session('uid')) {
             return redirect()->to(url('auth'));
-        } 
-
-        $post = $this->request->getGet();
-       
-        if(!empty($post)){
-            $data = $this->model->ledgeroutstanding_report_xls_export_data($post);
-        }else{       
-            $post['from'] = session('financial_form'); 
-            $post['to'] = session('financial_to'); 
-
-            $data = $this->model->ledgeroutstanding_report_xls_export_data($post);   
+        }
+        if (!session('cid')) {
+            return redirect()->to(url('Company'));
+        }
+        $cid = session('cid');
+        if ($method == 'account') {
+            $get = $this->request->getGet();
+            $get['cid'] = $cid;
+            $this->model->get_account_data($get);
+        }
+        if ($method == 'banktrans') {
+            $get = $this->request->getGet();
+            $this->model->get_banktrans_data($get);
         }
 
-        return $this->response->setHeader('Contente-Disposition','attachment;filename=abc.xlsx')
-        ->setContentType('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-       
+        if ($method == 'search_bill') {
+            $post = $this->request->getPost();
+            $result = $this->model->get_billno_databyid($post);
+            return $this->response->setJSON($result);
+        }
+           
+        if($method == 'search_account') {
+            $post = $this->request->getPost();
+            //print_r($post);exit;
+            if($post['party_name'] == 'Sundry Debtors')
+            {
+                $data= $this->mmodel->search_sun_debtor(@$post);
+            }
+            else
+            {
+                $data= $this->mmodel->search_sun_credit(@$post);
+            }
+            return $this->response->setJSON($data);
+        }
+
     }
+
+    public function Action($method = '')
+    {
+        $result = array();
+        if ($method == 'Update') {
+            $post = $this->request->getPost();
+            $result = $this->model->UpdateData($post);
+        }
+        return $this->response->setJSON($result);
+    }
+
+   
+
     public function Gnrl_purchase_register_xls()
     {
         if(!session('cid')){
@@ -600,6 +665,7 @@ class Addbook extends BaseController
         ->setContentType('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
           
     }
+
     public function Gnrl_purchase_gst_register()
     {
         $data = array();
@@ -617,6 +683,7 @@ class Addbook extends BaseController
    
         return view('addbook/gnrl_purchase_gst_register', $data);
     }
+
     public function Gnrl_purchase_gst_register_xls()
     {
         if(!session('cid')){
@@ -638,6 +705,7 @@ class Addbook extends BaseController
         ->setContentType('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
           
     }
+
     public function Gnrl_purchase_rtn_register()
     {
         if(!session('cid')){
@@ -666,6 +734,7 @@ class Addbook extends BaseController
         
         return view('addbook/gnrl_purchase_rtn_register', $data);
     }
+
     public function Gnrl_purchase_rtn_register_xls()
     {
         if(!session('cid')){
@@ -686,7 +755,9 @@ class Addbook extends BaseController
         return $this->response->setHeader('Contente-Disposition','attachment;filename=abc.xlsx')
         ->setContentType('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
           
-    }   
+    }
+
+   
     public function gnrl_purchase_rtn_voucher_wise(){
         if(!session('cid')){
             return redirect()->to(url('company'));
@@ -698,6 +769,9 @@ class Addbook extends BaseController
         $data['title'] = "General Return Purchase Voucher Wise";
         return view('trading/gnrl_purchase_rtn_voucher',$data);
     }
+
+   
+
     public function Gnrl_sales_register_xls()
     {
         if(!session('cid')){
@@ -720,6 +794,8 @@ class Addbook extends BaseController
         ->setContentType('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
           
     }
+
+
     public function Gnrl_sales_rtn_register()
     {
         if(!session('cid')){
@@ -770,6 +846,10 @@ class Addbook extends BaseController
         ->setContentType('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
           
     }
+
+
+   
+
     public function gnrl_sales_rtn_voucher_wise(){
         if(!session('cid')){
             return redirect()->to(url('company'));
@@ -781,6 +861,7 @@ class Addbook extends BaseController
         $data['title'] = "General Sales Return Voucher Wise";
         return view('trading/gnrl_sales_rtn_voucher',$data);
     }
+
     public function Gnrl_sales_gst_register()
     {
         $data = array();
@@ -799,6 +880,7 @@ class Addbook extends BaseController
    
         return view('addbook/gnrl_sales_gst_register', $data);
     }
+
     public function Gnrl_sales_gst_register_xls()
     {
         if(!session('cid')){
@@ -820,6 +902,7 @@ class Addbook extends BaseController
         ->setContentType('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
           
     }
+
     public function Sales_register_xls()
     {
         $data = array();
@@ -838,6 +921,8 @@ class Addbook extends BaseController
         ->setContentType('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         
     }
+			
+   
     public function Sales_gst_register_xls()
     {
         $data = array();
@@ -855,6 +940,8 @@ class Addbook extends BaseController
         ->setContentType('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         
     }
+
+    
     public function Sales_gst_register2_xls()
     {
         $data = array();
@@ -872,6 +959,13 @@ class Addbook extends BaseController
         ->setContentType('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         
     }
+
+   
+
+  
+
+  
+
     public function Sales_return_register_xls()
     {
         $data = array();
@@ -888,6 +982,7 @@ class Addbook extends BaseController
         return $this->response->setHeader('Contente-Disposition','attachment;filename=abc.xlsx')
         ->setContentType('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     }
+
     public function Creditnote_gst_register()
     {
         $data = array();
@@ -906,6 +1001,7 @@ class Addbook extends BaseController
    
         return view('addbook/credit_note_gst_register', $data);
     }
+
     public function Creditnote_gst_register_xls()
     {
         if(!session('cid')){
@@ -927,6 +1023,7 @@ class Addbook extends BaseController
         ->setContentType('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
           
     }
+
     public function Debitnote_gst_register()
     {
         $data = array();
@@ -945,6 +1042,9 @@ class Addbook extends BaseController
    
         return view('addbook/debit_note_gst_register', $data);
     }
+
+    
+
     public function Purchase_register_xls()
     {
         $data = array();
@@ -963,6 +1063,10 @@ class Addbook extends BaseController
         return $this->response->setHeader('Contente-Disposition','attachment;filename=abc.xlsx')
         ->setContentType('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     }
+
+
+   
+
     public function Purchase_gst_register_xls()
     {
         $data = array();
@@ -982,6 +1086,9 @@ class Addbook extends BaseController
         ->setContentType('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     
     }
+
+   
+
     public function Purchase_gst_register2_xls()
     {
         $data = array();
@@ -1001,6 +1108,10 @@ class Addbook extends BaseController
         ->setContentType('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     
     }
+
+
+   
+
     public function Purchase_return_register()
     {
         $data = array();
@@ -1044,6 +1155,7 @@ class Addbook extends BaseController
         return $this->response->setHeader('Contente-Disposition','attachment;filename=abc.xlsx')
         ->setContentType('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     }
+
     public function purchaseReturnItem_voucher_wise(){
         if(!session('cid')){
             return redirect()->to(url('company'));
@@ -1055,6 +1167,7 @@ class Addbook extends BaseController
         $data['title'] = "Purchase Return Report Voucher Wise";
         return view('trading/purchaseReturnItem_voucher',$data);
     }
+  
     public function payment()
     {
         $data = array();
@@ -1076,6 +1189,7 @@ class Addbook extends BaseController
         $data['payment'] = payment_monthly_data(session('financial_form'),session('financial_to'),@$post['mode']);
         return view('addbook/payment', $data);
     }
+
     public function Payment_voucher_wise(){
         if(!session('cid')){
             return redirect()->to(url('company'));
@@ -1087,6 +1201,7 @@ class Addbook extends BaseController
         $data['title'] = "Payment Voucher";
         return view('addbook/payment_voucher_data',$data);
     }
+
     public function contra()
     {
         $data = array();
@@ -1108,6 +1223,7 @@ class Addbook extends BaseController
         $data['contra'] = contra_monthly_data(session('financial_form'),session('financial_to'),@$post['mode']);
         return view('addbook/contra', $data);
     }
+
     public function Contra_voucher_wise(){
         if(!session('cid')){
             return redirect()->to(url('company'));
@@ -1119,6 +1235,7 @@ class Addbook extends BaseController
         $data['title'] = "Contra Voucher";
         return view('addbook/contra_voucher_data',$data);
     }
+
     public function Receipt_voucher_wise(){
         if(!session('cid')){
             return redirect()->to(url('company'));
@@ -1130,6 +1247,7 @@ class Addbook extends BaseController
         $data['title'] = "Receipt Voucher";
         return view('addbook/receipt_voucher_data',$data);
     }
+
     public function receipt()
     {
         $data = array();
@@ -1153,6 +1271,7 @@ class Addbook extends BaseController
         return view('addbook/receipt', $data);
 
     }
+    
     public function cash()
     {
         $data = array();
@@ -1276,6 +1395,7 @@ class Addbook extends BaseController
         return view('addbook/bank', $data);
 
     }
+
     public function journal()
     {
         $data = array();
@@ -1336,6 +1456,8 @@ class Addbook extends BaseController
         
         return view('addbook/journal', $data);
     }
+
+
     public function ledger()
     {
         $data = array();
@@ -1360,6 +1482,7 @@ class Addbook extends BaseController
         return view('addbook/ledger', $data);
 
     }
+
     public function ledger_xls_export(){
 
         if (!session('uid')) {
@@ -1381,6 +1504,136 @@ class Addbook extends BaseController
         ->setContentType('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
        
     }
+
+    public function sales_gray_finish()
+    {
+        $data = array();
+        $post = $this->request->getPost();
+        //print_r($post);exit;
+        if (date('m') <= '03') {
+            // echo "gre";exit;
+            $apryear = date('Y') - 1;
+            $mayyear = date('Y') - 1;
+            $junyear = date('Y') - 1;
+            $julyyear = date('Y') - 1;
+            $ogstyear = date('Y') - 1;
+            $sepyear = date('Y') - 1;
+            $octyear = date('Y') - 1;
+            $novyear = date('Y') - 1;
+            $decyear = date('Y') - 1;
+            $janyear = date('Y');
+            $febyear = date('Y');
+            $marchyear = date('Y');
+            //$start_date = $year.'-04-01';
+        } else {
+            $apryear = date('Y');
+            $mayyear = date('Y');
+            $junyear = date('Y');
+            $julyyear = date('Y');
+            $ogstyear = date('Y');
+            $sepyear = date('Y');
+            $octyear = date('Y');
+            $novyear = date('Y');
+            $decyear = date('Y');
+            $janyear = date('Y') + 1;
+            $febyear = date('Y') + 1;
+            $marchyear = date('Y') + 1;
+            //$start_date = $year.'-04-01';
+        }
+
+        if (!empty($post)) {
+            $data = $this->model->get_sale_gray_finish($post);
+        } else {
+            
+            $data = $this->model->get_sale_gray_finish();
+        }
+
+        $data['type'] = "sale_gray_finish";
+        $data['title'] = "Sale Gray Finish Data";
+        $type = "sale_gray_finish";
+        $data['jan'] = getmonth_total($type, $janyear . '-01-01', $janyear . '-01-31');
+        $data['feb'] = getmonth_total($type, $febyear . '-02-01', $febyear . '-02-28');
+        $data['march'] = getmonth_total($type, $marchyear . '-03-01', $marchyear . '-03-31');
+        $data['apr'] = getmonth_total($type, $apryear . '-04-01', $apryear . '-04-30');
+        $data['may'] = getmonth_total($type, $mayyear . '-05-01', $mayyear . '-05-31');
+        $data['jun'] = getmonth_total($type, $junyear . '-06-01', $junyear . '-06-30');
+        $data['july'] = getmonth_total($type, $julyyear . '-07-01', $julyyear . '-07-31');
+        $data['ogst'] = getmonth_total($type, $ogstyear . '-08-01', $ogstyear . '-08-31');
+        $data['sep'] = getmonth_total($type, $sepyear . '-09-01', $sepyear . '-09-30');
+        $data['oct'] = getmonth_total($type, $octyear . '-10-01', $octyear . '-10-31');
+        $data['nov'] = getmonth_total($type, $novyear . '-11-01', $novyear . '-11-30');
+        $data['dec'] = getmonth_total($type, $decyear . '-12-01', $decyear . '-12-31');
+        //$data['month']=$data;
+
+        //echo '<pre>';print_r($data);exit;
+        return view('addbook/sales_gray_finish', $data);
+
+    }
+
+    public function purchase_gray_finish()
+    {
+        $data = array();
+        $post = $this->request->getPost();
+        //print_r($post);exit;
+        if (date('m') <= '03') {
+            // echo "gre";exit;
+            $apryear = date('Y') - 1;
+            $mayyear = date('Y') - 1;
+            $junyear = date('Y') - 1;
+            $julyyear = date('Y') - 1;
+            $ogstyear = date('Y') - 1;
+            $sepyear = date('Y') - 1;
+            $octyear = date('Y') - 1;
+            $novyear = date('Y') - 1;
+            $decyear = date('Y') - 1;
+            $janyear = date('Y');
+            $febyear = date('Y');
+            $marchyear = date('Y');
+            //$start_date = $year.'-04-01';
+        } else {
+            $apryear = date('Y');
+            $mayyear = date('Y');
+            $junyear = date('Y');
+            $julyyear = date('Y');
+            $ogstyear = date('Y');
+            $sepyear = date('Y');
+            $octyear = date('Y');
+            $novyear = date('Y');
+            $decyear = date('Y');
+            $janyear = date('Y') + 1;
+            $febyear = date('Y') + 1;
+            $marchyear = date('Y') + 1;
+            //$start_date = $year.'-04-01';
+        }
+
+        if (!empty($post)) {
+            $data = $this->model->get_purchase_gray_finish($post);
+        } else {
+            $data = $this->model->get_purchase_gray_finish();
+        }
+
+        $data['type'] = "purchase_gray_finish";
+        $data['title'] = "Purchase Gray Finish Data";
+        $type = "purchase_gray_finish";
+        $data['jan'] = getmonth_total($type, $janyear . '-01-01', $janyear . '-01-31');
+        $data['feb'] = getmonth_total($type, $febyear . '-02-01', $febyear . '-02-28');
+        $data['march'] = getmonth_total($type, $marchyear . '-03-01', $marchyear . '-03-31');
+        $data['apr'] = getmonth_total($type, $apryear . '-04-01', $apryear . '-04-30');
+        $data['may'] = getmonth_total($type, $mayyear . '-05-01', $mayyear . '-05-31');
+        $data['jun'] = getmonth_total($type, $junyear . '-06-01', $junyear . '-06-30');
+        $data['july'] = getmonth_total($type, $julyyear . '-07-01', $julyyear . '-07-31');
+        $data['ogst'] = getmonth_total($type, $ogstyear . '-08-01', $ogstyear . '-08-31');
+        $data['sep'] = getmonth_total($type, $sepyear . '-09-01', $sepyear . '-09-30');
+        $data['oct'] = getmonth_total($type, $octyear . '-10-01', $octyear . '-10-31');
+        $data['nov'] = getmonth_total($type, $novyear . '-11-01', $novyear . '-11-30');
+        $data['dec'] = getmonth_total($type, $decyear . '-12-01', $decyear . '-12-31');
+        //$data['month']=$data;
+
+        // echo '<pre>';print_r($data);exit;
+        return view('addbook/purchase_gray_finish', $data);
+
+    }
+  
     public function ledger_outstanding_list_xls_export()
     {
        
@@ -1407,7 +1660,8 @@ class Addbook extends BaseController
             $data['invoice_data'] = $this->model->get_ledger_register($post);
             $data['old_data'] = $this->model->get_old_ledger_register($post);
         } else {
-          
+            // $post['from'] = session('financial_form');
+            // $post['to'] = session('financial_to');
             $data['invoice_data'] = $this->model->get_ledger_register($post);
             $data['old_data'] = $this->model->get_old_ledger_register($post);
         }
@@ -1421,10 +1675,12 @@ class Addbook extends BaseController
     }
     public function Ledger_outstanding_list()
     {
-      
+        // if (!session('uid')){
+        //     return redirect()->to(url('auth'));
+        // }
         $data = array();
         $post = $this->request->getPost();
-        
+        //$post['page'] = $page;
         if(!empty($post)){
             $data = $this->model->get_ledger_outstanding_list_new($post);
         }else{  
@@ -1442,78 +1698,5 @@ class Addbook extends BaseController
         $data['type'] = "Ledger";
         $data['title']="Ledger Outstating List";
         return view('addbook/ledger_list', $data);
-    }
-    // closing balance calculation 
-    public function update_gl_group_summary_table()
-    {
-        $data = $this->model->update_gl_group_summary_table();
-    }
-    public function gl_group_summary_query()
-    {
-       
-        $data = $this->model->get_gl_group_summary_query_data();
-        echo '<pre>';Print_r($data);exit;
-        
-
-    }
-    public function closing_bal_report()
-    {
-        $data = array();
-        $post = $this->request->getGet();
-        //$data['glgroup'] = get_sub_sub_glgroup(1);
-        $data = $this->model->get_closing_bal_report_data($post);
-       echo '<pre>';Print_r($data);exit;
-       
-        //return view('addbook/ledger_invoices', $data);
-
-    }
-    public function Getdata($method = '')
-    {
-        if (!session('uid')) {
-            return redirect()->to(url('auth'));
-        }
-        if (!session('cid')) {
-            return redirect()->to(url('Company'));
-        }
-        $cid = session('cid');
-        if ($method == 'account') {
-            $get = $this->request->getGet();
-            $get['cid'] = $cid;
-            $this->model->get_account_data($get);
-        }
-        if ($method == 'banktrans') {
-            $get = $this->request->getGet();
-            $this->model->get_banktrans_data($get);
-        }
-
-        if ($method == 'search_bill') {
-            $post = $this->request->getPost();
-            $result = $this->model->get_billno_databyid($post);
-            return $this->response->setJSON($result);
-        }
-           
-        if($method == 'search_account') {
-            $post = $this->request->getPost();
-            //print_r($post);exit;
-            if($post['party_name'] == 'Sundry Debtors')
-            {
-                $data= $this->mmodel->search_sun_debtor(@$post);
-            }
-            else
-            {
-                $data= $this->mmodel->search_sun_credit(@$post);
-            }
-            return $this->response->setJSON($data);
-        }
-
-    }
-    public function Action($method = '')
-    {
-        $result = array();
-        if ($method == 'Update') {
-            $post = $this->request->getPost();
-            $result = $this->model->UpdateData($post);
-        }
-        return $this->response->setJSON($result);
     }
 }

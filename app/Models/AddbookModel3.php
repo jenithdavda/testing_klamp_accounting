@@ -5564,263 +5564,124 @@ class AddbookModel extends Model
         $writer = new Xlsx($spreadsheet);
         $writer->save('php://output');
     }
-    public function update_gl_group_summary_table()
+    // public function get_gl_summary()
+    // {
+    //     $gl_group_id = 1;
+    //     $db = $this->db;
+    //     $db->setDatabase(session('DataSource'));
+    //     $builder = $db->table('gl_group');
+    //     $builder->select('id,name,parent');
+    //     $builder->where('parent', $gl_group_id);
+    //     $builder->where('is_delete', 0);
+    //     $query = $builder->get();
+    //     $result = $query->getResult();
+    //     //echo '<pre>';Print_r($result);exit;
+    //     foreach($result as $row)
+    //     {
+    //         $builder = $db->table('gl_group');
+    //         $builder->select('id,name,parent');
+    //         $builder->where('parent', $row);
+    //         $builder->where('is_delete', 0);
+    //         $query = $builder->get();
+    //         $result1 = $query->getResult();
+    //        // $result1[] = $row;
+    //         $result[] = array_merge($result, $result1);
+    //     }
+    //     echo '<pre>';Print_r($result1);exit;
+
+
+    // }
+    // public function sub_gl_group($new_sub_group = array())
+    // {
+    //     $gl_group_id = 1;
+    //     $db = $this->db;
+    //     $db->setDatabase(session('DataSource'));
+    //     $builder = $db->table('gl_group');
+    //     $builder->select('id,name,parent');
+    //     $builder->where('parent', $gl_group_id);
+    //     $builder->where('is_delete', 0);
+    //     $query = $builder->get();
+    //     $result = $query->getResult();
+    //     //echo '<pre>';Print_r($result);exit;
+    //     $new_array = $new_sub_group;
+    //     foreach($result as $row)
+    //     {
+    //         $new_array[] = array_merge($new_array, $result);
+
+    //     }
+    //     $new_array = gl_list($bijo, $xyz);
+    // } 
+    public function get_sub_glgroup()
     {
-       
         $db = $this->db;
         $db->setDatabase(session('DataSource'));
+
         $builder = $db->table('gl_group');
-        $builder->select('*');
+        $builder->select('id,name,parent');
+        $builder->where(array('is_delete' => 0));
         $query = $builder->get();
-        $result = $query->getResultArray();
-        foreach ($result as $row) {
-          
-           $builder_gl_summary = $db->table('gl_group_summary');
-           $pdata = array(
-                'gl_name' => $row['name'],
-                'parent' => $row['parent'],
-                'all_sub_glgroup' => '',
-                'closing' => 0.00,
-                'created_at' => $row['created_at'],
-                'created_by' => $row['created_by'],
-                'update_by' => $row['update_by'],
-                'update_at' => $row['update_at'],
-                'is_delete' => $row['is_delete'],
-           );
-           $result_gl = $builder_gl_summary->Insert($pdata);
-               
+        $result_array = $query->getResultArray();
+        $new_array = array();
+        foreach ($result_array as $pid) {
+
+            $builder = $db->table('gl_group');
+            $builder->select('id,name,parent');
+            $builder->where(array('is_delete' => 0, 'parent' => $pid['id']));
+            $query = $builder->get();
+            $result = $query->getResultArray();
+            $last_array = array();
+            $gl_sub_list = array();
+            foreach ($result as $row) {
+                $last_array[] = $row['id'];
+                $gl_sub_list = gl_list_new($row['id']);
+                // echo '<pre>';Print_r($last_array);exit;
+
+                $last_array = array_merge($last_array, $gl_sub_list);
+            }
+            $new_array[$pid['id']] =  $last_array;
         }
-        if(isset($result_gl))
-        {
-            $msg = array("st"=>"succsess","msg"=>"succsess");
-        }
-        else
-        {
-            $msg = array("st"=>"fail","msg"=>"fail");
-        }
-        return  $msg;
+
+        echo '<pre>';
+        Print_r($new_array);
+        exit;
     }
-    public function get_gl_group_summary_query_data()
+    function get_sub_sub_glgroup($parent_id)
     {
-       
-        $db = $this->db;
-        $db->setDatabase(session('DataSource'));
-        $builder = $db->table('gl_group_summary');
-        $builder->select('*');
+        $categories = array();
+
+        $db = \Config\Database::connect();
+
+        if (session('DataSource')) {
+            $db->setDatabase(session('DataSource'));
+        }
+
+        $builder = $db->table('gl_group');
+        $builder->select('id');
+        $builder->where('parent', $parent_id);
         $builder->where('is_delete', 0);
-        $builder->orderBy('id', 'desc');
         $query = $builder->get();
-        $result = $query->getResultArray();
-        $gnmodel = new GeneralModel();
-        foreach ($result as $row) {
-            
-            $data = gl_group_summary_array($row['id']); 
-            foreach($data as $gl_data)
-            {
-                $new_sub = array();
-                $new_array = array();
-                $old_gl = array();
-                $new_gl = array();
-                $get_data = $gnmodel->get_data_table('gl_group_summary', array('id' => $gl_data['id']),'all_sub_glgroup');
-               
-                if(!empty($get_data['all_sub_glgroup']))
-                {
-                    
-                    $old_gl = explode(",",$get_data['all_sub_glgroup']);
-                    $new_gl[] = $row['id'];
-                    $new_array= array_merge($old_gl,$new_gl);
-                   $new_sub = implode(',',$new_array);
-                   $result_gl = $gnmodel->update_data_table('gl_group_summary', array('id' => $gl_data['id']), array('all_sub_glgroup' => $new_sub));
-      
-                    
-                }    
-                else
-                {
-                     $result_gl = $gnmodel->update_data_table('gl_group_summary', array('id' => $gl_data['id']), array('all_sub_glgroup' => $row['id']));
-                }
-              
-            }
-           
-        }
-      
-        if(isset($result_gl))
-        {
-            $msg = array("st"=>"succsess","msg"=>"succsess");
-        }
-        else
-        {
-            $msg = array("st"=>"fail","msg"=>"fail");
-        }
-        return  $msg;
-    }
-    public function get_closing_bal_report_data()
-    {
-
-        $start_date = "2021-04-01";
-        $end_date = "2022-03-31";
-
-        $gmodel = new GeneralModel;
-        $gl_capital = $gmodel->get_data_table('gl_group_summary', array('gl_name' => 'Capital'), 'id,gl_name,all_sub_glgroup');
-        $gl_loan = $gmodel->get_data_table('gl_group_summary', array('gl_name' => 'Loans'), 'id,gl_name,all_sub_glgroup');
-        $gl_lib = $gmodel->get_data_table('gl_group_summary', array('gl_name' => 'Current Liabilities'), 'id,gl_name,,all_sub_glgroup');
-        $gl_fixedassets = $gmodel->get_data_table('gl_group_summary', array('gl_name' => 'Fixed Assets'), 'id,gl_name,,all_sub_glgroup');
-        $gl_currentassets = $gmodel->get_data_table('gl_group_summary', array('gl_name' => 'Current Assets'), 'id,gl_name,,all_sub_glgroup');
-        $gl_otherassets = $gmodel->get_data_table('gl_group_summary', array('gl_name' => 'Other Assets'), 'id,gl_name,,all_sub_glgroup');
-      
-           $capital_account_list = array();
-            if(!empty($gl_capital['all_sub_glgroup']))
-            {
-                
-                $capital_data_main_gl = capital_data($gl_capital['id'],$start_date,$end_date);
-                $main_gl_account_data = $capital_data_main_gl['account'];
-
-                $list_sub_gl = $gl_capital['all_sub_glgroup'];
-                $array_sub_gl = explode(",",$list_sub_gl);
-               
-                foreach($array_sub_gl as $array_sub_glrow)
-                { 
-                    $capital_data_gl = capital_data($array_sub_glrow,$start_date,$end_date);
-                    $sub_gl_account_data = $capital_data_gl['account'];
-                    foreach($sub_gl_account_data as $row)
-                    {
-                        $sub_gl_account[] = $row;
-                    }
-                }
-                $capital_account_list = array_merge($main_gl_account_data,$sub_gl_account);
-            }
-            else
-            {
-                $capital_data = capital_data($gl_capital['id'],$start_date,$end_date);
-                $capital_account_list = $capital_data['account'];
-               
-            }
-            $loan_account_list = array();
-            if(!empty($gl_loan['all_sub_glgroup']))
-            {
-                $loan_data_main_gl = loans_data($gl_loan['id'],$start_date,$end_date);
-                $main_gl_account_data = $loan_data_main_gl['account'];
-
-                $list_sub_gl = $gl_loan['all_sub_glgroup'];
-                $array_sub_gl = explode(",",$list_sub_gl);
-               
-                foreach($array_sub_gl as $array_sub_glrow)
-                { 
-                    $loan_data_gl = capital_data($array_sub_glrow,$start_date,$end_date);
-                    $sub_gl_account_data = $loan_data_gl['account'];
-                    foreach($sub_gl_account_data as $row)
-                    {
-                        $sub_gl_account[] = $row;
-                    }
-                }
-                $loan_account_list = array_merge($main_gl_account_data,$sub_gl_account);
-            }
-            else
-            {
-                $loan_data = loans_data($gl_loan['id'],$start_date,$end_date);
-                $loan_account_list = $loan_data['account'];
-               
-            }
-            $liability_account_list = array();
-            if(!empty($gl_lib['all_sub_glgroup']))
-            {
-                
-                $liability_data_main_gl = Currlib_data($gl_capital['id'],$start_date,$end_date);
-                $main_gl_account_data = $liability_data_main_gl['account'];
-
-                $list_sub_gl = $gl_lib['all_sub_glgroup'];
-                $array_sub_gl = explode(",",$list_sub_gl);
-               
-                foreach($array_sub_gl as $array_sub_glrow)
-                { 
-                    $liability_data_gl = Currlib_data($array_sub_glrow,$start_date,$end_date);
-                    $sub_gl_account_data = $liability_data_gl['account'];
-                    foreach($sub_gl_account_data as $row)
-                    {
-                        $sub_gl_account[] = $row;
-                    }
-                }
-                $liability_account_list = array_merge($main_gl_account_data,$sub_gl_account);
-            }
-            else
-            {
-                $liability_data = Currlib_data($gl_capital['id'],$start_date,$end_date);
-                $liability_account_list = $liability_data['account'];
-               
-            }
-            $current_assets_account_list = array();
-            if(!empty($gl_currentassets['all_sub_glgroup']))
-            {
-                
-                $current_assets_data_main_gl = Current_Assets_data($gl_currentassets['id'],$start_date,$end_date);
-                $main_gl_account_data = $current_assets_data_main_gl['account'];
-
-                $list_sub_gl = $gl_currentassets['all_sub_glgroup'];
-                $array_sub_gl = explode(",",$list_sub_gl);
-               
-                foreach($array_sub_gl as $array_sub_glrow)
-                { 
-                    $current_assets_data_gl = Current_Assets_data($array_sub_glrow,$start_date,$end_date);
-                    $sub_gl_account_data = $current_assets_data_gl['account'];
-                    foreach($sub_gl_account_data as $row)
-                    {
-                        $sub_gl_account[] = $row;
-                    }
-                }
-                $current_assets_account_list = array_merge($main_gl_account_data,$sub_gl_account_data);
-            }
-            else
-            {
-                $current_assets_data = Current_Assets_data($gl_currentassets['id'],$start_date,$end_date);
-                $current_assets_account_list = $current_assets_data['account'];
-               
-            }
-            $fixed_assets_account_list = array();
-            if(!empty($gl_fixedassets['all_sub_glgroup']))
-            {
-                $list_sub_gl = $gl_fixedassets['all_sub_glgroup'];
-                $array_sub_gl = explode(",",$list_sub_gl);
-                $fixedassets_data_gl = Fixed_Assets_data($gl_fixedassets['id'],$start_date,$end_date);
-                $main_gl_account_data = $fixedassets_data_gl['account'];
-                foreach($array_sub_gl as $array_sub_glrow)
-                { 
-                    $fixed_assets_data = Fixed_Assets_data($array_sub_glrow,$start_date,$end_date);
-                    $sub_gl_account_data = $fixed_assets_data['account'];
-                    foreach($sub_gl_account_data as $row)
-                    {
-                        $sub_gl_account[] = $row;
-                    }
-                }
-
-
-                $current_assets_data_main_gl = Fixed_Assets_data($gl_fixedassets['id'],$start_date,$end_date);
-                $main_gl_account_data = $current_assets_data_main_gl['account'];
-
-                $list_sub_gl = $gl_fixedassets['all_sub_glgroup'];
-                $array_sub_gl = explode(",",$list_sub_gl);
-               
-                foreach($array_sub_gl as $array_sub_glrow)
-                { 
-                    $fixed_assets_data_gl = Fixed_Assets_data($array_sub_glrow,$start_date,$end_date);
-                    $sub_gl_account_data = $fixed_assets_data_gl['account'];
-                    foreach($sub_gl_account_data as $row)
-                    {
-                        $sub_gl_account[] = $row;
-                    }
-                }
-                $fixed_assets_account_list = array_merge($main_gl_account_data,$sub_gl_account_data);
-            }
-            else
-            {
-                $fixed_assets_data = Fixed_Assets_data($gl_currentassets['id'],$start_date,$end_date);
-                $fixed_assets_account_list = $fixed_assets_data['account'];
-               
-            }
-
+        $result = $query->getResult();
+        //echo '<pre>';Print_r($result);exit;
         
-            
+        //$category = array();
+        foreach ($result as $mainCategory) {
+            //$category = array();
+
+            $category['gl'] = gl_list_new($mainCategory->id);
            
+           
+            $category['sub_categories'] = $this->get_sub_sub_glgroup($mainCategory->id);
+         
+            // $categories[] = array_merge($category,$sub_category);
+           //$categories = $category;
+           echo '<pre>';Print_r($category);
         
 
+            //$categories[$mainCategory->id] = $category;
+        }
+        exit;
+        //echo '<pre>';Print_r($categories);exit;
+        
+        return  $category;
     }
-
 }

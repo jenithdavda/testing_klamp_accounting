@@ -100,6 +100,7 @@ class AddbookModel extends Model
         $spreadsheet->setActiveSheetIndex(0);
         $writer = new Xlsx($spreadsheet);
         $writer->save('php://output');
+
     }
 
     public function ledgeroutstanding_xls_export_data($post)
@@ -168,6 +169,7 @@ class AddbookModel extends Model
                 $panding_amount = $row['pgpanding_amount'];
                 $intrest_rate = $row['pgintrest_rate'];
             } else {
+
             }
 
             $spreadsheet->setActiveSheetIndex(0)->setCellValue('A' . $i, @$inv_id);
@@ -191,9 +193,10 @@ class AddbookModel extends Model
         $spreadsheet->setActiveSheetIndex(0);
         $writer = new Xlsx($spreadsheet);
         $writer->save('php://output');
+
     }
 
-
+    
 
     public function get_transaction_view($post)
     {
@@ -311,6 +314,7 @@ class AddbookModel extends Model
                 $getdata['total']['sgeneralinvoive_total'] = $gsinvoive_total;
                 $getdata['total']['sgeneralreturn_total'] = $gsreturn_total;
             }
+
         } else {
             if (empty($post['transaction_type'])) {
                 $builder = $db->table('purchase_invoice pi');
@@ -460,6 +464,7 @@ class AddbookModel extends Model
             // echo '<pre>';print_r($data);exit;
 
             return $data;
+
         }
         if ($post['trans_type'] == 'sales' && $post['particular'] == 'general') {
             $builder = $db->table('sales_ACinvoice sa');
@@ -685,6 +690,7 @@ class AddbookModel extends Model
             $builder->where(array('DATE(p.doc_date)  <= ' => $end_date));
             $query = $builder->get();
             $purchase['purchase'] = $query->getResultArray();
+
         } else if (!empty(@$get['from'])) {
 
             $start_date = @$get['from'] ? db_date($get['from']) : '';
@@ -701,6 +707,7 @@ class AddbookModel extends Model
             $builder->where(array('DATE(p.doc_date)  <= ' => $end_date));
             $query = $builder->get();
             $purchase['purchase'] = $query->getResultArray();
+
         } else {
             $purchase['purchase'] = array();
             $start_date = '';
@@ -738,6 +745,7 @@ class AddbookModel extends Model
             $builder->where(array('DATE(p.doc_date)  <= ' => $end_date));
             $query = $builder->get();
             $purchase['purchase'] = $query->getResultArray();
+
         } else if (!empty(@$get['from'])) {
 
             $start_date = @$get['from'] ? db_date($get['from']) : '';
@@ -754,6 +762,7 @@ class AddbookModel extends Model
             $builder->where(array('DATE(p.doc_date)  <= ' => $end_date));
             $query = $builder->get();
             $purchase['purchase'] = $query->getResultArray();
+
         } else {
             $purchase['purchase'] = array();
             $start_date = '';
@@ -901,6 +910,7 @@ class AddbookModel extends Model
             $builder->where(array('DATE(p.invoice_date)  <= ' => $end_date));
             $query = $builder->get();
             $sales['sales'] = $query->getResultArray();
+
         } else if (!empty(@$get['from'])) {
 
             $start_date = @$get['from'] ? db_date($get['from']) : '';
@@ -917,6 +927,7 @@ class AddbookModel extends Model
             $builder->where(array('DATE(p.invoice_date)  <= ' => $end_date));
             $query = $builder->get();
             $sales['sales'] = $query->getResultArray();
+
         } else {
             $sales['sales'] = array();
             $start_date = '';
@@ -953,6 +964,7 @@ class AddbookModel extends Model
             $builder->where(array('DATE(p.invoice_date)  <= ' => $end_date));
             $query = $builder->get();
             $sales['sales'] = $query->getResultArray();
+
         } else if (!empty(@$get['from'])) {
 
             $start_date = @$get['from'] ? db_date($get['from']) : '';
@@ -969,6 +981,7 @@ class AddbookModel extends Model
             $builder->where(array('DATE(p.invoice_date)  <= ' => $end_date));
             $query = $builder->get();
             $sales['sales'] = $query->getResultArray();
+
         } else {
             $sales['sales'] = array();
             $start_date = '';
@@ -1031,7 +1044,7 @@ class AddbookModel extends Model
 
         $getdata['start_date'] = $start_date;
         $getdata['end_date'] = $end_date;
-
+        
         return $getdata;
     }
 
@@ -1173,6 +1186,7 @@ class AddbookModel extends Model
                 }
 
                 $total_gst += ($final_sub * ($row['item'][$k]['igst'] / 100));
+
             }
             for ($j = 0; $j < count($row['item']); $j++) {
                 //if($row['id'] )
@@ -1192,6 +1206,7 @@ class AddbookModel extends Model
                     $add_amt = $sub * $add_amt_per;
 
                     $final_sub += $add_amt;
+
                 } else {
                     $disc_amt = $sub * $row['item'][$j]['item_disc'] / 100;
                     $final_sub = $sub - $disc_amt;
@@ -1216,6 +1231,7 @@ class AddbookModel extends Model
 
                 $i++;
             }
+
         }
 
         $spreadsheet->getActiveSheet()->setTitle('Sales Gst Register');
@@ -1313,6 +1329,7 @@ class AddbookModel extends Model
                 }
 
                 $total_gst += ($final_sub * ($row['item'][$k]['igst'] / 100));
+
             }
             $new_array = array();
             for ($j = 0; $j < count($row['item']); $j++) {
@@ -1325,6 +1342,7 @@ class AddbookModel extends Model
                     $add_amt = $sub * $add_amt_per;
 
                     $final_sub += $add_amt;
+
                 } else {
                     $disc_amt = $sub * $row['item'][$j]['item_disc'] / 100;
                     $final_sub = $sub - $disc_amt;
@@ -1350,6 +1368,7 @@ class AddbookModel extends Model
                     $new_array[$row['item'][$j]['hsn']]['cgst_total'] = (isset($new_array[$row['item'][$j]['hsn']]['cgst_total']) ? $new_array[$row['item'][$j]['hsn']]['cgst_total'] : 0) + $itm_cgst;
                     $new_array[$row['item'][$j]['hsn']]['sgst_total'] = (isset($new_array[$row['item'][$j]['hsn']]['sgst_total']) ? $new_array[$row['item'][$j]['hsn']]['sgst_total'] : 0) + $itm_sgst;
                 }
+
             }
 
             foreach ($new_array as $item) {
@@ -1564,11 +1583,11 @@ class AddbookModel extends Model
             $spreadsheet->setActiveSheetIndex(0)->setCellValue('E' . $i, @$row['account_name']);
             $spreadsheet->setActiveSheetIndex(0)->setCellValue('F' . $i, @$row['voucher_name']);
             $spreadsheet->setActiveSheetIndex(0)->setCellValue('G' . $i, @$row['total_amount']);
-            if (in_array('igst', $taxes)) {
+            if(in_array('igst',$taxes)){
                 $igst = $row['tot_igst'];
-            } else {
-                $cgst = $row['tot_igst'] / 2;
-                $sgst = $row['tot_igst'] / 2;
+            }else{
+                $cgst = $row['tot_igst']/2;
+                $sgst = $row['tot_igst']/2;
             }
             $spreadsheet->setActiveSheetIndex(0)->setCellValue('H' . $i, @$igst);
             $spreadsheet->setActiveSheetIndex(0)->setCellValue('I' . $i, @$cgst);
@@ -1681,6 +1700,7 @@ class AddbookModel extends Model
                 }
 
                 $total_gst += ($final_sub * ($row['item'][$k]['igst'] / 100));
+
             }
             for ($j = 0; $j < count($row['item']); $j++) {
                 //if($row['id'] )
@@ -1700,6 +1720,7 @@ class AddbookModel extends Model
                     $add_amt = $sub * $add_amt_per;
 
                     $final_sub += $add_amt;
+
                 } else {
                     $disc_amt = $sub * $row['item'][$j]['item_disc'] / 100;
                     $final_sub = $sub - $disc_amt;
@@ -1724,6 +1745,7 @@ class AddbookModel extends Model
 
                 $i++;
             }
+
         }
 
         $spreadsheet->getActiveSheet()->setTitle('Sales Gst Register');
@@ -1820,6 +1842,7 @@ class AddbookModel extends Model
                 }
 
                 $total_gst += ($final_sub * ($row['item'][$k]['igst'] / 100));
+
             }
             $new_array = array();
             for ($j = 0; $j < count($row['item']); $j++) {
@@ -1832,6 +1855,7 @@ class AddbookModel extends Model
                     $add_amt = $sub * $add_amt_per;
 
                     $final_sub += $add_amt;
+
                 } else {
                     $disc_amt = $sub * $row['item'][$j]['item_disc'] / 100;
                     $final_sub = $sub - $disc_amt;
@@ -1857,6 +1881,7 @@ class AddbookModel extends Model
                     $new_array[$row['item'][$j]['hsn']]['cgst_total'] = (isset($new_array[$row['item'][$j]['hsn']]['cgst_total']) ? $new_array[$row['item'][$j]['hsn']]['cgst_total'] : 0) + $itm_cgst;
                     $new_array[$row['item'][$j]['hsn']]['sgst_total'] = (isset($new_array[$row['item'][$j]['hsn']]['sgst_total']) ? $new_array[$row['item'][$j]['hsn']]['sgst_total'] : 0) + $itm_sgst;
                 }
+
             }
 
             foreach ($new_array as $item) {
@@ -1879,6 +1904,7 @@ class AddbookModel extends Model
 
                 $i++;
             }
+
         }
 
         $spreadsheet->getActiveSheet()->setTitle('Sales Gst Register2');
@@ -1935,11 +1961,11 @@ class AddbookModel extends Model
             $spreadsheet->setActiveSheetIndex(0)->setCellValue('C' . $i, @$row['account_name']);
             $spreadsheet->setActiveSheetIndex(0)->setCellValue('D' . $i, @$row['supp_inv']);
             $spreadsheet->setActiveSheetIndex(0)->setCellValue('E' . $i, @$row['total_amount']);
-            if (in_array('igst', $taxes)) {
+            if(in_array('igst',$taxes)){
                 $igst = $row['tot_igst'];
-            } else {
-                $cgst = $row['tot_igst'] / 2;
-                $sgst = $row['tot_igst'] / 2;
+            }else{
+                $cgst = $row['tot_igst']/2;
+                $sgst = $row['tot_igst']/2;
             }
             $spreadsheet->setActiveSheetIndex(0)->setCellValue('F' . $i, @$igst);
             $spreadsheet->setActiveSheetIndex(0)->setCellValue('G' . $i, @$cgst);
@@ -2034,6 +2060,7 @@ class AddbookModel extends Model
                     $discount_amt = $sub * $disc_avg_per;
                     $final_sub = $sub - $discount_amt;
                     $add_amt = $sub * $add_amt_per;
+
                 } else {
                     $final_sub = $sub;
                     $add_amt = $final_sub * $add_amt_per;
@@ -2054,9 +2081,11 @@ class AddbookModel extends Model
                     $discount_amt = $sub * $disc_avg_per;
                     $final_sub = $sub - $discount_amt;
                     $add_amt = $sub * $add_amt_per;
+
                 } else {
                     $final_sub = $sub;
                     $add_amt = $final_sub * $add_amt_per;
+
                 }
                 $final_sub += $add_amt;
 
@@ -2163,7 +2192,7 @@ class AddbookModel extends Model
     //     $page = $get['page'];
     //     $page_first_result = ($page - 1) * $results_per_page;
     //     $new_limit = ($page - 1) * 15;
-
+    
     //     $gmodel = new GeneralModel();
     //     if (!empty($get['year'])) {
 
@@ -2257,7 +2286,7 @@ class AddbookModel extends Model
     //         $sales['opening_balance'] = $total_amount['total_taxable'];
     //     }
     //     echo '<pre>';Print_r($sales);exit;
-
+        
     //     return $sales;
     // }
     public function salesItem_voucher_wise_data($get)
@@ -2284,6 +2313,7 @@ class AddbookModel extends Model
             $builder->where(array('DATE(p.invoice_date)  <= ' => $end_date));
             $query = $builder->get();
             $sales['sales'] = $query->getResultArray();
+
         } else if (!empty(@$get['from'])) {
 
             $start_date = @$get['from'] ? db_date($get['from']) : '';
@@ -2291,14 +2321,15 @@ class AddbookModel extends Model
 
             $builder = $db->table('sales_invoice p');
             $builder->select('p.invoice_no as voucher_id,p.custom_inv_no,p.id,p.net_amount as taxable,ac.name as party_name,p.invoice_date  as date,acc.name as voucher_name');
-            $builder->join('account ac', 'ac.id =p.account', 'left');
-            $builder->join('account acc', 'acc.id =p.voucher_type', 'left');
+            $builder->join('account ac', 'ac.id =p.account','left');
+            $builder->join('account acc', 'acc.id =p.voucher_type','left');
             $builder->where('p.is_delete', 0);
             $builder->where('p.is_cancle', 0);
             $builder->where(array('DATE(p.invoice_date)  >= ' => $start_date));
             $builder->where(array('DATE(p.invoice_date)  <= ' => $end_date));
             $query = $builder->get();
             $sales['sales'] = $query->getResultArray();
+
         } else {
             $sales['sales'] = array();
             $start_date = '';
@@ -2306,7 +2337,7 @@ class AddbookModel extends Model
         }
         $builder = $db->table('sales_invoice p');
         $builder->select('SUM(p.net_amount) as sales_total');
-        $builder->where(array('p.is_delete' => 0, 'p.is_cancle' => 0));
+        $builder->where(array('p.is_delete'=>0,'p.is_cancle'=>0));
         $builder->where(array('DATE(p.invoice_date)  >= ' => $start_date));
         $builder->where(array('DATE(p.invoice_date)  <= ' => $end_date));
         $query = $builder->get();
@@ -2344,6 +2375,7 @@ class AddbookModel extends Model
             $builder->groupBy('p.id');
             $query = $builder->get();
             $sales['sales'] = $query->getResultArray();
+
         } else if (!empty(@$get['from'])) {
 
             $start_date = @$get['from'] ? db_date($get['from']) : '';
@@ -2360,6 +2392,7 @@ class AddbookModel extends Model
             $builder->groupBy('p.id');
             $query = $builder->get();
             $sales['sales'] = $query->getResultArray();
+
         } else {
             $sales['sales'] = array();
             $start_date = '';
@@ -2367,7 +2400,7 @@ class AddbookModel extends Model
         }
         $builder = $db->table('sales_return p');
         $builder->select('SUM(p.net_amount) as sales_total');
-        $builder->where(array('p.is_delete' => 0, 'p.is_cancle' => 0));
+        $builder->where(array('p.is_delete'=>0,'p.is_cancle'=>0));
         $builder->where(array('DATE(p.return_date)  >= ' => $start_date));
         $builder->where(array('DATE(p.return_date)  <= ' => $end_date));
         $query = $builder->get();
@@ -2485,31 +2518,32 @@ class AddbookModel extends Model
         return $getdata;
     }
 
-    public function purchaseItem_voucher_wise_data($get)
-    {
+    public function purchaseItem_voucher_wise_data($get){
         $db = $this->db;
-        $db->setDatabase(session('DataSource'));
+        $db->setDatabase(session('DataSource')); 
         $purchase = array();
 
-        if (!empty($get['year'])) {
+        if(!empty($get['year'])){
 
             $start = strtotime("{$get['year']}-{$get['month']}-01");
             $end = strtotime('-1 second', strtotime('+1 month', $start));
-
-            $start_date = date('Y-m-d', $start);
-            $end_date = date('Y-m-d', $end);
-
+             
+            $start_date = date('Y-m-d',$start);
+            $end_date = date('Y-m-d',$end);
+             
 
             $builder = $db->table('purchase_invoice p');
             $builder->select('p.invoice_no as voucher_id,p.supply_inv,p.id,p.net_amount taxable,ac.name as party_name,p.invoice_date  as date');
             $builder->join('account ac', 'ac.id =p.account');
-            $builder->where('p.is_delete', 0);
-            $builder->where('p.is_cancle', 0);
+            $builder->where('p.is_delete',0);
+            $builder->where('p.is_cancle',0);
             $builder->where(array('DATE(p.invoice_date)  >= ' => $start_date));
             $builder->where(array('DATE(p.invoice_date)  <= ' => $end_date));
             $query = $builder->get();
             $purchase['purchase'] = $query->getResultArray();
-        } else if (!empty(@$get['from'])) {
+
+
+        }else if(!empty(@$get['from'])){
 
             $start_date = @$get['from']  ? db_date($get['from']) : '';
             $end_date = @$get['to'] ? db_date($get['to']) : '';
@@ -2517,20 +2551,21 @@ class AddbookModel extends Model
             $builder = $db->table('purchase_invoice p');
             $builder->select('p.invoice_no as voucher_id,p.supply_inv,p.id,p.net_amount taxable,ac.name as party_name,p.invoice_date  as date');
             $builder->join('account ac', 'ac.id =p.account');
-            $builder->where('p.is_delete', 0);
-            $builder->where('p.is_cancle', 0);
+            $builder->where('p.is_delete',0);
+            $builder->where('p.is_cancle',0);
             $builder->where(array('DATE(p.invoice_date)  >= ' => $start_date));
             $builder->where(array('DATE(p.invoice_date)  <= ' => $end_date));
             $query = $builder->get();
             $purchase['purchase'] = $query->getResultArray();
-        } else {
+
+        }else{
             $purchase['purchase'] = array();
             $start_date = '';
             $end_date = '';
-        }
+        }   
         $builder = $db->table('purchase_invoice p');
         $builder->select('SUM(p.net_amount) as purchase_total');
-        $builder->where(array('p.is_delete' => 0, 'p.is_cancle' => 0));
+        $builder->where(array('p.is_delete'=>0,'p.is_cancle'=>0));
         $builder->where(array('DATE(p.invoice_date)  >= ' => $start_date));
         $builder->where(array('DATE(p.invoice_date)  <= ' => $end_date));
         $query = $builder->get();
@@ -2540,7 +2575,7 @@ class AddbookModel extends Model
         $purchase['date']['to'] = $end_date;
 
         //echo '<pre>';print_r($sales);exit;
-        return $purchase;
+        return $purchase;     
     }
 
     public function get_Purchase_return_register($post = '')
@@ -2599,22 +2634,21 @@ class AddbookModel extends Model
         return $getdata;
     }
 
-    public function get_Purchase_return_register_xls($post)
-    {
+    public function get_Purchase_return_register_xls($post){
 
         $data = $this->get_Purchase_return_register($post);
         $gmodel = new GeneralModel();
 
         $acc = $gmodel->get_data_table('account', array('id' => @$post['ac_id']), 'id,name');
-
+      
         //print_r($post);exit;
 
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
         $spreadsheet->getActiveSheet()->getStyle('A5:G5')->getFill()
-            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-            ->getStartColor()->setARGB('F8CBAD');
+        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+        ->getStartColor()->setARGB('F8CBAD');
 
         $spreadsheet->setActiveSheetIndex(0)->setCellValue('A1', 'Debit Note Register Report');
         $spreadsheet->setActiveSheetIndex(0)->setCellValue('A2', @$acc['name']);
@@ -2638,15 +2672,15 @@ class AddbookModel extends Model
         $closing = 0;
         foreach ($data['purchase_return'] as $row) {
             $closing += (float) $row['net_amount'];
-            $igst = 0;
-            $cgst = 0;
-            $sgst = 0;
+            $igst =0;
+            $cgst =0;
+            $sgst =0;
             $taxes = json_decode($row['taxes']);
-            if (in_array('igst', $taxes)) {
+            if(in_array('igst',$taxes)){
                 $igst = $row['tot_igst'];
-            } else {
-                $cgst = $row['tot_igst'] / 2;
-                $sgst = $row['tot_igst'] / 2;
+            }else{
+                $cgst = $row['tot_igst']/2;
+                $sgst = $row['tot_igst']/2;
             }
 
             $spreadsheet->setActiveSheetIndex(0)->setCellValue('A' . $i, @$row['id']);
@@ -2673,22 +2707,21 @@ class AddbookModel extends Model
         $writer->save('php://output');
     }
 
-    public function get_Gnrl_purchase_rtn_register_xls($post)
-    {
+    public function get_Gnrl_purchase_rtn_register_xls($post){
 
         $data = $this->get_Gnrl_purchase_rtn_register($post);
         //print_r($post);exit;
         $gmodel = new GeneralModel();
 
         $acc = $gmodel->get_data_table('account', array('id' => @$post['ac_id']), 'id,name');
-
+      
 
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
         $spreadsheet->getActiveSheet()->getStyle('A5:G5')->getFill()
-            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-            ->getStartColor()->setARGB('F8CBAD');
+        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+        ->getStartColor()->setARGB('F8CBAD');
 
         $spreadsheet->setActiveSheetIndex(0)->setCellValue('A1', 'General Purchase Return Register Report');
         $spreadsheet->setActiveSheetIndex(0)->setCellValue('A2', @$acc['name']);
@@ -2712,16 +2745,16 @@ class AddbookModel extends Model
         $closing = 0;
         foreach ($data['purchase_invoice'] as $row) {
             $closing += (float) $row['net_amount'];
-
-            $igst = 0;
-            $cgst = 0;
-            $sgst = 0;
+          
+            $igst =0;
+            $cgst =0;
+            $sgst =0;
             $taxes = json_decode($row['taxes']);
-            if (in_array('igst', $taxes)) {
+            if(in_array('igst',$taxes)){
                 $igst = $row['tot_igst'];
-            } else {
-                $cgst = $row['tot_igst'] / 2;
-                $sgst = $row['tot_igst'] / 2;
+            }else{
+                $cgst = $row['tot_igst']/2;
+                $sgst = $row['tot_igst']/2;
             }
 
             $spreadsheet->setActiveSheetIndex(0)->setCellValue('A' . $i, @$row['id']);
@@ -2748,22 +2781,21 @@ class AddbookModel extends Model
         $writer->save('php://output');
     }
 
-    public function get_Gnrl_sales_rtn_register_xls($post)
-    {
+    public function get_Gnrl_sales_rtn_register_xls($post){
 
         $data = $this->get_Gnrl_sales_rtn_register($post);
         //print_r($data);exit;
         $gmodel = new GeneralModel();
 
         $acc = $gmodel->get_data_table('account', array('id' => @$post['ac_id']), 'id,name');
-
+      
 
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
         $spreadsheet->getActiveSheet()->getStyle('A5:G5')->getFill()
-            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-            ->getStartColor()->setARGB('F8CBAD');
+        ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+        ->getStartColor()->setARGB('F8CBAD');
 
         $spreadsheet->setActiveSheetIndex(0)->setCellValue('A1', 'General Sales Return Register Report');
         $spreadsheet->setActiveSheetIndex(0)->setCellValue('A2', @$acc['name']);
@@ -2833,6 +2865,7 @@ class AddbookModel extends Model
             $purchase['purchase'] = $query->getResultArray();
 
             $getdata = array();
+
         } else if (!empty(@$get['from'])) {
 
             $start_date = @$get['from'] ? db_date($get['from']) : '';
@@ -2849,6 +2882,7 @@ class AddbookModel extends Model
             $builder->groupBy('p.id');
             $query = $builder->get();
             $purchase['purchase'] = $query->getResultArray();
+
         } else {
             $purchase['purchase'] = array();
             $start_date = '';
@@ -2890,6 +2924,7 @@ class AddbookModel extends Model
 
             $query = $builder->get();
             $getdata['payment_vch'] = $query->getResultArray();
+
         } else if (!empty(@$get['from'])) {
 
             $start_date = @$get['from'] ? db_date($get['from']) : '';
@@ -2911,6 +2946,7 @@ class AddbookModel extends Model
 
             $query = $builder->get();
             $getdata['payment_vch'] = $query->getResultArray();
+
         } else {
             $getdata['payment_vch'] = array();
             $start_date = '';
@@ -2953,6 +2989,7 @@ class AddbookModel extends Model
 
             $query = $builder->get();
             $getdata['receipt_vch'] = $query->getResultArray();
+
         } else if (!empty(@$get['from'])) {
 
             $start_date = @$get['from'] ? db_date($get['from']) : '';
@@ -2974,6 +3011,7 @@ class AddbookModel extends Model
 
             $query = $builder->get();
             $getdata['receipt_vch'] = $query->getResultArray();
+
         } else {
             $getdata['receipt_vch'] = array();
             $start_date = '';
@@ -3010,6 +3048,7 @@ class AddbookModel extends Model
             $query = $builder->get();
 
             $getdata['contra_vch'] = $query->getResultArray();
+
         } else if (!empty(@$get['from'])) {
 
             $start_date = @$get['from'] ? db_date($get['from']) : '';
@@ -3025,6 +3064,7 @@ class AddbookModel extends Model
             $query = $builder->get();
 
             $getdata['contra_vch'] = $query->getResultArray();
+
         } else {
             $getdata['contra_vch'] = array();
             $start_date = '';
@@ -3610,7 +3650,7 @@ class AddbookModel extends Model
 
         $account_id = @$post['account_id'];
         $gmodel = new GeneralModel();
-        $account_name = $gmodel->get_data_table('account', array('id' => $account_id), 'name');
+        $account_name = $gmodel->get_data_table('account',array('id'=>$account_id),'name');
 
 
 
@@ -3634,7 +3674,7 @@ class AddbookModel extends Model
         // }
         // print_r($start_date);
         // print_r($end_date);exit;
-
+        
         $getdata = array();
 
         if (!empty($account_id)) {
@@ -3643,11 +3683,13 @@ class AddbookModel extends Model
             $builder->select('"sale_invoice" as type,si.id,si.custom_inv_no as vch_no,si.account,si.invoice_date as date,si.total_amount,si.net_amount,ac.name as account_name');
             $builder->join('account ac', 'ac.id = si.account');
             $builder->where(array('si.is_delete' => 0, 'si.is_cancle' => 0, 'si.account' => $account_id));
-            if (!empty($start_date)) {
-                $builder->where(array('DATE(si.invoice_date)  >= ' => db_date($start_date)));
+            if(!empty($start_date))
+            {
+            $builder->where(array('DATE(si.invoice_date)  >= ' => db_date($start_date)));
             }
-            if (!empty($end_date)) {
-                $builder->where(array('DATE(si.invoice_date)  <= ' => db_date($end_date)));
+            if(!empty($end_date))
+            {
+            $builder->where(array('DATE(si.invoice_date)  <= ' => db_date($end_date)));
             }
             $query = $builder->get();
             $sales_invoice = $query->getResultArray();
@@ -3663,17 +3705,19 @@ class AddbookModel extends Model
             $builder = $db->table('sales_ACinvoice sac');
             $builder->select('"sale_general" as type,sac.id,sac.party_account,sac.v_type,sac.invoice_date as date,sac.total_amount,sac.net_amount,ac.name as account_name,sac.supp_inv as vch_no');
             $builder->join('account ac', 'ac.id = sac.party_account');
-            $builder->where(array('sac.is_delete' => 0, 'sac.is_cancle' => 0, 'sac.v_type' => 'general', 'sac.party_account' => $account_id));
-            if (!empty($start_date)) {
-                $builder->where(array('DATE(sac.invoice_date)  >= ' => db_date($start_date)));
+            $builder->where(array('sac.is_delete' => 0, 'sac.is_cancle' => 0,'sac.v_type' => 'general', 'sac.party_account' => $account_id));
+            if(!empty($start_date))
+            {
+            $builder->where(array('DATE(sac.invoice_date)  >= ' => db_date($start_date)));
             }
-            if (!empty($end_date)) {
-                $builder->where(array('DATE(sac.invoice_date)  <= ' => db_date($end_date)));
+            if(!empty($end_date))
+            {
+            $builder->where(array('DATE(sac.invoice_date)  <= ' => db_date($end_date)));
             }
             $query2 = $builder->get();
             $salesinvoice_general = $query2->getResultArray();
             $sginvoive_total = 0;
-
+            
 
             foreach ($salesinvoice_general as $row) {
                 $sginvoive_total = $sginvoive_total + $row["net_amount"];
@@ -3684,12 +3728,14 @@ class AddbookModel extends Model
             $builder = $db->table('purchase_invoice pi');
             $builder->select('"purchase_invoice" as type,pi.id,pi.account,pi.invoice_date as date,pi.total_amount,pi.net_amount,ac.name as account_name,pi.supply_inv as vch_no');
             $builder->join('account ac', 'ac.id = pi.account');
-            $builder->where(array('pi.is_delete' => 0, 'pi.is_cancle' => 0, 'pi.account' => $account_id));
-            if (!empty($start_date)) {
-                $builder->where(array('DATE(pi.invoice_date)  >= ' => db_date($start_date)));
+            $builder->where(array('pi.is_delete' => 0, 'pi.is_cancle' => 0,'pi.account' => $account_id));
+            if(!empty($start_date))
+            {
+            $builder->where(array('DATE(pi.invoice_date)  >= ' => db_date($start_date)));
             }
-            if (!empty($end_date)) {
-                $builder->where(array('DATE(pi.invoice_date)  <= ' => db_date($end_date)));
+            if(!empty($end_date))
+            {
+            $builder->where(array('DATE(pi.invoice_date)  <= ' => db_date($end_date)));
             }
             $query6 = $builder->get();
             $purchase_invoice = $query6->getResultArray();
@@ -3706,11 +3752,13 @@ class AddbookModel extends Model
             $builder->select('"purchase_general" as type,pg.id,pg.party_account,pg.v_type,pg.doc_date as date,pg.total_amount,pg.net_amount,ac.name as account_name,pg.supp_inv as vch_no');
             $builder->join('account ac', 'ac.id = pg.party_account');
             $builder->where(array('pg.is_delete' => 0, 'pg.is_cancle' => 0, 'pg.v_type' => 'general', 'pg.party_account' => $account_id));
-            if (!empty($start_date)) {
-                $builder->where(array('DATE(pg.doc_date)  >= ' => db_date($start_date)));
+            if(!empty($start_date))
+            {
+            $builder->where(array('DATE(pg.doc_date)  >= ' => db_date($start_date)));
             }
-            if (!empty($end_date)) {
-                $builder->where(array('DATE(pg.doc_date)  <= ' => db_date($end_date)));
+            if(!empty($end_date))
+            {
+            $builder->where(array('DATE(pg.doc_date)  <= ' => db_date($end_date)));
             }
             $query8 = $builder->get();
             $purchaseinvoice_general = $query8->getResultArray();
@@ -3728,11 +3776,13 @@ class AddbookModel extends Model
             $builder->select('bt.id,bt.account,bt.mode as type,bt.payment_type,bt.receipt_date as date,bt.amount as net_amount,ac.name as account_name');
             $builder->join('account ac', 'ac.id = bt.account');
             $builder->where(array('bt.mode' => 'Payment', 'bt.is_delete' => 0, 'bt.particular' => $account_id));
-            if (!empty($start_date)) {
-                $builder->where(array('DATE(bt.receipt_date)  >= ' => db_date($start_date)));
+            if(!empty($start_date))
+            {
+            $builder->where(array('DATE(bt.receipt_date)  >= ' => db_date($start_date)));
             }
-            if (!empty($end_date)) {
-                $builder->where(array('DATE(bt.receipt_date)  <= ' => db_date($end_date)));
+            if(!empty($end_date))
+            {
+            $builder->where(array('DATE(bt.receipt_date)  <= ' => db_date($end_date)));
             }
             $query = $builder->get();
             $payment = $query->getResultArray();
@@ -3750,11 +3800,13 @@ class AddbookModel extends Model
             $builder->select('bt.id,bt.account,bt.mode as type,bt.payment_type,bt.receipt_date as date,bt.amount as net_amount,ac.name as account_name');
             $builder->join('account ac', 'ac.id = bt.account');
             $builder->where(array('bt.mode' => 'Receipt', 'bt.is_delete' => 0, 'bt.particular' => $account_id));
-            if (!empty($start_date)) {
-                $builder->where(array('DATE(bt.receipt_date)  >= ' => db_date($start_date)));
+            if(!empty($start_date))
+            {
+            $builder->where(array('DATE(bt.receipt_date)  >= ' => db_date($start_date)));
             }
-            if (!empty($end_date)) {
-                $builder->where(array('DATE(bt.receipt_date)  <= ' => db_date($end_date)));
+            if(!empty($end_date))
+            {
+            $builder->where(array('DATE(bt.receipt_date)  <= ' => db_date($end_date)));
             }
             $query = $builder->get();
             $receipt = $query->getResultArray();
@@ -3772,11 +3824,13 @@ class AddbookModel extends Model
             $builder->select('"purchase_return" as type,pr.id,pr.account,pr.return_date as date,pr.total_amount,pr.net_amount,ac.name as account_name');
             $builder->join('account ac', 'ac.id = pr.account');
             $builder->where(array('pr.is_delete' => 0, 'pr.account' => $account_id));
-            if (!empty($start_date)) {
-                $builder->where(array('DATE(pr.return_date)  >= ' => db_date($start_date)));
+            if(!empty($start_date))
+            {
+            $builder->where(array('DATE(pr.return_date)  >= ' => db_date($start_date)));
             }
-            if (!empty($end_date)) {
-                $builder->where(array('DATE(pr.return_date)  <= ' => db_date($end_date)));
+            if(!empty($end_date))
+            {
+            $builder->where(array('DATE(pr.return_date)  <= ' => db_date($end_date)));
             }
             $query = $builder->get();
             $purchase_return = $query->getResultArray();
@@ -3793,12 +3847,14 @@ class AddbookModel extends Model
             $builder = $db->table('purchase_general pg');
             $builder->select('"purchase_general_return" as type,pg.id,pg.party_account,pg.v_type,pg.doc_date as date,pg.total_amount,pg.net_amount,ac.name as account_name,pg.supp_inv as vch_no');
             $builder->join('account ac', 'ac.id = pg.party_account');
-            $builder->where(array('pg.v_type' => 'return', 'pg.is_delete' => 0, 'pg.is_cancle' => 0, 'pg.party_account' => $account_id));
-            if (!empty($start_date)) {
-                $builder->where(array('DATE(pg.doc_date)  >= ' => db_date($start_date)));
+            $builder->where(array('pg.v_type' => 'return', 'pg.is_delete' => 0,'pg.is_cancle' => 0, 'pg.party_account' => $account_id));
+            if(!empty($start_date))
+            {
+            $builder->where(array('DATE(pg.doc_date)  >= ' => db_date($start_date)));
             }
-            if (!empty($end_date)) {
-                $builder->where(array('DATE(pg.doc_date)  <= ' => db_date($end_date)));
+            if(!empty($end_date))
+            {
+            $builder->where(array('DATE(pg.doc_date)  <= ' => db_date($end_date)));
             }
             $query8 = $builder->get();
             $purchasegeneral_return = $query8->getResultArray();
@@ -3815,17 +3871,19 @@ class AddbookModel extends Model
             $builder = $db->table('sales_return sr');
             $builder->select('"sale_return" as type,sr.id,sr.account,sr.return_date as date,sr.total,sr.net_amount,ac.name as account_name,sr.supp_inv as vch_no');
             $builder->join('account ac', 'ac.id = sr.account');
-            $builder->where(array('sr.is_delete' => 0, 'sr.is_cancle' => 0, 'sr.account' => $account_id));
-            if (!empty($start_date)) {
-                $builder->where(array('DATE(sr.return_date)  >= ' => db_date($start_date)));
+            $builder->where(array('sr.is_delete' => 0,'sr.is_cancle' => 0, 'sr.account' => $account_id));
+            if(!empty($start_date))
+            {
+            $builder->where(array('DATE(sr.return_date)  >= ' => db_date($start_date)));
             }
-            if (!empty($end_date)) {
-                $builder->where(array('DATE(sr.return_date)  <= ' => db_date($end_date)));
+            if(!empty($end_date))
+            {
+            $builder->where(array('DATE(sr.return_date)  <= ' => db_date($end_date)));
             }
             $query = $builder->get();
             $sales_return = $query->getResultArray();
 
-
+          
             $sreturn_total = 0;
 
             foreach ($sales_return as $row) {
@@ -3838,11 +3896,13 @@ class AddbookModel extends Model
             $builder->select('"sale_general_return" as type,sac.id,sac.party_account,sac.v_type,sac.invoice_date as date,sac.total_amount,sac.net_amount,ac.name as account_name,sac.supp_inv as vch_no');
             $builder->join('account ac', 'ac.id = sac.party_account');
             $builder->where(array('sac.v_type' => 'return', 'sac.is_cancle' => 0, 'sac.is_delete' => 0, 'sac.party_account' => $account_id));
-            if (!empty($start_date)) {
-                $builder->where(array('DATE(sac.invoice_date)  >= ' => db_date($start_date)));
+            if(!empty($start_date))
+            {
+            $builder->where(array('DATE(sac.invoice_date)  >= ' => db_date($start_date)));
             }
-            if (!empty($end_date)) {
-                $builder->where(array('DATE(sac.invoice_date)  <= ' => db_date($end_date)));
+            if(!empty($end_date))
+            {
+            $builder->where(array('DATE(sac.invoice_date)  <= ' => db_date($end_date)));
             }
             $query = $builder->get();
             $salesgeneral_return = $query->getResultArray();
@@ -3859,11 +3919,13 @@ class AddbookModel extends Model
             $builder->select('jv.id,jv.jv_id,jv.particular,jv.dr_cr as type,jv.date as date,jv.amount as net_amount,ac.name as account_name,jv.jv_id');
             $builder->join('account ac', 'ac.id = jv.particular');
             $builder->where(array('jv.is_delete' => 0, 'jv.particular' => $account_id));
-            if (!empty($start_date)) {
-                $builder->where(array('DATE(jv.date)  >= ' => db_date($start_date)));
+            if(!empty($start_date))
+            {
+            $builder->where(array('DATE(jv.date)  >= ' => db_date($start_date)));
             }
-            if (!empty($end_date)) {
-                $builder->where(array('DATE(jv.date)  <= ' => db_date($end_date)));
+            if(!empty($end_date))
+            {
+            $builder->where(array('DATE(jv.date)  <= ' => db_date($end_date)));
             }
             $query = $builder->get();
             $journal = $query->getResultArray();
@@ -3872,20 +3934,20 @@ class AddbookModel extends Model
             $journaldebit_total = 0;
             $journal_new = array();
             foreach ($journal as $row) {
-
+               
                 if ($row['type'] == 'cr') {
-                    $dr = $gmodel->get_data_table('jv_particular', array('jv_id' => $row['jv_id'], 'dr_cr' => "dr"), 'particular');
+                    $dr = $gmodel->get_data_table('jv_particular',array('jv_id' => $row['jv_id'],'dr_cr' => "dr"),'particular');
+                    
+                    $ac = $gmodel->get_data_table('account',array('id' => $dr['particular']),'name');
 
-                    $ac = $gmodel->get_data_table('account', array('id' => $dr['particular']), 'name');
-
-                    $row['account_name'] = @$ac['name'];
+                    $row['account_name'] = @$ac['name']; 
 
                     $journalcredit_total = $journalcredit_total + $row["net_amount"];
                 } else {
                     $journaldebit_total = $journaldebit_total + $row["net_amount"];
                 }
 
-                $journal_new[] = $row;
+                $journal_new[] = $row; 
             }
 
 
@@ -3894,7 +3956,7 @@ class AddbookModel extends Model
 
             $getdata['ledger'] = $ledger;
 
-            $merge_arr = array_merge($sales_invoice, $salesinvoice_general, $purchase_invoice, $purchaseinvoice_general, $payment, $receipt, $purchase_return, $purchasegeneral_return, $sales_return, $salesgeneral_return, $journal_new);
+            $merge_arr = array_merge($sales_invoice,$salesinvoice_general,$purchase_invoice,$purchaseinvoice_general,$payment,$receipt,$purchase_return,$purchasegeneral_return,$sales_return,$salesgeneral_return,$journal_new);
             usort($merge_arr, 'date_compare');
 
             $getdata['data'] = $merge_arr;
@@ -3907,7 +3969,7 @@ class AddbookModel extends Model
 
         return $getdata;
     }
-
+    
     public function get_old_ledger_register($post)
     {
         $db = $this->db;
@@ -3917,22 +3979,22 @@ class AddbookModel extends Model
 
         $account_id = @$post['account_id'];
         $gmodel = new GeneralModel();
-        $account_name = $gmodel->get_data_table('account', array('id' => $account_id), 'name,opening_type,opening_bal');
+        $account_name = $gmodel->get_data_table('account',array('id'=>$account_id),'name,opening_type,opening_bal');
 
         $ledger = array();
-        $salesinvoice_total = 0;
-        $salesinvoice_general_total = 0;
-        $purchaseinvoice_total = 0;
-        $purchaseinvoive_general_total = 0;
-        $payment_total = 0;
-        $receipt_total = 0;
-        $purchasreturn_total = 0;
-        $purchasereturn_general_total = 0;
-        $salesreturn_total = 0;
-        $salesreturn_general_total = 0;
-        $journal = 0;
+        $salesinvoice_total =0;
+        $salesinvoice_general_total =0;
+        $purchaseinvoice_total =0;
+        $purchaseinvoive_general_total =0;
+        $payment_total =0;
+        $receipt_total =0;
+        $purchasreturn_total =0;
+        $purchasereturn_general_total =0;
+        $salesreturn_total =0;
+        $salesreturn_general_total =0;
+        $journal =0;
         $journalcredit_total = 0;
-        $journaldebit_total = 0;
+        $journaldebit_total = 0; 
 
         if (!empty($account_id)) {
 
@@ -3942,13 +4004,13 @@ class AddbookModel extends Model
             $builder->where(array('DATE(invoice_date)  < ' => db_date($start_date)));
             $query = $builder->get();
             $sales_invoice = $query->getRowArray();
-            // echo $db->getLastQuery();
+           // echo $db->getLastQuery();
 
             $salesinvoice_total = $sales_invoice["total_netamount"];
 
             $builder = $db->table('sales_ACinvoice');
             $builder->select('SUM(net_amount) as total_netamount');
-            $builder->where(array('is_delete' => 0, 'is_cancle' => 0, 'v_type' => 'general', 'party_account' => $account_id));
+            $builder->where(array('is_delete' => 0, 'is_cancle' => 0,'v_type' => 'general', 'party_account' => $account_id));
             $builder->where(array('DATE(invoice_date)  < ' => db_date($start_date)));
             $query2 = $builder->get();
             $salesinvoice_general = $query2->getRowArray();
@@ -3956,7 +4018,7 @@ class AddbookModel extends Model
 
             $builder = $db->table('purchase_invoice');
             $builder->select('SUM(net_amount) as total_netamount');
-            $builder->where(array('is_delete' => 0, 'is_cancle' => 0, 'account' => $account_id));
+            $builder->where(array('is_delete' => 0, 'is_cancle' => 0,'account' => $account_id));
             $builder->where(array('DATE(invoice_date)  < ' => db_date($start_date)));
             $query6 = $builder->get();
             $purchase_invoice = $query6->getRowArray();
@@ -3996,7 +4058,7 @@ class AddbookModel extends Model
 
             $builder = $db->table('purchase_general');
             $builder->select('SUM(net_amount) as total_netamount');
-            $builder->where(array('v_type' => 'return', 'is_delete' => 0, 'is_cancle' => 0, 'party_account' => $account_id));
+            $builder->where(array('v_type' => 'return', 'is_delete' => 0,'is_cancle' => 0, 'party_account' => $account_id));
             $builder->where(array('DATE(doc_date)  < ' => db_date($start_date)));
             $query8 = $builder->get();
             $purchasegeneral_return = $query8->getRowArray();
@@ -4004,7 +4066,7 @@ class AddbookModel extends Model
 
             $builder = $db->table('sales_return');
             $builder->select('SUM(net_amount) as total_netamount');
-            $builder->where(array('is_delete' => 0, 'is_cancle' => 0, 'account' => $account_id));
+            $builder->where(array('is_delete' => 0,'is_cancle' => 0, 'account' => $account_id));
             $builder->where(array('DATE(return_date)  < ' => db_date($start_date)));
             $query = $builder->get();
             $sales_return = $query->getRowArray();
@@ -4025,7 +4087,7 @@ class AddbookModel extends Model
             $query = $builder->get();
             $journal = $query->getResultArray();
 
-
+           
             $journal_new = array();
             foreach ($journal as $row) {
                 if ($row['dr_cr'] == 'cr') {
@@ -4033,18 +4095,24 @@ class AddbookModel extends Model
                 } else {
                     $journaldebit_total = $journaldebit_total + $row["net_amount"];
                 }
+
             }
 
-            $journalcredit_total = $journalcredit_total;
+            $journalcredit_total= $journalcredit_total;
             $journaldebit_total = $journaldebit_total;
         }
         $debit_account = 0;
         $credit_account = 0;
-        if ($account_name['opening_type'] != '') {
-            if ($account_name['opening_bal'] != '') {
-                if ($account_name['opening_type'] == 'Credit') {
-                    $credit_account = $account_name['opening_bal'];
-                } else {
+        if($account_name['opening_type'] !='')
+        {
+            if($account_name['opening_bal'] !='')
+            {
+                if($account_name['opening_type'] == 'Credit')
+                {
+                    $credit_account = $account_name['opening_bal'];   
+                }
+                else
+                {   
                     $debit_account = $account_name['opening_bal'];
                 }
             }
@@ -4059,8 +4127,8 @@ class AddbookModel extends Model
         $credit = (float)$credit_account + (float)$salesreturn_total + (float)$salesreturn_general_total + (float)$purchaseinvoice_total + (float)$purchaseinvoive_general_total + (float)$receipt_total + (float)$journalcredit_total;
         $debit = (float)$debit_account + (float)$salesinvoice_total + (float)$salesinvoice_general_total + (float)$purchasreturn_total + (float)$purchasereturn_general_total + (float)$payment_total + (float)$journaldebit_total;
         $opening_bal = $debit - $credit;
-        // echo '<pre>';print_r($opening_bal);exit;
-
+      // echo '<pre>';print_r($opening_bal);exit;
+    
         return $opening_bal;
     }
 
@@ -4103,6 +4171,7 @@ class AddbookModel extends Model
         }
         if (!empty($mode)) {
             $builder->where(array('item_type' => $mode));
+
         }
 
         $query = $builder->get();
@@ -4125,6 +4194,7 @@ class AddbookModel extends Model
         }
         if (!empty($mode)) {
             $builder->where(array('item_type' => $mode));
+
         }
         $query1 = $builder->get();
         $getdata['sales_grayfinish_return'] = $query1->getResultArray();
@@ -4182,6 +4252,7 @@ class AddbookModel extends Model
         }
         if (!empty($mode)) {
             $builder->where(array('purchase_type' => $mode));
+
         }
 
         $query = $builder->get();
@@ -4204,6 +4275,7 @@ class AddbookModel extends Model
         }
         if (!empty($mode)) {
             $builder->where(array('purchase_type' => $mode));
+
         }
 
         $query = $builder->get();
@@ -4496,6 +4568,7 @@ class AddbookModel extends Model
                     $discount_amt = $sub * $disc_avg_per;
                     $final_sub = $sub - $discount_amt;
                     $add_amt = $sub * $add_amt_per;
+
                 } else {
                     $final_sub = $sub;
                     $add_amt = $final_sub * $add_amt_per;
@@ -4516,9 +4589,11 @@ class AddbookModel extends Model
                     $discount_amt = $sub * $disc_avg_per;
                     $final_sub = $sub - $discount_amt;
                     $add_amt = $sub * $add_amt_per;
+
                 } else {
                     $final_sub = $sub;
                     $add_amt = $final_sub * $add_amt_per;
+
                 }
                 $final_sub += $add_amt;
 
@@ -4716,6 +4791,7 @@ class AddbookModel extends Model
                 }
 
                 $total_gst += ($final_sub * ($row['item'][$k]['igst'] / 100));
+
             }
             for ($j = 0; $j < count($row['item']); $j++) {
                 //if($row['id'] )
@@ -4735,6 +4811,7 @@ class AddbookModel extends Model
                     $add_amt = $sub * $add_amt_per;
 
                     $final_sub += $add_amt;
+
                 } else {
                     $disc_amt = $sub * $row['item'][$j]['item_disc'] / 100;
                     $final_sub = $sub - $disc_amt;
@@ -4758,6 +4835,7 @@ class AddbookModel extends Model
 
                 $i++;
             }
+
         }
 
         $spreadsheet->getActiveSheet()->setTitle('Sales Gst Register');
@@ -4831,7 +4909,7 @@ class AddbookModel extends Model
             $getdata['purchase'][] = $row;
         }
         //echo '<pre>';Print_r($getdata);exit;
-
+        
         $getdata['start_date'] = $start_date;
         $getdata['end_date'] = $end_date;
         return $getdata;
@@ -4972,7 +5050,8 @@ class AddbookModel extends Model
     public function ledger_xls_export_data($post)
     {
         $new_data = array();
-        if (!empty($post['account_id'])) {
+        if(!empty($post['account_id']))
+        {
             $data = $this->get_ledger_register($post);
             $new_data = $data['data'];
         }
@@ -4999,31 +5078,36 @@ class AddbookModel extends Model
         $spreadsheet->setActiveSheetIndex(0)->setCellValue('G4', 'Debit');
 
         $i = 5;
-        $credit = 0;
-        $debit = 0;
-        if (!empty($new_data)) {
+        $credit =0;
+        $debit =0;
+        if(!empty($new_data))
+        {
             foreach ($new_data as $row) {
-
+            
 
                 $spreadsheet->setActiveSheetIndex(0)->setCellValue('A' . $i, @$row['id']);
                 $spreadsheet->setActiveSheetIndex(0)->setCellValue('B' . $i, user_date(@$row['date']));
                 $spreadsheet->setActiveSheetIndex(0)->setCellValue('C' . $i, @$row['account_name']);
                 $spreadsheet->setActiveSheetIndex(0)->setCellValue('D' . $i, @$row['vch_no']);
                 $spreadsheet->setActiveSheetIndex(0)->setCellValue('E' . $i, @$row['type']);
-
-                if ($row['type'] == 'sale_return' || $row['type'] == 'sale_general_return' ||  $row['type'] == 'purchase_invoice' || $row['type'] == 'purchase_general' || $row['type'] == 'Receipt' || $row['type'] == 'cr') {
-                    //$credit += (float)$row['net_amount'];
-
-                    $spreadsheet->setActiveSheetIndex(0)->setCellValue('F' . $i, @number_format(@$row['net_amount'], 2, '.', ""));
-                    $spreadsheet->setActiveSheetIndex(0)->setCellValue('G' . $i, '');
-                } else {
+                
+                if($row['type'] == 'sale_return' || $row['type'] == 'sale_general_return' ||  $row['type'] == 'purchase_invoice' || $row['type'] == 'purchase_general' || $row['type'] == 'Receipt' || $row['type'] == 'cr') {
+                //$credit += (float)$row['net_amount'];
+        
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue('F' . $i, @number_format(@$row['net_amount'],2,'.',""));
+                $spreadsheet->setActiveSheetIndex(0)->setCellValue('G' . $i, '');
+                
+                }
+                else
+                {
                     //$debit += (float)$row['net_amount'];
                     $spreadsheet->setActiveSheetIndex(0)->setCellValue('F' . $i, '');
-                    $spreadsheet->setActiveSheetIndex(0)->setCellValue('G' . $i, @number_format(@$row['net_amount'], 2, '.', ""));
+                    $spreadsheet->setActiveSheetIndex(0)->setCellValue('G' . $i, @number_format(@$row['net_amount'],2,'.',""));
+                
                 }
                 $i++;
             }
-        }
+        }  
         $spreadsheet->getActiveSheet()->setTitle('ledger_report');
 
         $spreadsheet->createSheet();
@@ -5035,56 +5119,67 @@ class AddbookModel extends Model
         $spreadsheet->setActiveSheetIndex(0);
         $writer = new Xlsx($spreadsheet);
         $writer->save('php://output');
+
     }
 
     public function get_ledger_outstanding_list_new($post)
     {
-
+       
         $db = $this->db;
         $db->setDatabase(session('DataSource'));
 
         //print_r($post);exit;
-
+       
         $data = array();
         $data1 = array();
-        if (!empty($post['date'])) {
-            $today = $post['date'];
-        } else {
-            $today = date('Y-m-d');
+        if(!empty($post['date']))
+        {
+             $today = $post['date'];
         }
-        $thirty = date('Y-m-d', strtotime('-30 days', strtotime($today))) . PHP_EOL;
-        $sixty = date('Y-m-d', strtotime('-60 days', strtotime($today))) . PHP_EOL;
-        $ninety = date('Y-m-d', strtotime('-90 days', strtotime($today))) . PHP_EOL;
-        if (!empty($post['account_id'])) {
+        else
+        {
+             $today = date('Y-m-d');
+        }
+        $thirty = date('Y-m-d',strtotime('-30 days',strtotime($today))) . PHP_EOL;
+        $sixty = date('Y-m-d',strtotime('-60 days',strtotime($today))) . PHP_EOL;
+        $ninety = date('Y-m-d',strtotime('-90 days',strtotime($today))) . PHP_EOL;
+        if(!empty($post['account_id']))
+        {
             //$page = 1;
-
+            
             $data['id'] = $post['account_id'];
             $gmodel = new GeneralModel();
             $acc = $gmodel->get_data_table('account', array('id' => @$post['account_id']), 'id,name,opening_type,opening_bal');
-            $data['name'] = $acc['name'];
+            $data['name'] = $acc['name']; 
             // $data['thirty'] = get_ledger_outstanding_list($thirty,$today,$post['account_id']);
             // $data['sixty'] = get_ledger_outstanding_list($sixty,$thirty,$post['account_id']);
             // $data['ninety'] = get_ledger_outstanding_list($ninety,$sixty,$post['account_id']);
             // $data['ninety_above'] = get_ledger_outstanding_list('',$ninety,$post['account_id']);
-            $thirty_data = get_ledger_outstanding_list($thirty, $today, $post['account_id']);
-            $sixty_data = get_ledger_outstanding_list($sixty, $thirty, $post['account_id']);
-            $ninety_data = get_ledger_outstanding_list($ninety, $sixty, $post['account_id']);
-            $ninety_above_data = get_ledger_outstanding_list('', $ninety, $post['account_id']);
+            $thirty_data = get_ledger_outstanding_list($thirty,$today,$post['account_id']);
+            $sixty_data = get_ledger_outstanding_list($sixty,$thirty,$post['account_id']);
+            $ninety_data = get_ledger_outstanding_list($ninety,$sixty,$post['account_id']);
+            $ninety_above_data = get_ledger_outstanding_list('',$ninety,$post['account_id']);
             $debit_account = 0;
             $credit_account = 0;
-            $sixty_credit = 0;
-            $sixty_debit = 0;
-            $ninety_credit = 0;
-            $ninety_debit = 0;
-            $thirty_credit = 0;
-            $thirty_debit = 0;
-            if ($acc['opening_type'] != '') {
-                if ($acc['opening_bal'] != '') {
-                    if ($acc['opening_type'] == 'Credit') {
-
+            $sixty_credit =0;
+            $sixty_debit =0;
+            $ninety_credit =0;
+            $ninety_debit =0;
+            $thirty_credit =0;
+            $thirty_debit =0;
+            if($acc['opening_type'] !='')
+            {
+                if($acc['opening_bal'] !='')
+                {
+                    if($acc['opening_type'] == 'Credit')
+                    {
+                        
                         $credit_account = $acc['opening_bal'];
-                    } else {
-
+                        
+                    }
+                    else
+                    {
+                        
                         $debit_account = $acc['opening_bal'];
                     }
                 }
@@ -5092,40 +5187,53 @@ class AddbookModel extends Model
             $ninety_above_credit = $ninety_above_data['credit'] + $credit_account;
             $ninety_above_debit = $ninety_above_data['debit'] + $debit_account;
             $data['ninety_above'] = $ninety_above_debit - $ninety_above_credit;
-            //print_r($ninety_data['credit']);exit;
-            if ($data['ninety_above'] < 0) {
+           //print_r($ninety_data['credit']);exit;
+            if($data['ninety_above'] <0)
+            {
                 //print_r($ninety_data['credit']);
                 $ninety_debit = $ninety_data['debit'];
                 $ninety_credit = $ninety_data['credit'] + $data['ninety_above'];
-            } else {
+               
+            }
+            else
+            {
                 $ninety_credit = $ninety_data['credit'];
                 $ninety_debit = $ninety_data['debit'] + $data['ninety_above'];
             }
             //exit;
             $data['ninety'] = $ninety_debit - $ninety_credit;
 
-            if ($data['ninety'] < 0) {
+            if($data['ninety'] <0)
+            {
                 $sixty_debit = $sixty_data['debit'];
                 $sixty_credit = $sixty_data['credit'] + $data['ninety'];
-            } else {
+            }
+            else
+            {
                 $sixty_credit = $sixty_data['credit'];
                 $sixty_debit = $sixty_data['debit'] + $data['ninety'];
             }
             $data['sixty'] = $sixty_debit - $sixty_credit;
 
-            if ($data['sixty'] < 0) {
+            if($data['sixty'] <0)
+            {
                 $thirty_debit = $thirty_data['debit'];
                 $thirty_credit = $thirty_data['credit'] + $data['sixty'];
-            } else {
+            }
+            else
+            {
                 $thirty_credit = $thirty_data['credit'];
                 $thirty_debit = $thirty_data['debit'] + $data['sixty'];
             }
             $data['thirty'] = $thirty_debit - $thirty_credit;
-
+           
 
             $data1[] = $data;
-        } else if (!empty($post['party']) and empty($post['account_id'])) {
-            if ($post['party'] == 'Sundry Creditors') {
+        }
+        else if(!empty($post['party']) AND empty($post['account_id']))
+        {
+            if($post['party'] == 'Sundry Creditors')
+            {
                 $builder = $db->table('gl_group');
                 $builder->select('id');
                 $builder->where(array('name' => 'Sundry Creditors'));
@@ -5133,37 +5241,44 @@ class AddbookModel extends Model
                 $gl_group = $query->getRowArray();
 
                 $glgroup = gl_list([$gl_group['id']]);
-                $glgroup[] = $gl_group['id'];
+                $glgroup[]=$gl_group['id'];
 
-
-
+               
+        
                 $builder = $db->table('account acc');
                 $builder->select('acc.id,acc.name,acc.intrest_rate,acc.opening_type,acc.opening_bal');
-                $builder->join('gl_group gl', 'gl.id = acc.gl_group');
+                $builder->join('gl_group gl','gl.id = acc.gl_group');
                 $builder->where(array('acc.is_delete' => 0));
-                $builder->whereIn('gl.id', $glgroup);
+                $builder->whereIn('gl.id',$glgroup);
                 $query = $builder->get();
                 $account = $query->getResultArray();
-
-
-                foreach ($account as $row) {
-
+        
+                
+                foreach($account as $row)
+                {
+    
                     $data['id'] = $row['id'];
-                    $data['name'] = $row['name'];
-                    $thirty_data = get_ledger_outstanding_list($thirty, $today, $row['id']);
-                    $sixty_data = get_ledger_outstanding_list($sixty, $thirty, $row['id']);
-                    $ninety_data = get_ledger_outstanding_list($ninety, $sixty, $row['id']);
-                    $ninety_above_data = get_ledger_outstanding_list('', $ninety, $row['id']);
+                    $data['name'] = $row['name']; 
+                    $thirty_data = get_ledger_outstanding_list($thirty,$today,$row['id']);
+                    $sixty_data = get_ledger_outstanding_list($sixty,$thirty,$row['id']);
+                    $ninety_data = get_ledger_outstanding_list($ninety,$sixty,$row['id']);
+                    $ninety_above_data = get_ledger_outstanding_list('',$ninety,$row['id']);
                     $debit_account = 0;
                     $credit_account = 0;
-
-                    if ($row['opening_type'] != '') {
-                        if ($row['opening_bal'] != '') {
-                            if ($row['opening_type'] == 'Credit') {
-
+                  
+                    if($row['opening_type'] !='')
+                    {
+                        if($row['opening_bal'] !='')
+                        {
+                            if($row['opening_type'] == 'Credit')
+                            {
+                                
                                 $credit_account = $row['opening_bal'];
-                            } else {
-
+                                
+                            }
+                            else
+                            {
+                                
                                 $debit_account = $row['opening_bal'];
                             }
                         }
@@ -5171,38 +5286,51 @@ class AddbookModel extends Model
                     $ninety_above_credit = $ninety_above_data['credit'] + $credit_account;
                     $ninety_above_debit = $ninety_above_data['debit'] + $debit_account;
                     $data['ninety_above'] = $ninety_above_debit - $ninety_above_credit;
-                    //print_r($ninety_data['credit']);exit;
-                    if ($data['ninety_above'] < 0) {
+                   //print_r($ninety_data['credit']);exit;
+                    if($data['ninety_above'] <0)
+                    {
                         //print_r($ninety_data['credit']);
                         $ninety_debit = $ninety_data['debit'];
                         $ninety_credit = $ninety_data['credit'] + $data['ninety_above'];
-                    } else {
+                       
+                    }
+                    else
+                    {
                         $ninety_credit = $ninety_data['credit'];
                         $ninety_debit = $ninety_data['debit'] + $data['ninety_above'];
                     }
                     //exit;
                     $data['ninety'] = $ninety_debit - $ninety_credit;
-
-                    if ($data['ninety'] < 0) {
+        
+                    if($data['ninety'] <0)
+                    {
                         $sixty_debit = $sixty_data['debit'];
                         $sixty_credit = $sixty_data['credit'] + $data['ninety'];
-                    } else {
+                    }
+                    else
+                    {
                         $sixty_credit = $sixty_data['credit'];
                         $sixty_debit = $sixty_data['debit'] + $data['ninety'];
                     }
                     $data['sixty'] = $sixty_debit - $sixty_credit;
-
-                    if ($data['sixty'] < 0) {
+        
+                    if($data['sixty'] <0)
+                    {
                         $thirty_debit = $thirty_data['debit'];
                         $thirty_credit = $thirty_data['credit'] + $data['sixty'];
-                    } else {
+                    }
+                    else
+                    {
                         $thirty_credit = $thirty_data['credit'];
                         $thirty_debit = $thirty_data['debit'] + $data['sixty'];
                     }
                     $data['thirty'] = $thirty_debit - $thirty_credit;
                     $data1[] = $data;
                 }
-            } else {
+              
+            }
+            else
+            {
                 $builder = $db->table('gl_group');
                 $builder->select('id');
                 $builder->where(array('name' => 'Sundry Debtors'));
@@ -5210,37 +5338,44 @@ class AddbookModel extends Model
                 $gl_group = $query->getRowArray();
 
                 $glgroup = gl_list([$gl_group['id']]);
-                $glgroup[] = $gl_group['id'];
+                $glgroup[]=$gl_group['id'];
 
-
+        
                 $builder = $db->table('account acc');
                 $builder->select('acc.id,acc.name,acc.intrest_rate,acc.opening_type,acc.opening_bal');
-                $builder->join('gl_group gl', 'gl.id = acc.gl_group');
+                $builder->join('gl_group gl','gl.id = acc.gl_group');
                 $builder->where(array('acc.is_delete' => 0));
-                $builder->whereIn('gl.id', $glgroup);
+                $builder->whereIn('gl.id',$glgroup);
                 $query = $builder->get();
                 $account = $query->getResultArray();
-
+        
                 $account_total = 0;
-                // $total_closing = ($page-1) * 15; 
-                foreach ($account as $row) {
-
+               // $total_closing = ($page-1) * 15; 
+                foreach($account as $row)
+                {
+    
                     $data['id'] = $row['id'];
-                    $data['name'] = $row['name'];
-                    $thirty_data = get_ledger_outstanding_list($thirty, $today, $row['id']);
-                    $sixty_data = get_ledger_outstanding_list($sixty, $thirty, $row['id']);
-                    $ninety_data = get_ledger_outstanding_list($ninety, $sixty, $row['id']);
-                    $ninety_above_data = get_ledger_outstanding_list('', $ninety, $row['id']);
+                    $data['name'] = $row['name']; 
+                    $thirty_data = get_ledger_outstanding_list($thirty,$today,$row['id']);
+                    $sixty_data = get_ledger_outstanding_list($sixty,$thirty,$row['id']);
+                    $ninety_data = get_ledger_outstanding_list($ninety,$sixty,$row['id']);
+                    $ninety_above_data = get_ledger_outstanding_list('',$ninety,$row['id']);
                     $debit_account = 0;
                     $credit_account = 0;
-
-                    if ($row['opening_type'] != '') {
-                        if ($row['opening_bal'] != '') {
-                            if ($row['opening_type'] == 'Credit') {
-
+                  
+                    if($row['opening_type'] !='')
+                    {
+                        if($row['opening_bal'] !='')
+                        {
+                            if($row['opening_type'] == 'Credit')
+                            {
+                                
                                 $credit_account = $row['opening_bal'];
-                            } else {
-
+                                
+                            }
+                            else
+                            {
+                                
                                 $debit_account = $row['opening_bal'];
                             }
                         }
@@ -5248,88 +5383,108 @@ class AddbookModel extends Model
                     $ninety_above_credit = $ninety_above_data['credit'] + $credit_account;
                     $ninety_above_debit = $ninety_above_data['debit'] + $debit_account;
                     $data['ninety_above'] = $ninety_above_debit - $ninety_above_credit;
-                    //print_r($ninety_data['credit']);exit;
-                    if ($data['ninety_above'] < 0) {
+                   //print_r($ninety_data['credit']);exit;
+                    if($data['ninety_above'] <0)
+                    {
                         //print_r($ninety_data['credit']);
                         $ninety_debit = $ninety_data['debit'];
                         $ninety_credit = $ninety_data['credit'] + $data['ninety_above'];
-                    } else {
+                       
+                    }
+                    else
+                    {
                         $ninety_credit = $ninety_data['credit'];
                         $ninety_debit = $ninety_data['debit'] + $data['ninety_above'];
                     }
                     //exit;
                     $data['ninety'] = $ninety_debit - $ninety_credit;
-
-                    if ($data['ninety'] < 0) {
+        
+                    if($data['ninety'] <0)
+                    {
                         $sixty_debit = $sixty_data['debit'];
                         $sixty_credit = $sixty_data['credit'] + $data['ninety'];
-                    } else {
+                    }
+                    else
+                    {
                         $sixty_credit = $sixty_data['credit'];
                         $sixty_debit = $sixty_data['debit'] + $data['ninety'];
                     }
                     $data['sixty'] = $sixty_debit - $sixty_credit;
-
-                    if ($data['sixty'] < 0) {
+        
+                    if($data['sixty'] <0)
+                    {
                         $thirty_debit = $thirty_data['debit'];
                         $thirty_credit = $thirty_data['credit'] + $data['sixty'];
-                    } else {
+                    }
+                    else
+                    {
                         $thirty_credit = $thirty_data['credit'];
                         $thirty_debit = $thirty_data['debit'] + $data['sixty'];
                     }
                     $data['thirty'] = $thirty_debit - $thirty_credit;
                     $data1[] = $data;
                 }
+              
             }
-        } else {
-
+        }
+        else
+        {
+            
             $builder = $db->table('gl_group');
             $builder->select('id');
             $builder->where(array('name' => 'Sundry Creditors'));
             $query = $builder->get();
             $gl_group = $query->getRowArray();
-
+    
             $builder = $db->table('gl_group');
             $builder->select('id');
             $builder->where(array('name' => 'Sundry Debtors'));
             $query = $builder->get();
             $gl_group1 = $query->getRowArray();
-
+            
             $glgroup = gl_list([$gl_group['id']]);
-            $glgroup[] = $gl_group['id'];
+            $glgroup[]=$gl_group['id'];
             //print_r($glgroup);exit;
-
+    
             $glgroup1 = gl_list([$gl_group1['id']]);
-            $glgroup1[] = $gl_group1['id'];
-            $gl_grp = array_merge($glgroup, $glgroup1);
-
-
-
+            $glgroup1[]=$gl_group1['id'];
+            $gl_grp = array_merge($glgroup,$glgroup1);
+    
+          
+    
             $builder = $db->table('account acc');
             $builder->select('acc.id,acc.name,acc.intrest_rate,acc.opening_type,acc.opening_bal');
-            $builder->join('gl_group gl', 'gl.id = acc.gl_group');
+            $builder->join('gl_group gl','gl.id = acc.gl_group');
             $builder->where(array('acc.is_delete' => 0));
-            $builder->whereIn('gl.id', $gl_grp);
+            $builder->whereIn('gl.id',$gl_grp);
             $query = $builder->get();
             $account = $query->getResultArray();
-
-
-            foreach ($account as $row) {
+    
+           
+            foreach($account as $row)
+            {
                 $data['id'] = $row['id'];
-                $data['name'] = $row['name'];
-                $thirty_data = get_ledger_outstanding_list($thirty, $today, $row['id']);
-                $sixty_data = get_ledger_outstanding_list($sixty, $thirty, $row['id']);
-                $ninety_data = get_ledger_outstanding_list($ninety, $sixty, $row['id']);
-                $ninety_above_data = get_ledger_outstanding_list('', $ninety, $row['id']);
+                $data['name'] = $row['name']; 
+                $thirty_data = get_ledger_outstanding_list($thirty,$today,$row['id']);
+                $sixty_data = get_ledger_outstanding_list($sixty,$thirty,$row['id']);
+                $ninety_data = get_ledger_outstanding_list($ninety,$sixty,$row['id']);
+                $ninety_above_data = get_ledger_outstanding_list('',$ninety,$row['id']);
                 $debit_account = 0;
                 $credit_account = 0;
-
-                if ($row['opening_type'] != '') {
-                    if ($row['opening_bal'] != '') {
-                        if ($row['opening_type'] == 'Credit') {
-
+              
+                if($row['opening_type'] !='')
+                {
+                    if($row['opening_bal'] !='')
+                    {
+                        if($row['opening_type'] == 'Credit')
+                        {
+                            
                             $credit_account = $row['opening_bal'];
-                        } else {
-
+                            
+                        }
+                        else
+                        {
+                            
                             $debit_account = $row['opening_bal'];
                         }
                     }
@@ -5337,49 +5492,61 @@ class AddbookModel extends Model
                 $ninety_above_credit = $ninety_above_data['credit'] + $credit_account;
                 $ninety_above_debit = $ninety_above_data['debit'] + $debit_account;
                 $data['ninety_above'] = $ninety_above_debit - $ninety_above_credit;
-                //print_r($ninety_data['credit']);exit;
-                if ($data['ninety_above'] < 0) {
+               //print_r($ninety_data['credit']);exit;
+                if($data['ninety_above'] <0)
+                {
                     //print_r($ninety_data['credit']);
                     $ninety_debit = $ninety_data['debit'];
                     $ninety_credit = $ninety_data['credit'] + $data['ninety_above'];
-                } else {
+                   
+                }
+                else
+                {
                     $ninety_credit = $ninety_data['credit'];
                     $ninety_debit = $ninety_data['debit'] + $data['ninety_above'];
                 }
                 //exit;
                 $data['ninety'] = $ninety_debit - $ninety_credit;
-
-                if ($data['ninety'] < 0) {
+    
+                if($data['ninety'] <0)
+                {
                     $sixty_debit = $sixty_data['debit'];
                     $sixty_credit = $sixty_data['credit'] + $data['ninety'];
-                } else {
+                }
+                else
+                {
                     $sixty_credit = $sixty_data['credit'];
                     $sixty_debit = $sixty_data['debit'] + $data['ninety'];
                 }
                 $data['sixty'] = $sixty_debit - $sixty_credit;
-
-                if ($data['sixty'] < 0) {
+    
+                if($data['sixty'] <0)
+                {
                     $thirty_debit = $thirty_data['debit'];
                     $thirty_credit = $thirty_data['credit'] + $data['sixty'];
-                } else {
+                }
+                else
+                {
                     $thirty_credit = $thirty_data['credit'];
                     $thirty_debit = $thirty_data['debit'] + $data['sixty'];
                 }
                 $data['thirty'] = $thirty_debit - $thirty_credit;
                 $data1[] = $data;
             }
+           
         }
         //exit;
-        usort($data1, function ($a, $b) {
+        usort($data1, function($a, $b) {
             return $b['ninety_above'] <=> $a['ninety_above'];
         });
-
+        
         $new_data['data'] =  $data1;
         $new_data['today'] = $today;
         $new_data['thirty'] = $thirty;
         $new_data['sixty'] = $sixty;
         $new_data['ninety'] = $ninety;
         return $new_data;
+        
     }
     public function ledger_outstanding_list_xls_export_data($post)
     {
@@ -5388,29 +5555,36 @@ class AddbookModel extends Model
         $db->setDatabase(session('DataSource'));
         $data = array();
         $data1 = array();
-        if (!empty($post['date'])) {
-            $today = $post['date'];
-        } else {
-            $today = date('Y-m-d');
+        if(!empty($post['date']))
+        {
+             $today = $post['date'];
         }
-        $thirty = date('Y-m-d', strtotime('-30 days', strtotime($today))) . PHP_EOL;
-        $sixty = date('Y-m-d', strtotime('-60 days', strtotime($today))) . PHP_EOL;
-        $ninety = date('Y-m-d', strtotime('-90 days', strtotime($today))) . PHP_EOL;
-        if (!empty($post['account_id'])) {
+        else
+        {
+             $today = date('Y-m-d');
+        }
+        $thirty = date('Y-m-d',strtotime('-30 days',strtotime($today))) . PHP_EOL;
+        $sixty = date('Y-m-d',strtotime('-60 days',strtotime($today))) . PHP_EOL;
+        $ninety = date('Y-m-d',strtotime('-90 days',strtotime($today))) . PHP_EOL;
+        if(!empty($post['account_id']))
+        {
             //$page = 1;
-            //print_r("fjfkm");exit;
+           //print_r("fjfkm");exit;
             $data['id'] = $post['account_id'];
             $gmodel = new GeneralModel();
             $acc = $gmodel->get_data_table('account', array('id' => @$post['account_id']), 'id,name');
-            $data['name'] = $acc['name'];
-            $data['thirty'] = get_ledger_outstanding_list($thirty, $today, $post['account_id']);
-            $data['sixty'] = get_ledger_outstanding_list($sixty, $thirty, $post['account_id']);
-            $data['ninety'] = get_ledger_outstanding_list($ninety, $sixty, $post['account_id']);
-            $data['ninety_above'] = get_ledger_outstanding_list('', $ninety, $post['account_id']);
+            $data['name'] = $acc['name']; 
+            $data['thirty'] = get_ledger_outstanding_list($thirty,$today,$post['account_id']);
+            $data['sixty'] = get_ledger_outstanding_list($sixty,$thirty,$post['account_id']);
+            $data['ninety'] = get_ledger_outstanding_list($ninety,$sixty,$post['account_id']);
+            $data['ninety_above'] = get_ledger_outstanding_list('',$ninety,$post['account_id']);
             $data1[] = $data;
-        } elseif (!empty($post['party']) and empty($post['account_id'])) {
-
-            if ($post['party'] == 'Sundry Creditors') {
+        }
+        elseif(!empty($post['party']) AND empty($post['account_id']))
+        {
+            
+            if($post['party'] == 'Sundry Creditors')
+            {
                 //print_r("party_crediter");exit;
                 $builder = $db->table('gl_group');
                 $builder->select('id');
@@ -5419,28 +5593,32 @@ class AddbookModel extends Model
                 $gl_group = $query->getRowArray();
 
                 $glgroup = gl_list([$gl_group['id']]);
-                $glgroup[] = $gl_group['id'];
-
+                $glgroup[]=$gl_group['id'];
+        
                 $builder = $db->table('account acc');
                 $builder->select('acc.id,acc.name,acc.intrest_rate');
-                $builder->join('gl_group gl', 'gl.id = acc.gl_group');
+                $builder->join('gl_group gl','gl.id = acc.gl_group');
                 $builder->where(array('acc.is_delete' => 0));
-                $builder->whereIn('gl.id', $glgroup);
+                $builder->whereIn('gl.id',$glgroup);
                 $query = $builder->get();
                 $account = $query->getResultArray();
-
-
-                foreach ($account as $row) {
-
+        
+               
+                foreach($account as $row)
+                {
+    
                     $data['id'] = $row['id'];
-                    $data['name'] = $row['name'];
-                    $data['thirty'] = get_ledger_outstanding_list($thirty, $today, $row['id']);
-                    $data['sixty'] = get_ledger_outstanding_list($sixty, $thirty, $row['id']);
-                    $data['ninety'] = get_ledger_outstanding_list($ninety, $sixty, $row['id']);
-                    $data['ninety_above'] = get_ledger_outstanding_list('', $ninety, $row['id']);
+                    $data['name'] = $row['name']; 
+                    $data['thirty'] = get_ledger_outstanding_list($thirty,$today,$row['id']);
+                    $data['sixty'] = get_ledger_outstanding_list($sixty,$thirty,$row['id']);
+                    $data['ninety'] = get_ledger_outstanding_list($ninety,$sixty,$row['id']);
+                    $data['ninety_above'] = get_ledger_outstanding_list('',$ninety,$row['id']);
                     $data1[] = $data;
                 }
-            } else {
+              
+            }
+            else
+            {
                 //print_r("party_debiter");exit;
                 $builder = $db->table('gl_group');
                 $builder->select('id');
@@ -5449,74 +5627,80 @@ class AddbookModel extends Model
                 $gl_group = $query->getRowArray();
 
                 $glgroup = gl_list([$gl_group['id']]);
-                $glgroup[] = $gl_group['id'];
+                $glgroup[]=$gl_group['id'];
 
-
+               
                 $builder = $db->table('account acc');
                 $builder->select('acc.id,acc.name,acc.intrest_rate');
-                $builder->join('gl_group gl', 'gl.id = acc.gl_group');
+                $builder->join('gl_group gl','gl.id = acc.gl_group');
                 $builder->where(array('acc.is_delete' => 0));
-                $builder->whereIn('gl.id', $glgroup);
+                $builder->whereIn('gl.id',$glgroup);
                 $query = $builder->get();
                 $account = $query->getResultArray();
-
-                foreach ($account as $row) {
-
+        
+                foreach($account as $row)
+                {
+    
                     $data['id'] = $row['id'];
-                    $data['name'] = $row['name'];
-                    $data['thirty'] = get_ledger_outstanding_list($thirty, $today, $row['id']);
-                    $data['sixty'] = get_ledger_outstanding_list($sixty, $thirty, $row['id']);
-                    $data['ninety'] = get_ledger_outstanding_list($ninety, $sixty, $row['id']);
-                    $data['ninety_above'] = get_ledger_outstanding_list('', $ninety, $row['id']);
+                    $data['name'] = $row['name']; 
+                    $data['thirty'] = get_ledger_outstanding_list($thirty,$today,$row['id']);
+                    $data['sixty'] = get_ledger_outstanding_list($sixty,$thirty,$row['id']);
+                    $data['ninety'] = get_ledger_outstanding_list($ninety,$sixty,$row['id']);
+                    $data['ninety_above'] = get_ledger_outstanding_list('',$ninety,$row['id']);
                     $data1[] = $data;
                 }
+              
             }
-        } else {
+        }
+        else
+        {
             //print_r("all");exit;
             $builder = $db->table('gl_group');
             $builder->select('id');
             $builder->where(array('name' => 'Sundry Creditors'));
             $query = $builder->get();
             $gl_group = $query->getRowArray();
-
+    
             $builder = $db->table('gl_group');
             $builder->select('id');
             $builder->where(array('name' => 'Sundry Debtors'));
             $query = $builder->get();
             $gl_group1 = $query->getRowArray();
-
+            
             $glgroup = gl_list([$gl_group['id']]);
-            $glgroup[] = $gl_group['id'];
+            $glgroup[]=$gl_group['id'];
             //print_r($glgroup);exit;
-
+    
             $glgroup1 = gl_list([$gl_group1['id']]);
-            $glgroup1[] = $gl_group1['id'];
-            $gl_grp = array_merge($glgroup, $glgroup1);
-
-
+            $glgroup1[]=$gl_group1['id'];
+            $gl_grp = array_merge($glgroup,$glgroup1);
+    
+           
             $builder = $db->table('account acc');
             $builder->select('acc.id,acc.name,acc.intrest_rate');
-            $builder->join('gl_group gl', 'gl.id = acc.gl_group');
+            $builder->join('gl_group gl','gl.id = acc.gl_group');
             $builder->where(array('acc.is_delete' => 0));
-            $builder->whereIn('gl.id', $gl_grp);
+            $builder->whereIn('gl.id',$gl_grp);
             $query = $builder->get();
             $account = $query->getResultArray();
-
-            foreach ($account as $row) {
+    
+            foreach($account as $row)
+            {
 
                 $data['id'] = $row['id'];
-                $data['name'] = $row['name'];
-                $data['thirty'] = get_ledger_outstanding_list($thirty, $today, $row['id']);
-                $data['sixty'] = get_ledger_outstanding_list($sixty, $thirty, $row['id']);
-                $data['ninety'] = get_ledger_outstanding_list($ninety, $sixty, $row['id']);
-                $data['ninety_above'] = get_ledger_outstanding_list('', $ninety, $row['id']);
+                $data['name'] = $row['name']; 
+                $data['thirty'] = get_ledger_outstanding_list($thirty,$today,$row['id']);
+                $data['sixty'] = get_ledger_outstanding_list($sixty,$thirty,$row['id']);
+                $data['ninety'] = get_ledger_outstanding_list($ninety,$sixty,$row['id']);
+                $data['ninety_above'] = get_ledger_outstanding_list('',$ninety,$row['id']);
                 $data1[] = $data;
             }
+           
         }
-        usort($data1, function ($a, $b) {
+        usort($data1, function($a, $b) {
             return $b['ninety_above'] <=> $a['ninety_above'];
         });
-
+        
 
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
@@ -5526,9 +5710,9 @@ class AddbookModel extends Model
             ->getStartColor()->setARGB('F8CBAD');
 
         $spreadsheet->setActiveSheetIndex(0)->setCellValue('A1', 'Ledget Outstanding List Report');
-        $spreadsheet->setActiveSheetIndex(0)->setCellValue('A2', 'Party:' . @$post['party']);
-        $spreadsheet->setActiveSheetIndex(0)->setCellValue('A3', 'Account:' . @$post['account_id']);
-        $spreadsheet->setActiveSheetIndex(0)->setCellValue('A4', 'start date:' . user_date(@$post['date']));
+        $spreadsheet->setActiveSheetIndex(0)->setCellValue('A2', 'Party:'.@$post['party']);
+        $spreadsheet->setActiveSheetIndex(0)->setCellValue('A3', 'Account:'.@$post['account_id']);
+        $spreadsheet->setActiveSheetIndex(0)->setCellValue('A4', 'start date:'.user_date(@$post['date']));
 
         $spreadsheet->setActiveSheetIndex(0)->setCellValue('A5', 'Ledger Id');
         $spreadsheet->setActiveSheetIndex(0)->setCellValue('B5', 'Ledger Name');
@@ -5540,7 +5724,7 @@ class AddbookModel extends Model
         $i = 6;
 
         foreach ($data1 as $row) {
-
+            
 
             $spreadsheet->setActiveSheetIndex(0)->setCellValue('A' . $i, @$row['id']);
             $spreadsheet->setActiveSheetIndex(0)->setCellValue('B' . $i, @$row['name']);
@@ -5563,264 +5747,8 @@ class AddbookModel extends Model
         $spreadsheet->setActiveSheetIndex(0);
         $writer = new Xlsx($spreadsheet);
         $writer->save('php://output');
-    }
-    public function update_gl_group_summary_table()
-    {
-       
-        $db = $this->db;
-        $db->setDatabase(session('DataSource'));
-        $builder = $db->table('gl_group');
-        $builder->select('*');
-        $query = $builder->get();
-        $result = $query->getResultArray();
-        foreach ($result as $row) {
-          
-           $builder_gl_summary = $db->table('gl_group_summary');
-           $pdata = array(
-                'gl_name' => $row['name'],
-                'parent' => $row['parent'],
-                'all_sub_glgroup' => '',
-                'closing' => 0.00,
-                'created_at' => $row['created_at'],
-                'created_by' => $row['created_by'],
-                'update_by' => $row['update_by'],
-                'update_at' => $row['update_at'],
-                'is_delete' => $row['is_delete'],
-           );
-           $result_gl = $builder_gl_summary->Insert($pdata);
-               
-        }
-        if(isset($result_gl))
-        {
-            $msg = array("st"=>"succsess","msg"=>"succsess");
-        }
-        else
-        {
-            $msg = array("st"=>"fail","msg"=>"fail");
-        }
-        return  $msg;
-    }
-    public function get_gl_group_summary_query_data()
-    {
-       
-        $db = $this->db;
-        $db->setDatabase(session('DataSource'));
-        $builder = $db->table('gl_group_summary');
-        $builder->select('*');
-        $builder->where('is_delete', 0);
-        $builder->orderBy('id', 'desc');
-        $query = $builder->get();
-        $result = $query->getResultArray();
-        $gnmodel = new GeneralModel();
-        foreach ($result as $row) {
-            
-            $data = gl_group_summary_array($row['id']); 
-            foreach($data as $gl_data)
-            {
-                $new_sub = array();
-                $new_array = array();
-                $old_gl = array();
-                $new_gl = array();
-                $get_data = $gnmodel->get_data_table('gl_group_summary', array('id' => $gl_data['id']),'all_sub_glgroup');
-               
-                if(!empty($get_data['all_sub_glgroup']))
-                {
-                    
-                    $old_gl = explode(",",$get_data['all_sub_glgroup']);
-                    $new_gl[] = $row['id'];
-                    $new_array= array_merge($old_gl,$new_gl);
-                   $new_sub = implode(',',$new_array);
-                   $result_gl = $gnmodel->update_data_table('gl_group_summary', array('id' => $gl_data['id']), array('all_sub_glgroup' => $new_sub));
-      
-                    
-                }    
-                else
-                {
-                     $result_gl = $gnmodel->update_data_table('gl_group_summary', array('id' => $gl_data['id']), array('all_sub_glgroup' => $row['id']));
-                }
-              
-            }
-           
-        }
-      
-        if(isset($result_gl))
-        {
-            $msg = array("st"=>"succsess","msg"=>"succsess");
-        }
-        else
-        {
-            $msg = array("st"=>"fail","msg"=>"fail");
-        }
-        return  $msg;
-    }
-    public function get_closing_bal_report_data()
-    {
-
-        $start_date = "2021-04-01";
-        $end_date = "2022-03-31";
-
-        $gmodel = new GeneralModel;
-        $gl_capital = $gmodel->get_data_table('gl_group_summary', array('gl_name' => 'Capital'), 'id,gl_name,all_sub_glgroup');
-        $gl_loan = $gmodel->get_data_table('gl_group_summary', array('gl_name' => 'Loans'), 'id,gl_name,all_sub_glgroup');
-        $gl_lib = $gmodel->get_data_table('gl_group_summary', array('gl_name' => 'Current Liabilities'), 'id,gl_name,,all_sub_glgroup');
-        $gl_fixedassets = $gmodel->get_data_table('gl_group_summary', array('gl_name' => 'Fixed Assets'), 'id,gl_name,,all_sub_glgroup');
-        $gl_currentassets = $gmodel->get_data_table('gl_group_summary', array('gl_name' => 'Current Assets'), 'id,gl_name,,all_sub_glgroup');
-        $gl_otherassets = $gmodel->get_data_table('gl_group_summary', array('gl_name' => 'Other Assets'), 'id,gl_name,,all_sub_glgroup');
-      
-           $capital_account_list = array();
-            if(!empty($gl_capital['all_sub_glgroup']))
-            {
-                
-                $capital_data_main_gl = capital_data($gl_capital['id'],$start_date,$end_date);
-                $main_gl_account_data = $capital_data_main_gl['account'];
-
-                $list_sub_gl = $gl_capital['all_sub_glgroup'];
-                $array_sub_gl = explode(",",$list_sub_gl);
-               
-                foreach($array_sub_gl as $array_sub_glrow)
-                { 
-                    $capital_data_gl = capital_data($array_sub_glrow,$start_date,$end_date);
-                    $sub_gl_account_data = $capital_data_gl['account'];
-                    foreach($sub_gl_account_data as $row)
-                    {
-                        $sub_gl_account[] = $row;
-                    }
-                }
-                $capital_account_list = array_merge($main_gl_account_data,$sub_gl_account);
-            }
-            else
-            {
-                $capital_data = capital_data($gl_capital['id'],$start_date,$end_date);
-                $capital_account_list = $capital_data['account'];
-               
-            }
-            $loan_account_list = array();
-            if(!empty($gl_loan['all_sub_glgroup']))
-            {
-                $loan_data_main_gl = loans_data($gl_loan['id'],$start_date,$end_date);
-                $main_gl_account_data = $loan_data_main_gl['account'];
-
-                $list_sub_gl = $gl_loan['all_sub_glgroup'];
-                $array_sub_gl = explode(",",$list_sub_gl);
-               
-                foreach($array_sub_gl as $array_sub_glrow)
-                { 
-                    $loan_data_gl = capital_data($array_sub_glrow,$start_date,$end_date);
-                    $sub_gl_account_data = $loan_data_gl['account'];
-                    foreach($sub_gl_account_data as $row)
-                    {
-                        $sub_gl_account[] = $row;
-                    }
-                }
-                $loan_account_list = array_merge($main_gl_account_data,$sub_gl_account);
-            }
-            else
-            {
-                $loan_data = loans_data($gl_loan['id'],$start_date,$end_date);
-                $loan_account_list = $loan_data['account'];
-               
-            }
-            $liability_account_list = array();
-            if(!empty($gl_lib['all_sub_glgroup']))
-            {
-                
-                $liability_data_main_gl = Currlib_data($gl_capital['id'],$start_date,$end_date);
-                $main_gl_account_data = $liability_data_main_gl['account'];
-
-                $list_sub_gl = $gl_lib['all_sub_glgroup'];
-                $array_sub_gl = explode(",",$list_sub_gl);
-               
-                foreach($array_sub_gl as $array_sub_glrow)
-                { 
-                    $liability_data_gl = Currlib_data($array_sub_glrow,$start_date,$end_date);
-                    $sub_gl_account_data = $liability_data_gl['account'];
-                    foreach($sub_gl_account_data as $row)
-                    {
-                        $sub_gl_account[] = $row;
-                    }
-                }
-                $liability_account_list = array_merge($main_gl_account_data,$sub_gl_account);
-            }
-            else
-            {
-                $liability_data = Currlib_data($gl_capital['id'],$start_date,$end_date);
-                $liability_account_list = $liability_data['account'];
-               
-            }
-            $current_assets_account_list = array();
-            if(!empty($gl_currentassets['all_sub_glgroup']))
-            {
-                
-                $current_assets_data_main_gl = Current_Assets_data($gl_currentassets['id'],$start_date,$end_date);
-                $main_gl_account_data = $current_assets_data_main_gl['account'];
-
-                $list_sub_gl = $gl_currentassets['all_sub_glgroup'];
-                $array_sub_gl = explode(",",$list_sub_gl);
-               
-                foreach($array_sub_gl as $array_sub_glrow)
-                { 
-                    $current_assets_data_gl = Current_Assets_data($array_sub_glrow,$start_date,$end_date);
-                    $sub_gl_account_data = $current_assets_data_gl['account'];
-                    foreach($sub_gl_account_data as $row)
-                    {
-                        $sub_gl_account[] = $row;
-                    }
-                }
-                $current_assets_account_list = array_merge($main_gl_account_data,$sub_gl_account_data);
-            }
-            else
-            {
-                $current_assets_data = Current_Assets_data($gl_currentassets['id'],$start_date,$end_date);
-                $current_assets_account_list = $current_assets_data['account'];
-               
-            }
-            $fixed_assets_account_list = array();
-            if(!empty($gl_fixedassets['all_sub_glgroup']))
-            {
-                $list_sub_gl = $gl_fixedassets['all_sub_glgroup'];
-                $array_sub_gl = explode(",",$list_sub_gl);
-                $fixedassets_data_gl = Fixed_Assets_data($gl_fixedassets['id'],$start_date,$end_date);
-                $main_gl_account_data = $fixedassets_data_gl['account'];
-                foreach($array_sub_gl as $array_sub_glrow)
-                { 
-                    $fixed_assets_data = Fixed_Assets_data($array_sub_glrow,$start_date,$end_date);
-                    $sub_gl_account_data = $fixed_assets_data['account'];
-                    foreach($sub_gl_account_data as $row)
-                    {
-                        $sub_gl_account[] = $row;
-                    }
-                }
-
-
-                $current_assets_data_main_gl = Fixed_Assets_data($gl_fixedassets['id'],$start_date,$end_date);
-                $main_gl_account_data = $current_assets_data_main_gl['account'];
-
-                $list_sub_gl = $gl_fixedassets['all_sub_glgroup'];
-                $array_sub_gl = explode(",",$list_sub_gl);
-               
-                foreach($array_sub_gl as $array_sub_glrow)
-                { 
-                    $fixed_assets_data_gl = Fixed_Assets_data($array_sub_glrow,$start_date,$end_date);
-                    $sub_gl_account_data = $fixed_assets_data_gl['account'];
-                    foreach($sub_gl_account_data as $row)
-                    {
-                        $sub_gl_account[] = $row;
-                    }
-                }
-                $fixed_assets_account_list = array_merge($main_gl_account_data,$sub_gl_account_data);
-            }
-            else
-            {
-                $fixed_assets_data = Fixed_Assets_data($gl_currentassets['id'],$start_date,$end_date);
-                $fixed_assets_account_list = $fixed_assets_data['account'];
-               
-            }
-
-        
-            
-           
-        
 
     }
 
 }
+
