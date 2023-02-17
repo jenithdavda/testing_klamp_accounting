@@ -982,11 +982,13 @@ function capital_data($id, $start_date = '', $end_date = '')
         }
         $tot_pg_income[$row['account_name']]['opening_total'] = $total;
         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
+        //use of gl_group summary
+        $tot_pg_income[$row['account_name']]['type'] = 'capital';
     }
 
     $bank_income = array();
-//     echo '<pre>';Print_r($start_date);
-// echo '<pre>';Print_r($end_date);exit;
+    //     echo '<pre>';Print_r($start_date);
+    // echo '<pre>';Print_r($end_date);exit;
 
     
 
@@ -1011,6 +1013,8 @@ function capital_data($id, $start_date = '', $end_date = '')
 
         $tot_pg_income[$row['account_name']]['bt_total'] = $total;
         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
+         //use of gl_group summary
+         $tot_pg_income[$row['account_name']]['type'] = 'capital';
     }
 
     $jv_income = array();
@@ -1036,6 +1040,8 @@ function capital_data($id, $start_date = '', $end_date = '')
 
         $tot_pg_income[$row['account_name']]['jv_total'] = $total;
         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
+        //use of gl_group summary
+        $tot_pg_income[$row['account_name']]['type'] = 'capital';
     }
 
     $total_arr = array();
@@ -1139,6 +1145,8 @@ function loans_data($id, $start_date = '', $end_date = '')
         }
         $tot_pg_income[$row['account_name']]['opening_total'] = $total;
         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
+         //use of gl_group summary
+         $tot_pg_income[$row['account_name']]['type'] = 'loan';
     }
 
 
@@ -1164,6 +1172,8 @@ function loans_data($id, $start_date = '', $end_date = '')
         }
         $tot_pg_income[$row['account_name']]['bt_total'] = $total;
         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
+        //use of gl_group summary
+        $tot_pg_income[$row['account_name']]['type'] = 'loan';
     }
     // echo '<pre>';print_r($bank_income);
     $jv_income = array();
@@ -1187,6 +1197,8 @@ function loans_data($id, $start_date = '', $end_date = '')
         }
         $tot_pg_income[$row['account_name']]['jv_total'] = $total;
         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
+        //use of gl_group summary
+        $tot_pg_income[$row['account_name']]['type'] = 'loan';
     }
     // echo '<pre>';Print_r($tot_pg_income);exit;
 
@@ -1297,6 +1309,8 @@ function Currlib_data($id, $start_date = '', $end_date = '')
         }
         $tot_pg_income[$row['account_name']]['opening_total'] = $total;
         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
+        //use of gl_group summary
+        $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
     }
 
 
@@ -1324,6 +1338,8 @@ function Currlib_data($id, $start_date = '', $end_date = '')
         $total = ((@$tot_pg_income[$row['account_name']][$row['pg_type']]) ? $tot_pg_income[$row['account_name']][$row['pg_type']] : 0) + $row['pg_amount'];
         $tot_pg_income[$row['account_name']][$row['pg_type']] = $total;
         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
+          //use of gl_group summary
+          $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
     }
 
     $bank_income = array();
@@ -1350,6 +1366,8 @@ function Currlib_data($id, $start_date = '', $end_date = '')
 
         $tot_pg_income[$row['account_name']]['bt_total'] = $total;
         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
+          //use of gl_group summary
+          $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
     }
 
     $jv_income = array();
@@ -1378,6 +1396,8 @@ function Currlib_data($id, $start_date = '', $end_date = '')
 
         $tot_pg_income[$row['account_name']]['jv_total'] = $total;
         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
+          //use of gl_group summary
+          $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
     }
 
     $purchase = array();
@@ -1400,6 +1420,8 @@ function Currlib_data($id, $start_date = '', $end_date = '')
         $total = ((@$tot_pg_income[$row['account_name']]['purchase_total']) ? $tot_pg_income[$row['account_name']]['purchase_total'] : 0) + $row['total'];
         $tot_pg_income[$row['account_name']]['purchase_total'] = $total;
         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
+          //use of gl_group summary
+          $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
     }
     $purchase_return = array();
 
@@ -1419,6 +1441,8 @@ function Currlib_data($id, $start_date = '', $end_date = '')
         $total = ((@$tot_pg_income[$row['account_name']]['purchase_ret_total']) ? $tot_pg_income[$row['account_name']]['purchase_ret_total'] : 0) + $row['total'];
         $tot_pg_income[$row['account_name']]['purchase_ret_total'] = $total;
         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
+          //use of gl_group summary
+          $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
     }
 
     // update trupti 26-12-2022 duties and taxes add taxes account
@@ -1433,18 +1457,24 @@ function Currlib_data($id, $start_date = '', $end_date = '')
         $total = ((@$tot_pg_income[$row['account_name']][$row['pg_type'] . 'purchase_igst']) ? $tot_pg_income[$row['account_name']][$row['pg_type'] . 'purchase_igst'] : 0) + $row['pg_amount'];
         $tot_pg_income[$row['account_name']][$row['pg_type'] . 'purchase_igst'] = $total;
         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
+          //use of gl_group summary
+          $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
     }
     foreach ($pg_expense_cgst as $row) {
 
         $total = ((@$tot_pg_income[$row['account_name']][$row['pg_type'] . 'purchase_cgst']) ? $tot_pg_income[$row['account_name']][$row['pg_type'] . 'purchase_cgst'] : 0) + $row['pg_amount'];
         $tot_pg_income[$row['account_name']][$row['pg_type'] . 'purchase_cgst'] = $total;
         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
+          //use of gl_group summary
+          $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
     }
     foreach ($pg_expense_sgst as $row) {
 
         $total = ((@$tot_pg_income[$row['account_name']][$row['pg_type'] . 'purchase_sgst']) ? $tot_pg_income[$row['account_name']][$row['pg_type'] . 'purchase_sgst'] : 0) + $row['pg_amount'];
         $tot_pg_income[$row['account_name']][$row['pg_type'] . 'purchase_sgst'] = $total;
         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
+          //use of gl_group summary
+          $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
     }
     $sg_expense_igst = $data['sg_expense_igst'];
     $sg_expense_cgst = $data['sg_expense_cgst'];
@@ -1454,18 +1484,24 @@ function Currlib_data($id, $start_date = '', $end_date = '')
         $total = ((@$tot_pg_income[$row['account_name']][$row['pg_type']]) ? $tot_pg_income[$row['account_name']][$row['pg_type']] : 0) + $row['sg_amount_igst'];
         $tot_pg_income[$row['account_name']][$row['pg_type'] . 'sales_igst'] = $total;
         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
+          //use of gl_group summary
+          $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
     }
     foreach ($sg_expense_cgst as $row) {
 
         $total = ((@$tot_pg_income[$row['account_name']][$row['pg_type']]) ? $tot_pg_income[$row['account_name']][$row['pg_type']] : 0) + $row['sg_amount_cgst'];
         $tot_pg_income[$row['account_name']][$row['pg_type'] . 'sales_cgst'] = $total;
         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
+          //use of gl_group summary
+          $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
     }
     foreach ($sg_expense_sgst as $row) {
 
         $total = ((@$tot_pg_income[$row['account_name']][$row['pg_type']]) ? $tot_pg_income[$row['account_name']][$row['pg_type']] : 0) + $row['sg_amount_sgst'];
         $tot_pg_income[$row['account_name']][$row['pg_type'] . 'sales_sgst'] = $total;
         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
+          //use of gl_group summary
+          $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
     }
     $purchase_igst = $data['purchase_igst'];
     $purchase_cgst = $data['purchase_cgst'];
@@ -1475,18 +1511,24 @@ function Currlib_data($id, $start_date = '', $end_date = '')
         $total = ((@$tot_pg_income[$row['account_name']]['purchase_total_igst']) ? $tot_pg_income[$row['account_name']]['purchase_total_igst'] : 0) + $row['total'];
         $tot_pg_income[$row['account_name']]['purchase_total_igst'] = $total;
         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
+          //use of gl_group summary
+          $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
     }
     foreach ($purchase_cgst as $row) {
 
         $total = ((@$tot_pg_income[$row['account_name']]['purchase_total_cgst']) ? $tot_pg_income[$row['account_name']]['purchase_total_cgst'] : 0) + $row['total'];
         $tot_pg_income[$row['account_name']]['purchase_total_cgst'] = $total;
         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
+          //use of gl_group summary
+          $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
     }
     foreach ($purchase_sgst as $row) {
 
         $total = ((@$tot_pg_income[$row['account_name']]['purchase_total_sgst']) ? $tot_pg_income[$row['account_name']]['purchase_total_sgst'] : 0) + $row['total'];
         $tot_pg_income[$row['account_name']]['purchase_total_sgst'] = $total;
         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
+          //use of gl_group summary
+          $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
     }
     $sales_igst = $data['sales_igst'];
     $sales_cgst = $data['sales_cgst'];
@@ -1496,18 +1538,24 @@ function Currlib_data($id, $start_date = '', $end_date = '')
         $total = ((@$tot_pg_income[$row['account_name']]['sales_igst_total']) ? $tot_pg_income[$row['account_name']]['sales_igst_total'] : 0) + $row['sales_igst_total'];
         $tot_pg_income[$row['account_name']]['sales_igst_total'] = $total;
         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
+          //use of gl_group summary
+          $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
     }
     foreach ($sales_cgst as $row) {
 
         $total = ((@$tot_pg_income[$row['account_name']]['sales_cgst_total']) ? $tot_pg_income[$row['account_name']]['sales_cgst_total'] : 0) + $row['sales_cgst_total'];
         $tot_pg_income[$row['account_name']]['sales_cgst_total'] = $total;
         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
+          //use of gl_group summary
+          $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
     }
     foreach ($sales_sgst as $row) {
 
         $total = ((@$tot_pg_income[$row['account_name']]['sales_sgst_total']) ? $tot_pg_income[$row['account_name']]['sales_sgst_total'] : 0) + $row['sales_sgst_total'];
         $tot_pg_income[$row['account_name']]['sales_sgst_total'] = $total;
         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
+          //use of gl_group summary
+          $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
     }
 
     $purchase_return_igst = $data['purchase_return_igst'];
@@ -1519,18 +1567,24 @@ function Currlib_data($id, $start_date = '', $end_date = '')
         $total = ((@$tot_pg_income[$row['account_name']]['purchase_return_igst_total']) ? $tot_pg_income[$row['account_name']]['purchase_return_igst_total'] : 0) + $row['total'];
         $tot_pg_income[$row['account_name']]['purchase_return_igst_total'] = $total;
         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
+          //use of gl_group summary
+          $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
     }
     foreach ($purchase_return_cgst as $row) {
 
         $total = ((@$tot_pg_income[$row['account_name']]['purchase_return_cgst_total']) ? $tot_pg_income[$row['account_name']]['purchase_return_cgst_total'] : 0) + $row['total'];
         $tot_pg_income[$row['account_name']]['purchase_return_cgst_total'] = $total;
         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
+          //use of gl_group summary
+          $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
     }
     foreach ($purchase_return_sgst as $row) {
 
         $total = ((@$tot_pg_income[$row['account_name']]['purchase_return_sgst_total']) ? $tot_pg_income[$row['account_name']]['purchase_return_sgst_total'] : 0) + $row['total'];
         $tot_pg_income[$row['account_name']]['purchase_return_sgst_total'] = $total;
         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
+          //use of gl_group summary
+          $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
     }
     $sales_return_igst = $data['sales_return_igst'];
     $sales_return_cgst = $data['sales_return_cgst'];
@@ -1540,18 +1594,24 @@ function Currlib_data($id, $start_date = '', $end_date = '')
         $total = ((@$tot_pg_income[$row['account_name']]['sales_return_igst_total']) ? $tot_pg_income[$row['account_name']]['sales_return_igst_total'] : 0) + $row['sales_return_igst_total'];
         $tot_pg_income[$row['account_name']]['sales_return_igst_total'] = $total;
         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
+          //use of gl_group summary
+          $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
     }
     foreach ($sales_return_cgst as $row) {
 
         $total = ((@$tot_pg_income[$row['account_name']]['sales_return_cgst_total']) ? $tot_pg_income[$row['account_name']]['sales_return_cgst_total'] : 0) + $row['sales_return_cgst_total'];
         $tot_pg_income[$row['account_name']]['sales_return_cgst_total'] = $total;
         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
+          //use of gl_group summary
+          $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
     }
     foreach ($sales_return_sgst as $row) {
 
         $total = ((@$tot_pg_income[$row['account_name']]['sales_return_sgst_total']) ? $tot_pg_income[$row['account_name']]['sales_return_sgst_total'] : 0) + $row['sales_return_sgst_total'];
         $tot_pg_income[$row['account_name']]['sales_return_sgst_total'] = $total;
         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
+          //use of gl_group summary
+          $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
     }
 
 
@@ -1673,6 +1733,8 @@ function Fixed_Assets_data($id, $start_date = '', $end_date = '')
         }
         $tot_fixedassets[$row['account_name']]['opening_total'] = $total;
         $tot_fixedassets[$row['account_name']]['account_id'] = $row['account_id'];
+          //use of gl_group summary
+          $tot_pg_income[$row['account_name']]['type'] = 'fixed assets';
     }
 
     $bank_FixedAssets = array();
@@ -1698,6 +1760,8 @@ function Fixed_Assets_data($id, $start_date = '', $end_date = '')
         }
         $tot_fixedassets[$row['account_name']]['bt_total'] = $total;
         $tot_fixedassets[$row['account_name']]['account_id'] = $row['account_id'];
+         //use of gl_group summary
+         $tot_fixedassets[$row['account_name']]['type'] = 'fixed assets';
     }
 
     $jv_FixedAssets = array();
@@ -1720,8 +1784,11 @@ function Fixed_Assets_data($id, $start_date = '', $end_date = '')
         } else {
             $total = ((@$tot_fixedassets[$row['account_name']]['jv_total']) ? $tot_fixedassets[$row['account_name']]['jv_total'] : 0) + $row['total'];
         }
-        $tot_fixedassets[$row['account_name']]['jv_total'] = $total;
+        $tot_fixedassets[$row['account_name']]['bt_total'] = $total;
         $tot_fixedassets[$row['account_name']]['account_id'] = $row['account_id'];
+         //use of gl_group summary
+         $tot_fixedassets[$row['account_name']]['type'] = 'fixed assets';
+        
     }
     $sales_FixedAssets = array();
     $builder = $db->table('gl_group gl');
@@ -1748,6 +1815,8 @@ function Fixed_Assets_data($id, $start_date = '', $end_date = '')
         $total =  @$gen_total - @$ret_total;
         $tot_fixedassets[$row['account_name']]['sale_total'] = $total;
         $tot_fixedassets[$row['account_name']]['account_id'] = @$row['account_id'];
+           //use of gl_group summary
+           $tot_fixedassets[$row['account_name']]['type'] = 'fixed assets';
     }
     $purchase_FixedAssets = array();
     $builder = $db->table('gl_group gl');
@@ -1779,6 +1848,8 @@ function Fixed_Assets_data($id, $start_date = '', $end_date = '')
         //$total = $gen_total - (@$ret_total ? @$ret_total : 0);
         $tot_fixedassets[$row['account_name']]['purchase_total'] = $total;
         $tot_fixedassets[$row['account_name']]['account_id'] = @$row['account_id'];
+           //use of gl_group summary
+           $tot_fixedassets[$row['account_name']]['type'] = 'fixed assets';
     }
 
     $total_arr = array();
@@ -1881,6 +1952,8 @@ function Current_Assets_data($id, $start_date = '', $end_date = '')
         }
         $tot_currentassets[$row['account_name']]['opening_total'] = $total;
         $tot_currentassets[$row['account_name']]['account_id'] = $row['account_id'];
+           //use of gl_group summary
+           $tot_currentassets[$row['account_name']]['type'] = 'current assets';
     }
 
     $builder = $db->table('gl_group gl');
@@ -1899,18 +1972,13 @@ function Current_Assets_data($id, $start_date = '', $end_date = '')
     $query = $builder->get();
     $sale_gnrl_current_asset = $query->getResultArray();
 
-    // echo $db->getLastQuery();
-    // echo '<pre>';print_r($id);
-    // echo '<pre>';print_r($start_date);
-    // echo '<pre>';print_r($end_date);
-    // echo '<pre>';print_r($sale_gnrl_current_asset);
-
-
     foreach ($sale_gnrl_current_asset as $row) {
 
         $total = ((@$tot_currentassets[$row['account_name']][$row['sg_type']]) ? $tot_currentassets[$row['account_name']][$row['sg_type']] : 0) + $row['sg_amount'];
         $tot_currentassets[$row['account_name']][$row['sg_type']] = $total;
         $tot_currentassets[$row['account_name']]['account_id'] = $row['account_id'];
+        //use of gl_group summary
+        $tot_currentassets[$row['account_name']]['type'] = 'current assets';
     }
 
     $bank_CurrentAssets = array();
@@ -1937,6 +2005,8 @@ function Current_Assets_data($id, $start_date = '', $end_date = '')
 
         $tot_currentassets[$row['account_name']]['bt_total'] = $total;
         $tot_currentassets[$row['account_name']]['account_id'] = @$row['account_id'];
+        //use of gl_group summary
+        $tot_currentassets[$row['account_name']]['type'] = 'current assets';
     }
 
 
@@ -1963,6 +2033,8 @@ function Current_Assets_data($id, $start_date = '', $end_date = '')
         }
         $tot_currentassets[$row['account_name']]['jv_total'] = $total;
         $tot_currentassets[$row['account_name']]['account_id'] = $row['account_id'];
+        //use of gl_group summary
+        $tot_currentassets[$row['account_name']]['type'] = 'current assets';
     }
 
     $ac_CurrentAssets = array();
@@ -1989,6 +2061,8 @@ function Current_Assets_data($id, $start_date = '', $end_date = '')
 
         $tot_currentassets[$row['account_name']]['ac_total'] = $total;
         $tot_currentassets[$row['account_name']]['account_id'] = @$row['account_id'];
+        //use of gl_group summary
+        $tot_currentassets[$row['account_name']]['type'] = 'current assets';
     }
 
     $sales = array();
@@ -2014,6 +2088,8 @@ function Current_Assets_data($id, $start_date = '', $end_date = '')
         $total = ((@$tot_currentassets[$row['account_name']]['sales_total']) ? $tot_currentassets[$row['account_name']]['sales_total'] : 0) + $row['total'];
         $tot_currentassets[$row['account_name']]['sales_total'] = $total;
         $tot_currentassets[$row['account_name']]['account_id'] = $row['account_id'];
+        //use of gl_group summary
+        $tot_currentassets[$row['account_name']]['type'] = 'current assets';
     }
 
 
@@ -2036,6 +2112,8 @@ function Current_Assets_data($id, $start_date = '', $end_date = '')
         $total = ((@$tot_currentassets[$row['account_name']]['sales_ret_total']) ? $tot_currentassets[$row['account_name']]['sales_ret_total'] : 0) + $row['total'];
         $tot_currentassets[$row['account_name']]['sales_ret_total'] = $total;
         $tot_currentassets[$row['account_name']]['account_id'] = $row['account_id'];
+        //use of gl_group summary
+        $tot_currentassets[$row['account_name']]['type'] = 'current assets';
     }
 
 
@@ -2058,6 +2136,8 @@ function Current_Assets_data($id, $start_date = '', $end_date = '')
 
         $tot_currentassets[$row['account_name']]['contra_total'] = $total;
         $tot_currentassets[$row['account_name']]['account_id'] = @$row['account_id'];
+        //use of gl_group summary
+        $tot_currentassets[$row['account_name']]['type'] = 'current assets';
     }
 
 
@@ -2081,6 +2161,8 @@ function Current_Assets_data($id, $start_date = '', $end_date = '')
 
         $tot_currentassets[$row['account_name']]['contra_ac_total'] = $total;
         $tot_currentassets[$row['account_name']]['account_id'] = @$row['account_id'];
+        //use of gl_group summary
+        $tot_currentassets[$row['account_name']]['type'] = 'current assets';
     }
 
     $total_arr = array();
@@ -2187,9 +2269,11 @@ function Other_Assets_data($id, $start_date = '', $end_date = '')
         }
         $tot_otherassets[$row['account_name']]['bt_total'] = $total;
         $tot_otherassets[$row['account_name']]['account_id'] = $row['account_id'];
+        //use of gl_group summary
+        $tot_otherassets[$row['account_name']]['type'] = 'other assets';
     }
 
-    $jv_FixedAssets = array();
+    $jv_OtherAssets = array();
     $builder = $db->table('gl_group gl');
     $builder->select('ac.id as account_id,gl.name as gl_name,gl.id as gl_id,gl.parent,jv.amount as total, ac.name as account_name,jv.dr_cr');
     $builder->join('account ac', 'gl.id =ac.gl_group');
@@ -2211,6 +2295,8 @@ function Other_Assets_data($id, $start_date = '', $end_date = '')
         }
         $tot_otherassets[$row['account_name']]['jv_total'] = $total;
         $tot_otherassets[$row['account_name']]['account_id'] = $row['account_id'];
+        //use of gl_group summary
+        $tot_otherassets[$row['account_name']]['type'] = 'other assets';
     }
 
     $sales_OtherAssets = array();
@@ -2238,6 +2324,8 @@ function Other_Assets_data($id, $start_date = '', $end_date = '')
         $total =  @$gen_total - @$ret_total;
         $tot_otherassets[$row['account_name']]['sale_total'] = $total;
         $tot_otherassets[$row['account_name']]['account_id'] = @$row['account_id'];
+        //use of gl_group summary
+        $tot_otherassets[$row['account_name']]['type'] = 'other assets';
     }
 
     $purchase_OtherAssets = array();
@@ -2264,6 +2352,8 @@ function Other_Assets_data($id, $start_date = '', $end_date = '')
         $total = $gen_total - $ret_total;
         $tot_otherassets[$row['account_name']]['purchase_total'] = $total;
         $tot_otherassets[$row['account_name']]['account_id'] = @$row['account_id'];
+        //use of gl_group summary
+        $tot_otherassets[$row['account_name']]['type'] = 'other assets';
     }
 
     $total_arr = array();
@@ -2654,7 +2744,6 @@ function get_capital_account_wise($start_date, $end_date, $id)
 
     $total = 0;
     foreach ($bank_expence as $row) {
-
         if ($row['mode'] == 'Payment') {
             $total -= $row['bt_total'];
         } else {
@@ -2662,7 +2751,6 @@ function get_capital_account_wise($start_date, $end_date, $id)
         }
     }
     $capital['bank_trans']['total'] = $total;
-
     $builder = $db->table('jv_particular jv');
     $builder->select('ac.id as account_id,jv.amount as total,ac.name as account_name,jv.dr_cr');
     $builder->join('account ac', 'ac.id = jv.particular');
@@ -2673,7 +2761,6 @@ function get_capital_account_wise($start_date, $end_date, $id)
     $builder->where(array('DATE(jv.date)  <= ' => db_date($end_date)));
     $query = $builder->get();
     $jv_expence = $query->getResultArray();
-
 
     $capital['jv_parti']['total'] = 0;
     $total = 0;

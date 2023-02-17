@@ -6,6 +6,7 @@ use App\Models\GeneralModel;
 use CodeIgniter\Model;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use App\Models\TradingModel;
 
 class AddbookModel extends Model
 {
@@ -5653,11 +5654,11 @@ class AddbookModel extends Model
         }
         return  $msg;
     }
-    public function get_closing_bal_report_data()
+    public function get_closing_bal_report_data($post)
     {
 
-        $start_date = "2021-04-01";
-        $end_date = "2022-03-31";
+        $start_date = $post['from'];
+        $end_date = $post['to'];
 
         $gmodel = new GeneralModel;
         $gl_capital = $gmodel->get_data_table('gl_group_summary', array('gl_name' => 'Capital'), 'id,gl_name,all_sub_glgroup');
@@ -5681,19 +5682,21 @@ class AddbookModel extends Model
                 { 
                     $capital_data_gl = capital_data($array_sub_glrow,$start_date,$end_date);
                     $sub_gl_account_data = $capital_data_gl['account'];
-                    foreach($sub_gl_account_data as $row)
+                    foreach($sub_gl_account_data as $key => $row)
                     {
-                        $sub_gl_account[] = $row;
+                        $sub_gl_account[$key] = $row;
                     }
                 }
                 $capital_account_list = array_merge($main_gl_account_data,$sub_gl_account);
             }
             else
             {
-                $capital_data = capital_data($gl_capital['id'],$start_date,$end_date);
+                $capital_data = capital_data($gl_capital['id'],$start_date,$end_date);       
                 $capital_account_list = $capital_data['account'];
                
             }
+          
+            
             $loan_account_list = array();
             if(!empty($gl_loan['all_sub_glgroup']))
             {
@@ -5702,14 +5705,14 @@ class AddbookModel extends Model
 
                 $list_sub_gl = $gl_loan['all_sub_glgroup'];
                 $array_sub_gl = explode(",",$list_sub_gl);
-               
+                $sub_gl_account = array();
                 foreach($array_sub_gl as $array_sub_glrow)
                 { 
                     $loan_data_gl = capital_data($array_sub_glrow,$start_date,$end_date);
                     $sub_gl_account_data = $loan_data_gl['account'];
-                    foreach($sub_gl_account_data as $row)
+                    foreach($sub_gl_account_data as $key => $row)
                     {
-                        $sub_gl_account[] = $row;
+                        $sub_gl_account[$key] = $row;
                     }
                 }
                 $loan_account_list = array_merge($main_gl_account_data,$sub_gl_account);
@@ -5724,26 +5727,30 @@ class AddbookModel extends Model
             if(!empty($gl_lib['all_sub_glgroup']))
             {
                 
-                $liability_data_main_gl = Currlib_data($gl_capital['id'],$start_date,$end_date);
+                $liability_data_main_gl = Currlib_data($gl_lib['id'],$start_date,$end_date);
+                
                 $main_gl_account_data = $liability_data_main_gl['account'];
 
                 $list_sub_gl = $gl_lib['all_sub_glgroup'];
                 $array_sub_gl = explode(",",$list_sub_gl);
-               
+                $sub_gl_account = array();
                 foreach($array_sub_gl as $array_sub_glrow)
                 { 
                     $liability_data_gl = Currlib_data($array_sub_glrow,$start_date,$end_date);
+                   
                     $sub_gl_account_data = $liability_data_gl['account'];
-                    foreach($sub_gl_account_data as $row)
+                    foreach($sub_gl_account_data as $key => $row)
                     {
-                        $sub_gl_account[] = $row;
+                        $sub_gl_account[$key] = $row;
                     }
                 }
+               // echo '<pre>';Print_r($sub_gl_account);exit; 
                 $liability_account_list = array_merge($main_gl_account_data,$sub_gl_account);
+               
             }
             else
             {
-                $liability_data = Currlib_data($gl_capital['id'],$start_date,$end_date);
+                $liability_data = Currlib_data($gl_capital['id'],$start_date,$end_date);       
                 $liability_account_list = $liability_data['account'];
                
             }
@@ -5756,17 +5763,17 @@ class AddbookModel extends Model
 
                 $list_sub_gl = $gl_currentassets['all_sub_glgroup'];
                 $array_sub_gl = explode(",",$list_sub_gl);
-               
+                $sub_gl_account = array();
                 foreach($array_sub_gl as $array_sub_glrow)
                 { 
                     $current_assets_data_gl = Current_Assets_data($array_sub_glrow,$start_date,$end_date);
                     $sub_gl_account_data = $current_assets_data_gl['account'];
-                    foreach($sub_gl_account_data as $row)
+                    foreach($sub_gl_account_data as $key => $row)
                     {
-                        $sub_gl_account[] = $row;
+                        $sub_gl_account[$key] = $row;
                     }
                 }
-                $current_assets_account_list = array_merge($main_gl_account_data,$sub_gl_account_data);
+                $current_assets_account_list = array_merge($main_gl_account_data,$sub_gl_account);
             }
             else
             {
@@ -5777,50 +5784,154 @@ class AddbookModel extends Model
             $fixed_assets_account_list = array();
             if(!empty($gl_fixedassets['all_sub_glgroup']))
             {
-                $list_sub_gl = $gl_fixedassets['all_sub_glgroup'];
-                $array_sub_gl = explode(",",$list_sub_gl);
-                $fixedassets_data_gl = Fixed_Assets_data($gl_fixedassets['id'],$start_date,$end_date);
-                $main_gl_account_data = $fixedassets_data_gl['account'];
-                foreach($array_sub_gl as $array_sub_glrow)
-                { 
-                    $fixed_assets_data = Fixed_Assets_data($array_sub_glrow,$start_date,$end_date);
-                    $sub_gl_account_data = $fixed_assets_data['account'];
-                    foreach($sub_gl_account_data as $row)
-                    {
-                        $sub_gl_account[] = $row;
-                    }
-                }
-
-
-                $current_assets_data_main_gl = Fixed_Assets_data($gl_fixedassets['id'],$start_date,$end_date);
-                $main_gl_account_data = $current_assets_data_main_gl['account'];
-
-                $list_sub_gl = $gl_fixedassets['all_sub_glgroup'];
-                $array_sub_gl = explode(",",$list_sub_gl);
                
+                $fixed_assets_data_main_gl = Fixed_Assets_data($gl_fixedassets['id'],$start_date,$end_date);
+                $main_gl_account_data = $fixed_assets_data_main_gl['account'];
+               
+                $list_sub_gl = $gl_fixedassets['all_sub_glgroup'];
+                $array_sub_gl = explode(",",$list_sub_gl);
+                $sub_gl_account = array();
                 foreach($array_sub_gl as $array_sub_glrow)
                 { 
                     $fixed_assets_data_gl = Fixed_Assets_data($array_sub_glrow,$start_date,$end_date);
                     $sub_gl_account_data = $fixed_assets_data_gl['account'];
-                    foreach($sub_gl_account_data as $row)
+                    foreach($sub_gl_account_data as $key => $row)
                     {
-                        $sub_gl_account[] = $row;
+                        $sub_gl_account[$key] = $row;
                     }
                 }
-                $fixed_assets_account_list = array_merge($main_gl_account_data,$sub_gl_account_data);
+                $fixed_assets_account_list = array_merge($main_gl_account_data,$sub_gl_account);
             }
             else
             {
-                $fixed_assets_data = Fixed_Assets_data($gl_currentassets['id'],$start_date,$end_date);
+                $fixed_assets_data = Fixed_Assets_data($gl_fixedassets['id'],$start_date,$end_date);
                 $fixed_assets_account_list = $fixed_assets_data['account'];
                
             }
-
-        
-            
            
-        
+            $other_assets_account_list = array();
+            if(!empty($gl_otherassets['all_sub_glgroup']))
+            {
+               
+                $other_assets_data_main_gl = Other_Assets_data($gl_otherassets['id'],$start_date,$end_date);
+                $main_gl_account_data = $other_assets_data_main_gl['account'];
 
+                $list_sub_gl = $gl_otherassets['all_sub_glgroup'];
+                $array_sub_gl = explode(",",$list_sub_gl);
+                $sub_gl_account = array();
+                foreach($array_sub_gl as $array_sub_glrow)
+                { 
+                    $other_assets_data_gl = Other_Assets_data($array_sub_glrow,$start_date,$end_date);
+                    $sub_gl_account_data = $other_assets_data_gl['account'];
+                    $sub_gl_account = array();
+                    foreach($sub_gl_account_data as $key => $row)
+                    {
+                        $sub_gl_account[$key] = $row;
+                    }
+                }
+                $other_assets_account_list = array_merge($main_gl_account_data,$sub_gl_account);
+            }
+            else
+            {
+                $other_assets_data = Other_Assets_data($gl_otherassets['id'],$start_date,$end_date);
+                $other_assets_account_list = $other_assets_data['account']; 
+            }
+            $last_array = array_merge($capital_account_list,$loan_account_list,$liability_account_list,$current_assets_account_list,$fixed_assets_account_list,$other_assets_account_list);
+            return $last_array;   
+    }
+    public function get_closing_bal_account_report_data($post)
+    {
+        $gmodel  = new GeneralModel();
+        $tmodel  = new TradingModel();
+        $bmodel  = new BalancesheetModel();
+        $acc = $gmodel->get_data_table('account', array('id' => $post['account_id']), 'opening_bal,opening_type');
+        $data = array();
+        $opening_bal = 0;
+        if ($acc['opening_type'] == 'Debit') {
+            $opening_bal -= (float)@$acc['opening_bal'];
+        } else {
+            $opening_bal += (float)@$acc['opening_bal'];
+        }
+        $send['id'] = $post['account_id'];
+        $send['from'] = $post['from'];
+        $send['to'] = $post['to'];
+        if($post['type'] == 'capital' OR $post['type'] == 'loan')
+        {
+            $bank_data = $tmodel->bank_cash_voucher_wise_data($send);
+            $jv_data= $tmodel->jv_voucher_wise_data($send);
+          
+            $data['bank'] = $bank_data['sales'];
+            $data['jv'] = $jv_data['sales'];
+        }
+        elseif($post['type'] == 'current liabilities')
+        {
+            $purchase_invoice = $bmodel->purchase_voucher_wise_data($send);
+            $purchase_return = $bmodel->purchase_ret_voucher_wise_data($send);
+            $purchase_general = $bmodel->generalPurchase_liabi_voucher_wise_data($send);
+            $sales_invoice = $bmodel->sales_voucher_wise_data($send);
+            $sales_return = $bmodel->sales_ret_voucher_wise_data($send);
+            $sales_general = $bmodel->generalSales_liabi_voucher_wise_data($send);
+            $bank_data = $tmodel->bank_cash_voucher_wise_data($send);
+            $jv_data= $tmodel->jv_voucher_wise_data($send);
+          
+            $data['purchase_invoice'] = $purchase_invoice['purchase'];
+            $data['purchase_return'] = $purchase_return['purchase_ret'];
+            $data['purchase_general'] = $purchase_general['purchase'];
+            $data['sales_invoice'] = $sales_invoice['sales'];
+            $data['sales_return'] = $sales_return['sales_ret'];
+            $data['sales_general'] = $sales_general['sales'];
+            $data['bank'] = $bank_data['sales'];
+            $data['jv'] = $jv_data['sales'];
+         
+        }
+        elseif($post['type'] == 'fixed assets' OR $post['type'] == 'other assets')
+        {
+            $sales_general = $bmodel->generalSales_voucher_wise_data($send);
+            $purchase_general = $bmodel->generalPurchase_voucher_wise_data($send);
+            $bank_data = $bmodel->fixedassets_bankcash_voucher_Perwise($send);
+            $jv_data = $bmodel->fixedassets_jv_voucher_wise($send);
+
+            $data['sales_general'] = $sales_general['sales'];
+            $data['purchase_general'] = $purchase_general['purchase'];
+            $data['bank'] = $bank_data['fixedassets_banktrans'];
+            $data['jv'] = $jv_data['fixedassets_jv'];
+            
+        }
+        elseif($post['type'] == 'current assets')
+        {
+            $sales_invoice = $bmodel->currentassets_salesinvoice_voucher_wise($send);
+            $sales_return = $bmodel->currentassets_salesreturn_voucher_wise($send);
+            $sales_general = $bmodel->currentassets_gnrl_sale_voucher_data($send);
+            $sales_general_return = $bmodel->currentassets_gnrl_sale_rtn_voucher_wise($send);
+            $bank_per_data = $bmodel->currentassets_bankcash_voucher_Perwise($send);
+            $bank_acc_data = $bmodel->currentassets_bankcash_voucher_Acwise($send);
+            $contra_per_data = $bmodel->currentassets_contra_voucher_Perwise($send);
+            $contra_acc_data = $bmodel->currentassets_contra_voucher_Acwise($send);
+            $jv_data= $bmodel->currentassets_jv_voucher_wise($send); 
+
+            $data['sales_invoice'] = $sales_invoice['currentassets_salesinvoice'];
+            $data['sales_return'] = $sales_return['currentassets_salesreturn'];
+            $data['sales_general'] = $sales_general['currentassets_salesinvoice'];
+            $data['sales_general_return'] = $sales_general_return['currentassets_salesreturn'];
+            $data['bank_per'] = $bank_per_data['currentassets_banktrans'];
+            $data['bank_acc'] = $bank_acc_data['currentassets_banktrans'];
+            $data['contra_per'] = $contra_per_data['currentassets_contratrans'];
+            $data['contra_acc'] = $contra_acc_data['currentassets_ac_contratrans'];
+            $data['jv'] = $jv_data['currentassets_jv'];
+        }
+        else
+        {
+            
+        }
+        $data['start_date'] = $post['from'];
+        $data['end_date'] = $post['to'];
+        $data['type'] = $post['type'];
+        $data['account_id'] = $post['account_id'];
+
+        return $data;
+        //echo '<pre>';Print_r($data);exit;
+        
+        
     }
 
 }

@@ -1458,13 +1458,50 @@ class Addbook extends BaseController
     }
     public function closing_bal_report()
     {
+     
         $data = array();
+        $post = $this->request->getPost();
+        if (!empty($post['from']) && !empty($post['to'])) {
+            $data['gl_summary'] = $this->model->get_closing_bal_report_data($post);
+        } else {
+            $post['from'] = session('financial_form');
+            $post['to'] = session('financial_to');
+            $data['gl_summary'] = $this->model->get_closing_bal_report_data($post);
+        }
+        $data['start_date'] = @$post['from']; 
+        $data['end_date'] = @$post['to']; 
+       // echo '<pre>';Print_r($data);exit;
+        
+        $data['title'] = "GL Group Summary";
+        return view('addbook/gl_summary_report', $data);
+
+    }
+    public function closing_bal_account_report()
+    {
+     
+        // $data = array();
         $post = $this->request->getGet();
-        //$data['glgroup'] = get_sub_sub_glgroup(1);
-        $data = $this->model->get_closing_bal_report_data($post);
-       echo '<pre>';Print_r($data);exit;
-       
-        //return view('addbook/ledger_invoices', $data);
+        //echo '<pre>';Print_r($post);exit;
+        
+    //     //echo '<pre>';Print_r($post);exit;
+        
+    //     if (!empty($post['from']) && !empty($post['to'])) {
+    //         $data['gl_summary'] = $this->model->get_closing_bal_report_data($post);
+    //     } else {
+    //         $post['from'] = session('financial_form');
+    //         $post['to'] = session('financial_to');
+         $data['gl_account_summary'] = $this->model->get_closing_bal_account_report_data($post);
+         echo '<pre>';Print_r($data);exit;
+         
+    //     }
+         $data['start_date'] = @$post['from']; 
+         $data['end_date'] = @$post['to']; 
+         $data['account_id'] = @$post['account_id']; 
+         $data['type'] = @$post['type']; 
+    //    // echo '<pre>';Print_r($data);exit;
+        
+        $data['title'] = "GL Account Summary";
+        return view('addbook/gl_account_summary_report', $data);
 
     }
     public function Getdata($method = '')

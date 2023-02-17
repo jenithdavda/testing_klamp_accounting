@@ -230,6 +230,8 @@ class Balancesheet extends BaseController
 
         $data['title'] = "Capital Voucher";
         $data['ac_name'] = $acc['name'];
+        //echo '<pre>';Print_r($data);exit;
+        
         return view('trading/liability/capital_acc_voucher', $data);
     }
     public function get_loan_account_data()

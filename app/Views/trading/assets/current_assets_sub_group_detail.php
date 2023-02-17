@@ -141,7 +141,7 @@
                                         $total = subGrp_total($arr,0);                          
                             ?>
                             <tr>
-                                <td><a href = "<?=url('Trading/get_current_assets_sub_grp?'.'id='.$sub_key.'&name='.$sub_value['name'].'&from='.$date['from'].'&to='.$date['to'])?>"><?=$sub_value['name']?></a>
+                                <td><a href = "<?=url('Balancesheet/get_current_assets_sub_grp?'.'id='.$sub_key.'&name='.$sub_value['name'].'&from='.$date['from'].'&to='.$date['to'])?>"><?=$sub_value['name']?></a>
                                 </td>
                                 <td><?=number_format($total,2) ?>
                                    
