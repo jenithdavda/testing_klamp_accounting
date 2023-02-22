@@ -1842,7 +1842,7 @@ function Currlib_data($id, $start_date = '', $end_date = '')
         $total = ((@$tot_pg_income[$row['account_name']][$row['pg_type'] . 'purchase_igst']) ? $tot_pg_income[$row['account_name']][$row['pg_type'] . 'purchase_igst'] : 0) + $row['pg_amount'];
         $tot_pg_income[$row['account_name']][$row['pg_type'] . 'purchase_igst'] = $total;
         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
-        $tot_pg_income[$row['account_name']]['type'] = 'current liabilities'; 
+        $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
     }
     foreach ($pg_expense_cgst as $row) {
 

@@ -20,7 +20,8 @@
             aria-label="Toggle navigation">
             <i class="fe fe-filter mr-1"></i> Filter <i class="fas fa-caret-down ml-1"></i>
         </a>
-        <a href="<?=url('Trading/sales_item_xls?from='.$start_date.'&to='.$end_date)?>"  class="btn ripple btn-primary"><i class="fe fe-external-link"></i>Excel Export</a>
+        <a href="<?=url('Trading/sales_item_xls?from='.$start_date.'&to='.$end_date)?>"
+            class="btn ripple btn-primary"><i class="fe fe-external-link"></i>Excel Export</a>
 
     </div>
 </div>
@@ -41,10 +42,10 @@
                                                 FROM:
                                             </div>
                                         </div>
-                                        <input class="form-control fc-datepicker"  name="from" required
+                                        <input class="form-control fc-datepicker" name="from" required
                                             placeholder="YYYY-MM-DD" type="text">
                                     </div>
-                                  
+
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -56,7 +57,7 @@
                                                 TO:
                                             </div>
                                         </div>
-                                        <input class="form-control fc-datepicker1"  name="to" required
+                                        <input class="form-control fc-datepicker1" name="to" required
                                             placeholder="YYYY-MM-DD" type="text">
                                     </div>
                                 </div>
@@ -123,12 +124,12 @@
                                 <div class="col-md-5">
                                     <div class="table-responsive">
                                         <?php
-                                            //echo '<pre>';Print_r(session('is_stock'));exit;
+                                           // echo '<pre>';Print_r(@$trading['opening_bal']);exit;
                                             
                                             if(session('is_stock') == 1 ){
                                                 $closing_bal = @$trading['manualy_closing_bal'];
                                             }else{
-                                                $closing_bal  = @$trading['closing_bal'];
+                                                $closing_bal  = @$trading['closing_bal'] + @$trading['opening_bal_total'];
                                             }
                                             // print_r($closing_stock);
                                             
@@ -180,17 +181,65 @@
                                                     as at <?=date_format($to,"d/m/Y")?>
                                                 </td>
                                             </tr>
-                                            <tr>
+                                            <!-- <tr>
                                                 <td><b>Opening Stock</b></td>
                                                 <td></td>
                                                 <td><b><?=number_format($trading['opening_bal'],2)?></b> </td>
-                                            </tr>
+                                            </tr> -->
 
-                                            <tr>
+                                            <!-- <tr>
                                                 <td>Stock In Hand </td>
                                                 <td> <?=number_format($trading['opening_bal'],2)?></td>
                                                 <td></td>
+                                            </tr> -->
+                                            <?php
+                                            $total = 0;
+                                            foreach($trading['opening_stock'] as $key => $value) { ?>
+                                            <tr>
+                                                <td><b><?=@$value['name']?></b></td>
+                                                <td></td>
+                                                <td><b><?=number_format(@$trading['opening_bal_total'],2)?></b><br>
+                                                </td>
                                             </tr>
+
+                                            <?php   
+                                                    if(!empty($value['account'])) {
+                                                        foreach(@$value['account'] as $ac_key => $ac_value){ ?>
+                                            <tr>
+                                                <td><a
+                                                        href="<?=url('account/add_account/'.$ac_value['account_id'])?>"><?=$ac_key ?></a>
+                                                </td>
+                                                <td><?=number_format($ac_value['opening_stock'],2) ?>
+                                                </td>
+                                                <td> </td>
+                                            </tr>
+                                            <?php 
+                                                        }    
+                                                    }
+                                            ?>
+
+                                            <?php if(!empty($value['sub_categories'])) {
+                                                        foreach(@$value['sub_categories'] as $sub_key => $sub_value){
+                                                            $total = 0;
+                                                            $arr[$sub_key] = $sub_value;
+                                                            $total = subGrp_total($arr,0);
+                                                            
+                                                            ?>
+                                            <tr>
+                                                <td><a
+                                                        href="<?=url('trading/get_opening_sub_grp?id='.$sub_key.'&name='.$sub_value['name'].'&from='.$trading['from'].'&to='.$trading['to'].'&type=trading')?>"><?=$sub_value['name']?></a>
+                                                </td>
+                                                <td><?=number_format($total,2) ?>
+                                                </td>
+                                                <td> </td>
+                                            </tr>
+                                            <?php 
+                                                            unset($arr);
+                                                        }
+                                                    }
+                                                }
+                                            ?>
+
 
                                             <tr>
                                                 <td><b>Purchase Accounts </b></td>
@@ -198,17 +247,21 @@
                                                 <td><b><?=$all_purchase - $all_purchase_return?></b>
                                                 </td>
                                             </tr>
-                                            
+
                                             <tr>
-                                                <td><a href="<?=url('Trading/purchase_voucher?from='.$trading['from'].'&to='.$trading['to'])?>">Purchase Account </a></td>
+                                                <td><a
+                                                        href="<?=url('Trading/purchase_voucher?from='.$trading['from'].'&to='.$trading['to'])?>">Purchase
+                                                        Account </a></td>
                                                 <td><?=number_format($all_purchase,2)?>
-                                                 
+
                                                 </td>
                                                 <td> </td>
                                             </tr>
 
                                             <tr>
-                                                <td><a href="<?=url('Trading/purchaseReturn_voucher?from='.$trading['from'].'&to='.$trading['to'])?>">Purchase Return</td>
+                                                <td><a
+                                                        href="<?=url('Trading/purchaseReturn_voucher?from='.$trading['from'].'&to='.$trading['to'])?>">Purchase
+                                                        Return</td>
                                                 <td>-<?=number_format($all_purchase_return,2)?>
                                                 </td>
                                                 <td> </td>
@@ -227,13 +280,15 @@
                                             <?php   
                                                     if(!empty($value['account'])) {
                                                         foreach(@$value['account'] as $ac_key => $ac_value){ ?>
-                                                            <tr>
-                                                                <td><a href="<?=url('Trading/get_expence_account_data?from='.$trading['from'].'&to='.$trading['to'].'&id='.$ac_value['account_id'].'&type=trading')?>"><?=$ac_key ?></a></td>
-                                                                <td><?=number_format($ac_value['total'],2) ?>
-                                                                </td>
-                                                                <td> </td>
-                                                            </tr>
-                                                            <?php 
+                                            <tr>
+                                                <td><a
+                                                        href="<?=url('Trading/get_expence_account_data?from='.$trading['from'].'&to='.$trading['to'].'&id='.$ac_value['account_id'].'&type=trading')?>"><?=$ac_key ?></a>
+                                                </td>
+                                                <td><?=number_format($ac_value['total'],2) ?>
+                                                </td>
+                                                <td> </td>
+                                            </tr>
+                                            <?php 
                                                         }    
                                                     }
                                             ?>
@@ -246,13 +301,15 @@
                                                             $total = subGrp_total($arr,0);
                                                             
                                                             ?>
-                                                            <tr>
-                                                                <td><a href = "<?=url('trading/get_expence_sub_grp?id='.$sub_key.'&name='.$sub_value['name'].'&from='.$trading['from'].'&to='.$trading['to'].'&type=trading')?>"><?=$sub_value['name']?></a></td>
-                                                                <td><?=number_format($total,2) ?>
-                                                                </td>
-                                                                <td> </td>
-                                                            </tr>
-                                                            <?php 
+                                            <tr>
+                                                <td><a
+                                                        href="<?=url('trading/get_expence_sub_grp?id='.$sub_key.'&name='.$sub_value['name'].'&from='.$trading['from'].'&to='.$trading['to'].'&type=trading')?>"><?=$sub_value['name']?></a>
+                                                </td>
+                                                <td><?=number_format($total,2) ?>
+                                                </td>
+                                                <td> </td>
+                                            </tr>
+                                            <?php 
                                                             unset($arr);
                                                         }
                                                     }
@@ -305,13 +362,17 @@
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td><a href="<?=url('Trading/sales_voucher?from='.$trading['from'].'&to='.$trading['to'])?>">Sales Accounts</a></td>
+                                                <td><a
+                                                        href="<?=url('Trading/sales_voucher?from='.$trading['from'].'&to='.$trading['to'])?>">Sales
+                                                        Accounts</a></td>
                                                 <td><?=number_format($all_sale,2)?><br>
                                                 </td>
                                                 <td></td>
                                             </tr>
                                             <tr>
-                                                <td><a href="<?=url('Trading/salesReturn_voucher?from='.$trading['from'].'&to='.$trading['to'])?>"> Sales Return </a></td>
+                                                <td><a
+                                                        href="<?=url('Trading/salesReturn_voucher?from='.$trading['from'].'&to='.$trading['to'])?>">
+                                                        Sales Return </a></td>
                                                 <td>-<?=number_format($all_sale_return,2)?><br>
                                                 </td>
                                                 <td> </td>
@@ -322,13 +383,13 @@
                                                 <td><b>Closing Bal</b> </td>
                                                 <td></td>
                                                 <td><b><?= number_format($closing_bal,2) ?></b>
-                                                <?php
+                                                    <?php
                                                 if(session('is_stock') == 1 ) { ?>
                                                     <a data-toggle="modal" href="<?=url('Trading/add_closing')?>"
                                                         data-target="#fm_model" data-title="Add Closing ">
                                                         <i class="btn btn-secondary btn-sm mb-1" style="float:right"><i
                                                                 class="fa fa-plus"></i></i></a>
-                                                <?php
+                                                    <?php
                                                 }
                                                 ?>
                                                 </td>
@@ -348,13 +409,15 @@
                                             <?php   
                                                     if(!empty($value['account'])) {
                                                         foreach(@$value['account'] as $ac_key => $ac_value){ ?>
-                                                            <tr>
-                                                                <td><a href = "<?=url('Trading/get_income_account_data?from='.$trading['from'].'&to='.$trading['to'].'&id='.$ac_value['account_id'].'&type=trading')?>"><?=$ac_key ?></a></td>
-                                                                <td><?=number_format($ac_value['total'],2) ?>
-                                                                </td>
-                                                                <td> </td>
-                                                            </tr>
-                                                            <?php 
+                                            <tr>
+                                                <td><a
+                                                        href="<?=url('Trading/get_income_account_data?from='.$trading['from'].'&to='.$trading['to'].'&id='.$ac_value['account_id'].'&type=trading')?>"><?=$ac_key ?></a>
+                                                </td>
+                                                <td><?=number_format($ac_value['total'],2) ?>
+                                                </td>
+                                                <td> </td>
+                                            </tr>
+                                            <?php 
                                                         }    
                                                     }
                                             ?>
@@ -366,13 +429,15 @@
                                                             $total = subGrp_total($arr,0);
                                                             
                                                             ?>
-                                                          <tr>
-                                                                <td><a href = "<?=url('trading/get_income_sub_grp?id='.$sub_key.'&name='.$sub_value['name'].'&from='.$trading['from'].'&to='.$trading['to'].'&type=trading')?>"><?=$sub_value['name']?></a></td>
-                                                                <td><?=number_format($total,2) ?>
-                                                                </td>
-                                                                <td> </td>
-                                                            </tr>
-                                                            <?php 
+                                            <tr>
+                                                <td><a
+                                                        href="<?=url('trading/get_income_sub_grp?id='.$sub_key.'&name='.$sub_value['name'].'&from='.$trading['from'].'&to='.$trading['to'].'&type=trading')?>"><?=$sub_value['name']?></a>
+                                                </td>
+                                                <td><?=number_format($total,2) ?>
+                                                </td>
+                                                <td> </td>
+                                            </tr>
+                                            <?php 
                                                             unset($arr);
                                                         }
                                                     }
@@ -416,7 +481,7 @@
                                         </table>
                                     </div>
                                 </div>
-                                
+
                             </div>
                         </div>
                     </div>

@@ -5,12 +5,14 @@ use CodeIgniter\Model;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use App\Models\TradingModel;
+use App\Models\GeneralModel;
 
 class BalancesheetModel extends Model
 {
     public function __construct() {
         parent::__construct();
         $this->tmodel = new TradingModel();
+        $this->gmodel = new GeneralModel();
        
     }
     public function purchase_voucher_wise_data($get)
@@ -1086,7 +1088,7 @@ class BalancesheetModel extends Model
             $builder = $db->table('bank_tras bt');
             $builder->select('bt.id,ac.id as account_id,ac.name as party_name,bt.receipt_date as date,bt.amount as total,bt.mode,bt.payment_type');
             $builder->join('account ac', 'ac.id =bt.particular');
-            $builder->where(array('bt.particular' => $get['id']));
+            $builder->where(array('bt.account' => $get['id']));
             $builder->where(array('ac.is_delete' => '0'));
             $builder->where(array('bt.is_delete' => '0'));
             $builder->where(array('bt.payment_type !=' => 'contra'));
@@ -2141,6 +2143,112 @@ class BalancesheetModel extends Model
         $spreadsheet->setActiveSheetIndex(0);
         $writer = new Xlsx($spreadsheet);
         $writer->save('php://output');
+    }
+    //use of get profit loss
+    function pl_tot_data_bl_new($start_date = '', $end_date = '')
+    {
+        $init_total =0;
+    
+        $gl_id = $this->gmodel->get_data_table('gl_group',array('name'=>'Trading Expenses','is_delete'=>0),'id,name');
+        $gl_inc_id = $this->gmodel->get_data_table('gl_group',array('name'=>'Trading Income','is_delete'=>0),'id,name');
+        $pl_exp_id = $this->gmodel->get_data_table('gl_group',array('name'=>'P & L Expenses','is_delete'=>0),'id,name');
+        $pl_inc_id = $this->gmodel->get_data_table('gl_group',array('name'=>'P & L Incomes','is_delete'=>0),'id,name');
+        $gl_opening_id = $this->gmodel->get_data_table('gl_group',array('name'=>'Opening Stock'),'id,name');
+       
+        if(!empty($start_date)){
+
+            //$Opening_bal = Opening_bal('Opening Stock');
+             
+            $manualy_closing_bal = $this->tmodel->get_manualy_stock($start_date,$end_date);
+            $closing_data = $this->tmodel->get_closing_detail($start_date,$end_date);
+
+            $sale_pur = sale_purchase_vouhcer($start_date,$end_date); 
+
+            $exp[$gl_id['id']] = trading_expense_data($gl_id['id'],$start_date,$end_date);
+            $exp[$gl_id['id']]['name'] = $gl_id['name'];
+            $exp[$gl_id['id']]['sub_categories'] = get_expense_sub_grp_data($gl_id['id'],$start_date,$end_date);
+            
+            $inc[$gl_inc_id['id']] = trading_income_data($gl_inc_id['id'],$start_date,$end_date);
+            $inc[$gl_inc_id['id']]['name'] = $gl_inc_id['name'];
+            $inc[$gl_inc_id['id']]['sub_categories'] = get_income_sub_grp_data($gl_inc_id['id'],$start_date,$end_date);
+            
+            $exp_pl[$pl_exp_id['id']] = pl_expense_data($pl_exp_id['id'],$start_date,$end_date);
+            $exp_pl[$pl_exp_id['id']]['name'] = $pl_exp_id['name'];
+            $exp_pl[$pl_exp_id['id']]['sub_categories']  = get_PL_expense_sub_grp_data($pl_exp_id['id'],$start_date,$end_date);
+
+            
+            $inc_pl[$pl_inc_id['id']] = pl_income_data($pl_inc_id['id'],$start_date,$end_date);
+            $inc_pl[$pl_inc_id['id']]['name'] = $pl_inc_id['name'];
+            $inc_pl[$pl_inc_id['id']]['sub_categories'] = get_PL_income_sub_grp_data($pl_inc_id['id'],$start_date,$end_date);
+          
+        }
+        else
+        {
+            //$Opening_bal = Opening_bal('Opening Stock');
+            $manualy_closing_bal = $this->tmodel->get_manualy_stock();
+            $closing_data = $this->tmodel->get_closing_detail();
+            $sale_pur = sale_purchase_vouhcer($start_date,$end_date); 
+            $exp[$gl_id['id']] = trading_expense_data($gl_id['id']);
+            $exp[$gl_id['id']]['name'] = $gl_id['name'];
+            $exp[$gl_id['id']]['sub_categories'] = get_expense_sub_grp_data($gl_id['id']);
+    
+            $inc[$gl_inc_id['id']] = trading_income_data($gl_inc_id['id']);
+            $inc[$gl_inc_id['id']]['name'] = $gl_inc_id['name'];
+            $inc[$gl_inc_id['id']]['sub_categories'] = get_income_sub_grp_data($gl_inc_id['id']);
+
+            $exp_pl[$pl_exp_id['id']] = pl_expense_data($pl_exp_id['id']);
+            $exp_pl[$pl_exp_id['id']]['name'] = $pl_exp_id['name'];
+            $exp_pl[$pl_exp_id['id']]['sub_categories'] = get_PL_expense_sub_grp_data($pl_exp_id['id']);
+            
+            
+            $inc_pl[$pl_inc_id['id']] = pl_income_data($pl_inc_id['id']);
+            $inc_pl[$pl_inc_id['id']]['name'] = $pl_inc_id['name'];
+            $inc_pl[$pl_inc_id['id']]['sub_categories'] = get_PL_income_sub_grp_data($pl_inc_id['id']);
+        }
+        if(session('is_stock') == 1 ){
+            $closing_stock = @$manualy_closing_bal;
+        }else{
+            $closing_stock  = @$closing_data['closing_bal'];
+        }
+       // echo '<pre>';Print_r($sale_pur);exit;
+        $all_purchase = $sale_pur['pur_total_rate'] ;
+        $all_purchase_return = $sale_pur['Purret_total_rate'] ;
+        
+        $all_sale = $sale_pur['sale_total_rate'] ;
+        $all_sale_return = $sale_pur['saleret_total_rate'] ;
+
+        $opening_stock[$gl_opening_id['id']] = opening_stock_data($gl_opening_id['id']);
+        $opening_stock[$gl_opening_id['id']]['name'] = $gl_opening_id['name'];
+        $opening_stock[$gl_opening_id['id']]['sub_categories'] = get_opening_stock_sub_grp_data($gl_opening_id['id']);
+             
+
+        $exp_total = subGrp_total($exp,$init_total);
+        $inc_total = subGrp_total($inc,$init_total);
+        $exp_pl_total = subGrp_total($exp_pl,$init_total);
+        $inc_pl_total = subGrp_total($inc_pl,$init_total);
+        $opening_total = subGrp_total($opening_stock,$init_total);
+
+        $income_total = (float)$all_sale - (float)$all_sale_return + $closing_stock + $opening_total + $inc_total;
+        $expens_total = $opening_total + (float)$all_purchase  - (float)$all_purchase_return + $exp_total;
+
+        if(($expens_total -  $income_total) < 0 ){
+            $gross_profit = ($expens_total -  $income_total) * -1;
+        }else{
+            $gross_loss = $expens_total -  $income_total;
+        }
+        $net_loss = 0;
+        $net_profit = 0;
+        if((@$gross_loss + $exp_pl_total)   >  ($inc_pl_total + @$gross_profit)){
+            $net_loss = (@$gross_loss + $exp_pl_total) - ($inc_pl_total + @$gross_profit);
+        }else{
+            $net_profit =($inc_pl_total + @$gross_profit)  - (@$gross_loss + $exp_pl_total);
+        }
+       
+        $data['net_loss'] = $net_loss;
+        $data['net_profit'] = $net_profit;
+
+        //echo '<pre>';print_r($data);exit;
+        return $data;
     }
    
 }

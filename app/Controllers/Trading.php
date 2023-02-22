@@ -28,6 +28,7 @@ class Trading extends BaseController{
         $exp = array();
         $gl_id = $gmodel->get_data_table('gl_group',array('name'=>'Trading Expenses'),'id,name');
         $gl_inc_id = $gmodel->get_data_table('gl_group',array('name'=>'Trading Income'),'id,name');
+        $gl_opening_id = $gmodel->get_data_table('gl_group',array('name'=>'Opening Stock'),'id,name');
         $init_total = 0;
 
         $company_from = session('financial_form');
@@ -54,6 +55,11 @@ class Trading extends BaseController{
             $init_total = 0;
 
             $Opening_bal = Opening_bal('Opening Stock');
+
+            // $opening_stock[$gl_opening_id['id']] = opening_stock_data($gl_opening_id['id'],$post['from'],$post['to']);
+            // $opening_stock[$gl_opening_id['id']]['name'] = $gl_opening_id['name'];
+            // $opening_stock[$gl_opening_id['id']]['sub_categories'] = get_opening_stock_sub_grp_data($gl_opening_id['id'],$post['from'],$post['to']);
+            
             $manualy_closing_bal = $this->model->get_manualy_stock($post['from'],$post['to']);
             $closing_data = $this->model->get_closing_detail($post['from'],$post['to']);
          
@@ -79,6 +85,11 @@ class Trading extends BaseController{
             $init_total = 0;
 
             $Opening_bal = Opening_bal('Opening Stock');
+
+            // $opening_stock[$gl_opening_id['id']] = opening_stock_data($gl_opening_id['id'],$post['from'],$post['to']);
+            // $opening_stock[$gl_opening_id['id']]['name'] = $gl_opening_id['name'];
+            // $opening_stock[$gl_opening_id['id']]['sub_categories'] = get_opening_stock_sub_grp_data($gl_opening_id['id'],$post['from'],$post['to']);
+            
             $manualy_closing_bal = $this->model->get_manualy_stock($post['from'],$post['to']);
             $closing_data = $this->model->get_closing_detail($post['from'],$post['to']);
 
@@ -94,14 +105,24 @@ class Trading extends BaseController{
             $inc[$gl_inc_id['id']]['sub_categories'] = get_income_sub_grp_data($gl_inc_id['id']);
             
             $Opening_bal = Opening_bal('Opening Stock');
+
             $manualy_closing_bal = $this->model->get_manualy_stock();
             $closing_data = $this->model->get_closing_detail();
           
         }
+        $opening_stock[$gl_opening_id['id']] = opening_stock_data($gl_opening_id['id']);
+        $opening_stock[$gl_opening_id['id']]['name'] = $gl_opening_id['name'];
+        $opening_stock[$gl_opening_id['id']]['sub_categories'] = get_opening_stock_sub_grp_data($gl_opening_id['id']);
+        
+       // echo '<pre>';Print_r($opening_stock);exit;
+        
         $exp_total = subGrp_total($exp,$init_total);
         $inc_total = subGrp_total($inc,$init_total);
+        $opening_total = subGrp_total($opening_stock,$init_total);
         
         $data['trading'] = $sale_pur;
+        
+       
         //change calculation closing_bal update 21-01-2023
         $data['trading']['opening_bal'] = $Opening_bal;
         $data['trading']['closing_bal'] = @$closing_data['closing_bal']; 
@@ -110,9 +131,11 @@ class Trading extends BaseController{
         
         $data['trading']['exp'] = @$exp;
         $data['trading']['inc'] = @$inc;
+        $data['trading']['opening_stock'] = @$opening_stock;
 
         $data['trading']['exp_total'] = @$exp_total;
         $data['trading']['inc_total'] = @$inc_total;
+        $data['trading']['opening_bal_total'] = @$opening_total;
         //update trupti 03-12-2022
         $data['start_date'] = $post['from']?$post['from']:$company_from;
         $data['end_date'] = $post['to']?$post['to']:$company_to;
@@ -699,6 +722,111 @@ class Trading extends BaseController{
         return $this->response->setHeader('Contente-Disposition','attachment;filename=abc.xlsx')
         ->setContentType('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
        
+    }
+    public function get_income_sub_grp(){
+        
+        if (!session('cid')) {
+            return redirect()->to(url('company'));
+        }
+
+        $get = $this->request->getGet();
+      
+        $inc[$get['id']] = trading_income_data($get['id'],$get['from'],$get['to']);
+        
+        $inc[$get['id']]['name'] = $get['name'];
+        if($get['type'] == 'pl'){
+            $data['title'] =  "P & L Income Sub Group";
+            $inc[$get['id']]['sub_categories'] = get_PL_income_sub_grp_data($get['id'],$get['from'],$get['to']);
+        }else{
+            $data['title'] =  "Trading Income Sub Group";
+            $inc[$get['id']]['sub_categories'] = get_income_sub_grp_data($get['id'],$get['from'],$get['to']);
+        }
+        
+        $init_total = 0;
+        $inc_total = subGrp_total($inc,$init_total);
+
+        $data['trading']['inc'] = @$inc;
+
+        $data['trading']['inc_total'] = @$inc_total;
+        
+        $data['date']['from'] = $get['from'];
+        $data['date']['to'] = $get['to'];
+        $data['ac_id'] = $get['id'];
+        $data['ac_name'] = $get['name'];
+        $data['type'] = $get['type'];
+        
+        return view('trading/income/sub_group_detail',$data);
+
+    }
+
+    public function get_expence_sub_grp(){
+        
+        if(!session('cid')){
+            return redirect()->to(url('company'));
+        }
+
+        $get = $this->request->getGet();
+        
+        $inc[$get['id']] = pl_expense_data($get['id'],$get['from'],$get['to']);
+        $inc[$get['id']]['name'] = $get['name'];
+        
+        if($get['type'] == 'pl'){
+            $data['title'] =  "P & L Income Sub Group";
+            $inc[$get['id']]['sub_categories'] = get_PL_expense_sub_grp_data($get['id'],$get['from'],$get['to']);
+        }else{
+            $data['title'] =  "Trading Income Sub Group";
+            $inc[$get['id']]['sub_categories'] = get_expense_sub_grp_data($get['id'],$get['from'],$get['to']);
+        }
+        $init_total = 0;
+        $inc_total = subGrp_total($inc,$init_total);
+
+        $data['trading']['inc'] = @$inc;
+
+        $data['trading']['inc_total'] = @$inc_total;
+        
+        $data['date']['from'] = $get['from'];
+        $data['date']['to'] = $get['to'];
+        $data['ac_id'] = $get['id'];
+        $data['ac_name'] = $get['name'];
+        $data['type'] = $get['type'];
+
+        //$data['title'] =  "Trading Expence Sub Group";
+        
+        return view('trading/expence/sub_group_detail',$data);
+
+    }
+    public function get_opening_sub_grp(){
+        
+        if(!session('cid')){
+            return redirect()->to(url('company'));
+        }
+
+        $get = $this->request->getGet();
+        
+        $opening_stock[$get['id']] = opening_stock_data($get['id'],$get['from'],$get['to']);
+        $opening_stock[$get['id']]['name'] = $get['name'];
+        
+       
+            $data['title'] =  "Trading Opening Stock";
+            $opening_stock[$get['id']]['sub_categories'] = get_opening_stock_sub_grp_data($get['id'],$get['from'],$get['to']);
+    
+        $init_total = 0;
+        $opening_total = subGrp_total($opening_stock,$init_total);
+
+        $data['trading']['opening_stock'] = @$opening_stock;
+
+        $data['trading']['opening_total'] = @$opening_total;
+        
+        $data['date']['from'] = $get['from'];
+        $data['date']['to'] = $get['to'];
+        $data['ac_id'] = $get['id'];
+        $data['ac_name'] = $get['name'];
+        //$data['type'] = $get['type'];
+
+        //$data['title'] =  "Trading Expence Sub Group";
+        
+        return view('trading/trading/sub_group_opening_detail',$data);
+
     }
 
     

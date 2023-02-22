@@ -7,41 +7,34 @@
         <div class="col-lg-12">
             <h2 class="main-content-title tx-24 mg-b-5"><?=$title?></h2>
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="#">Balancesheet</a></li>
+                <li class="breadcrumb-item"><a href="#">Opening Stock</a></li>
                 <li class="breadcrumb-item active" aria-current="page"><?=$title?></li>
             </ol>
         </div>
     </div>
 
-    <div class="btn btn-list">
-        <a href="#" class="btn ripple btn-secondary navresponsive-toggler" data-toggle="collapse"
-            data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
-            aria-label="Toggle navigation">
-            <i class="fe fe-filter mr-1"></i> Filter <i class="fas fa-caret-down ml-1"></i>
-        </a>
-    </div>
+   
 </div>
-<!--Start Navbar -->
-
 <div class="responsive-background">
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <div class="advanced-search">
-            <form method="get" action="<?=url('Balancesheet/get_loan_account_data')?>">
+            <form method="get" action="<?= url('Trading/get_opening_sub_grp') ?>">
+
                 <div class="row align-items-center">
                     <div class="col-md-6">
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group mb-lg-0">
-                                    <!-- <label class="">From :</label> -->
                                     <div class="input-group">
                                         <div class="input-group-prepend">
                                             <div class="input-group-text">
                                                 FROM:
                                             </div>
                                         </div>
-                                        <input class="form-control fc-datepicker" name="from" required placeholder="YYYY-MM-DD" type="text">
-                                       
+                                        <input class="form-control fc-datepicker" name="from" placeholder="YYYY-MM-DD"
+                                            type="text">
                                     </div>
+
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -53,12 +46,15 @@
                                                 TO:
                                             </div>
                                         </div>
-                                        <input class="form-control fc-datepicker" name="to" required placeholder="YYYY-MM-DD" type="text">
-                                            <input type="hidden" name="id" value="<?=@$id?>">
+                                        <input class="form-control fc-datepicker" name="to" placeholder="YYYY-MM-DD"
+                                            type="text">
+                                        <input type="hidden" name="id" value="<?= @$ac_id ?>">
+                                        <input type="hidden" name="name" value="<?= @$ac_name ?>">
+
                                     </div>
+
                                 </div>
                             </div>
-
                         </div>
                     </div>
 
@@ -75,6 +71,7 @@
         </div>
     </div>
 </div>
+<!--Start Navbar -->
 
 <div class="row">
     <div class="col-lg-12">
@@ -84,11 +81,14 @@
                     <table class="table table-hover table-bordered table-fw-widget">
                         <tr>
                             <td>
-                                <span style="size:20px;"><b><?=$ac_name?></b></span>
+                                <span style="size:20px;"><b><?=$title?></b></span>
                                 </br>
-                               
-                                <b><?=user_date($from)?></b> to
-                                <b><?=user_date($to); ?></b>
+                                <?php
+                                    $from =date_create($date['from']) ;                                         
+                                    $to = date_create($date['to']);
+                                ?>
+                                <b><?=date_format($from,"d/m/Y"); ?></b> to
+                                <b><?=date_format($to,"d/m/Y"); ?></b>
 
                             </td>
                         </tr>
@@ -96,50 +96,68 @@
                         </tr>
                     </table>
                 </div>
-                
+
                 <div class="table-responsive">
-                    <table class="table table-striped mg-b-0">
+                    <table class="table main-table-reference mt-0 mb-0 text-center">
                         <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>Voucher Name</th>
-                                <th>Total Taxable</th>
+                                <th>Name</th>
+                                <th>Total</th>
+                                <th>Total</th>
                             </tr>
                         </thead>
 
                         <tbody>
-                            
-                            <tr>
-                                <th scope="row">1</th>
-                                <td>Opening Balance</td>
-                                <td><?=number_format(@$opening['total'],2)?></td>
-                            </tr>
                             <?php
-                            if (isset($bank_trans['total'])) {
-                                if (@$bank_trans['total'] != 0) {
-                            ?>
+                                $total = 0;
+                                foreach($trading['opening_stock'] as $key => $value) { ?>
                             <tr>
-                                <th scope="row">2</th>
-                                <td><a href="<?=url('Trading/bank_cash_monthly_AcWise?from='.$from.'&to='.$to.'&id='.$id)?>">Bank/Cash Transaction </a></td>
-                                <td><?=number_format(@$bank_trans['total'],2)?></td>
+                                <td><b><?=@$value['name']?></b></td>
+                                <td></td>
+                                <td><b><?=number_format(@$trading['opening_total'],2)?></b><br>
+
+                                </td>
                             </tr>
-                            <?php
+
+                            <?php   
+                                if(!empty($value['account'])) {
+                                    foreach(@$value['account'] as $ac_key => $ac_value){ ?>
+                            <tr>
+                                <td><a href="<?=url('account/add_account/'.$ac_value['account_id'])?>"><?=$ac_key ?></a>
+                                </td>
+                                <td><?=number_format($ac_value['opening_stock'],2) ?>
+
+                                </td>
+                                <td> </td>
+                            </tr>
+                            <?php 
+                                    }    
                                 }
-                            }
-                            if (isset($jv_parti['total'])) {
-                                if ($jv_parti['total'] != 0) {
-                                ?>
-                            <tr>
-                                <th scope="row">3</th>
-                                <td><a href="<?=url('Trading/jv_monthly_AcWise?from='.$from.'&to='.$to.'&id='.$id)?>">Journal Voucher</a></td>
-                                <td><?=number_format(@$jv_parti['total'],2)?></td>
-                            </tr>
-                            <?php
-                                }
-                            }
                             ?>
-                            
+
+                            <?php if(!empty($value['sub_categories'])) {
+                                                        foreach(@$value['sub_categories'] as $sub_key => $sub_value){
+                                                            $total = 0;
+                                                            $arr[$sub_key] = $sub_value;
+                                                            $total = subGrp_total($arr,0);
+                                                            
+                                                            ?>
+                            <tr>
+                                <td><a
+                                        href="<?=url('trading/get_opening_sub_grp?id='.$sub_key.'&name='.$sub_value['name'].'&from='.$trading['from'].'&to='.$trading['to'].'&type=trading')?>"><?=$sub_value['name']?></a>
+                                </td>
+                                <td><?=number_format($total,2) ?>
+                                </td>
+                                <td> </td>
+                            </tr>
+                            <?php 
+                                                            unset($arr);
+                                                        }
+                                                    }
+                                                }
+                                            ?>
                         </tbody>
+
                     </table>
                 </div>
             </div>
@@ -147,8 +165,6 @@
     </div>
 </div>
 <!--End Navbar -->
-
-
 
 
 <?= $this->endSection() ?>
@@ -164,6 +180,5 @@ $(document).ready(function() {
     $('.dateMask').mask('99-99-9999');
 
 });
-
 </script>
 <?= $this->endSection() ?>

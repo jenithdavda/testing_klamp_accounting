@@ -163,6 +163,11 @@ class MasterModel extends Model
         'parent' => @$post['parent_grp'],
         'status' => 1,
     );
+
+    $pdata1 = array(
+        'gl_name' => $post['name'],
+        'parent' => @$post['parent_grp'],
+    );
     $gmodel = new GeneralModel();
     $res = $gmodel->get_data_table('gl_group',array('name'=>$post['name']),'*');
     
@@ -173,8 +178,6 @@ class MasterModel extends Model
         }
     }
     if (!empty($result_array)) {
-
-        
         $res = $gmodel->get_data_table('gl_group',array('name'=>$post['name'],'id !='=>$post['id']),'*');
         if(!empty($res)){
             $msg = array('st' => 'fail', 'msg' => "General Ledger With This Name Was Alredy Exist..!!");
@@ -196,15 +199,67 @@ class MasterModel extends Model
             }
         }
     }
-    
-     else {
+    else 
+    {
         
         $pdata['created_at'] = date('Y-m-d H:i:s');
         $pdata['created_by'] = session('uid');
+        $pdata1['created_at'] = date('Y-m-d H:i:s');
+        $pdata1['created_by'] = session('uid');
        
         if (empty($msg)) {
-            $result = $builder->Insert($pdata);
-            $id = $db->insertID();
+           $result = $builder->Insert($pdata);
+           $id = $db->insertID();
+
+           $builder_gl = $db->table('gl_group_summary');
+           $result_gl = $builder_gl->Insert($pdata1);
+           $summ_id = $db->insertID();
+
+           $get_parent_data = $gmodel->get_data_table('gl_group_summary', array('id' => $post['parent_grp']),'all_sub_glgroup');
+               
+           if(!empty($get_data['all_sub_glgroup']))
+           {
+               
+               $old_gl = explode(",",$get_data['all_sub_glgroup']);
+               $new_gl[] = $summ_id;
+               $new_array= array_merge($old_gl,$new_gl);
+              $new_sub = implode(',',$new_array);
+              $result_gl = $gmodel->update_data_table('gl_group_summary', array('id' => $post['parent_grp']), array('all_sub_glgroup' => $new_sub));
+ 
+               
+           }    
+           else
+           {
+                $result_gl = $gmodel->update_data_table('gl_group_summary', array('id' => $post['parent_grp']), array('all_sub_glgroup' => $id));
+           }
+           $gl_data = gl_group_summary_array(@$post['parent_grp']);
+           foreach($gl_data as $gl_data_row)
+            {
+                $new_sub = array();
+                $new_array = array();
+                $old_gl = array();
+                $new_gl = array();
+                $get_data = $gmodel->get_data_table('gl_group_summary', array('id' => $gl_data_row['id']),'all_sub_glgroup');
+               
+                if(!empty($get_data['all_sub_glgroup']))
+                {
+                    
+                    $old_gl = explode(",",$get_data['all_sub_glgroup']);
+                    $new_gl[] = $summ_id;
+                    $new_array= array_merge($old_gl,$new_gl);
+                   $new_sub = implode(',',$new_array);
+                   $result_gl = $gmodel->update_data_table('gl_group_summary', array('id' => $gl_data_row['id']), array('all_sub_glgroup' => $new_sub));
+      
+                    
+                }    
+                else
+                {
+                     $result_gl = $gmodel->update_data_table('gl_group_summary', array('id' => $gl_data_row['id']), array('all_sub_glgroup' => $row['id']));
+                }
+              
+            }
+            //echo '<pre>';Print_r($gl_data);exit;
+            
             if ($result) {
                 $msg = array('st' => 'success', 'msg' => "Your Details Added Successfully!!!");
             } else {

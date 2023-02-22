@@ -3181,4 +3181,45 @@ class TestingModel extends Model
 
         return $result;
     }
+    public function get_acinvoice_list($post)
+    {
+       // echo '<pre>';Print_r($post);exit;
+        
+        $start = strtotime("{$post['year']}-{$post['month']}-01");
+        $end = strtotime('-1 second', strtotime('+1 month', $start));
+        $start_date = date('Y-m-d', $start);
+        $end_date = date('Y-m-d', $end);
+
+        $db = $this->db;
+        $db->setDatabase(session('DataSource'));
+
+        $builder = $db->table('jv_management jm');
+        $builder->select('jm.*,ac.name as ac_name,si.acc_state,s.name as state_name');
+        $builder->join('platform_voucher pv', 'pv.voucher = jm.invoice_no');
+        $builder->join('account ac', 'ac.id = jm.party_account');
+        if($post['type'] == 'invoice')
+        {
+            $builder->join('sales_invoice si', 'si.id = jm.invoice_no');
+        }
+        else
+        {
+            $builder->join('sales_return si', 'si.id = jm.invoice_no');
+        }
+        $builder->join('states s', 's.id = si.acc_state');
+        
+        if (!empty($post['month'])) {
+            $builder->where(array('DATE(jm.invoice_date)  >= ' => $start_date));
+            $builder->where(array('DATE(jm.invoice_date)  <= ' => $end_date));
+        }
+        if (!empty($post['plateform_id'])) {
+            $builder->where(array('pv.platform_id' => $post['plateform_id']));
+        }
+        $builder->where(array("jm.type" => $post['type'], "jm.party_account" => $post['ac_id']));
+        $result = $builder->get();
+        $invoice_list = $result->getResultArray();
+
+        return $invoice_list;
+        //echo '<pre>';Print_r($invoice_list);exit;
+        
+    }
 }

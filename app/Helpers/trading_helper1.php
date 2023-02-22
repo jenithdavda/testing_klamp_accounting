@@ -69,6 +69,7 @@ function sale_purchase_vouhcer($start_date = '', $end_date = '')
 
     return $result;
 }
+
 // update sub total and added amt  trupti 12-12-2022
 function trading_expense_data($id, $start_date = '', $end_date = '')
 {
@@ -107,15 +108,12 @@ function trading_expense_data($id, $start_date = '', $end_date = '')
     $builder->where('(pg.v_type="general" OR pg.v_type = "return")');
     $builder->where(array('gl.id' => $id));
     $builder->where(array('ac.is_delete' => '0'));
-    $builder->where(array('pg.is_delete' => '0'));
-    $builder->where(array('pg.is_cancle' => '0'));
+    $builder->where(array('pg.is_delete' => '0','pg.is_cancle' => '0'));
     $builder->where(array('pp.is_delete' => '0'));
     $builder->where(array('DATE(pg.doc_date)  >= ' => $start_date));
     $builder->where(array('DATE(pg.doc_date)  <= ' => $end_date));
     $query = $builder->get();
     $pg_expense = $query->getResultArray();
-    //echo '<pre>';Print_r($pg_expense);exit;
-    
     $tot_pg_expens = array();
     foreach ($pg_expense as $row) {
         $row['pg_amount'] = (float) $row['pg_amount'] + (float) $row['added_amt'];
@@ -123,7 +121,6 @@ function trading_expense_data($id, $start_date = '', $end_date = '')
         $tot_pg_expens[$row['account_name']][$row['pg_type']] = $total;
         $tot_pg_expens[$row['account_name']]['account_id'] = $row['account_id'];
     }
-    //echo '<pre>';Print_r($tot_pg_expens);exit;
 
     $builder = $db->table('gl_group gl');
     $builder->select('ac.id as account_id ,gl.name as gl_name,gl.parent,gl.id as gl_id,ac.name as account_name,bt.amount as bt_total,bt.mode');
@@ -160,8 +157,6 @@ function trading_expense_data($id, $start_date = '', $end_date = '')
     $query = $builder->get();
     $jv_expens = $query->getResultArray();
 
-    //$tot_pg_expens = array();
-
     foreach ($jv_expens as $row) {
         if ($row['dr_cr'] == 'cr') {
             $total = (@$tot_pg_expens[$row['account_name']]['jv_total']) ? $tot_pg_expens[$row['account_name']]['jv_total'] : 0 - $row['jv_total'];
@@ -172,19 +167,13 @@ function trading_expense_data($id, $start_date = '', $end_date = '')
         $tot_pg_expens[$row['account_name']]['account_id'] = $row['account_id'];
 
     }
-    //echo '<pre>';Print_r($jv_expens);exit;
-    
 
     $total_ex_arr = array();
-    
+
     foreach ($tot_pg_expens as $key => $value) {
         $tot_pg_expens[$key]['total'] = @$value['general']-@$value['return']+@$value['jv_total']+@$value['bt_total'];
         $total_ex_arr[] = @$value['general']-@$value['return']+@$value['jv_total']+@$value['bt_total'];
     }
-    //echo '<pre>';Print_r($total_ex_arr);exit;
-    
-   
-    
 
     if (!empty($total_ex_arr)) {
         $trading_expense_total = array_sum($total_ex_arr);
@@ -341,59 +330,6 @@ function trading_income_data($id, $start_date = '', $end_date = '')
     return $arr;
 
 }
-function opening_stock_data($id, $start_date = '', $end_date = '')
-{
-    if ($start_date == '') {
-
-        if (date('m') < '03') {
-            $year = date('Y') - 1;
-            $start_date = $year . '-04-01';
-        } else {
-            $year = date('Y');
-            $start_date = $year . '-04-01';
-        }
-    }
-
-    if ($end_date == '') {
-
-        if (date('m') < '03') {
-            $year = date('Y');
-        } else {
-            $year = date('Y') + 1;
-        }
-        $end_date = $year . '-03-31';
-    }
-
-    $db = \Config\Database::connect();
-
-    if (session('DataSource')) {
-        $db->setDatabase(session('DataSource'));
-    }
-
-    $builder = $db->table('gl_group gl');
-    $builder->select('ac.id as account_id, ac.name as account_name,opening_bal');
-    $builder->join('account ac', 'gl.id =ac.gl_group');
-    $builder->where(array('gl.id' => $id));
-    $builder->where(array('ac.is_delete' => '0'));
-    $query = $builder->get();
-    $account_list = $query->getResultArray();
-    //echo '<pre>';Print_r($pg_expense);exit;
-    
-    $account_opening = array();
-    $total = 0;
-    foreach ($account_list as $row) {
-       // $row['amount'] = (float) $row['opening_bal'];
-        $total += $row['opening_bal'];
-        $account_opening[$row['account_name']]['opening_stock'] = $row['opening_bal'];
-        $account_opening[$row['account_name']]['account_id'] = $row['account_id'];
-    }
-
-    $arr['account'] = $account_opening;
-    $arr['total'] = $total;
-    //echo '<pre>';Print_r($arr);exit;
-    
-    return $arr;
-}
 //******* Trading Income & Expense Sub Group LOOPING *******//
 function get_expense_sub_grp_data($parent_id, $start_date = '', $end_date = '')
 {
@@ -458,40 +394,6 @@ function get_income_sub_grp_data($parent_id, $start_date = '', $end_date = '')
             $category = trading_income_data($mainCategory->id);
             $category['name'] = $mainCategory->name;
             $category['sub_categories'] = get_income_sub_grp_data($mainCategory->id);
-        }
-
-        $categories[$mainCategory->id] = $category;
-    }
-    return $categories;
-}
-function get_opening_stock_sub_grp_data($parent_id, $start_date = '', $end_date = '')
-{
-    $categories = array();
-
-    $db = \Config\Database::connect();
-
-    if (session('DataSource')) {
-        $db->setDatabase(session('DataSource'));
-    }
-
-    $builder = $db->table('gl_group');
-    $builder->select('id,name,parent');
-    $builder->where('parent', $parent_id);
-    $query = $builder->get();
-    $result = $query->getResult();
-
-    foreach ($result as $mainCategory) {
-        $category = array();
-
-        if ($start_date != '' && $end_date != '') {
-            $category = opening_stock_data($mainCategory->id, $start_date, $end_date);
-            $category['name'] = $mainCategory->name;
-            $category['sub_categories'] = get_opening_stock_sub_grp_data($mainCategory->id, $start_date, $end_date);
-
-        } else {
-            $category = opening_stock_data($mainCategory->id);
-            $category['name'] = $mainCategory->name;
-            $category['sub_categories'] = get_opening_stock_sub_grp_data($mainCategory->id);
         }
 
         $categories[$mainCategory->id] = $category;
@@ -672,6 +574,7 @@ function Opening_bal($gl1, $start_date = '', $end_date = '')
 
     $gl_ids = gl_list([$gl_id['id']]);
     $gl_ids[] = $gl_id['id'];
+    
 
     $result = array();
     $opening_bal = 0;
@@ -952,14 +855,12 @@ function sale_purchase_itm_total($start_date = '', $end_date = '')
     $query = $builder->get();
     $sale = $query->getResultArray();
 
-   
+  
 
     $pur_total_rate = 0;
     $pur_total_qty = 0;
     $sale_total_rate = 0;
     $sale_total_qty = 0;
-
-    
 
     $Purret_total_qty = 0;
     $Purret_total_rate = 0;
@@ -990,6 +891,7 @@ function sale_purchase_itm_total($start_date = '', $end_date = '')
     }
 
   
+    
 
     $re = array();
     $re = array(
@@ -1001,7 +903,6 @@ function sale_purchase_itm_total($start_date = '', $end_date = '')
         'Saleret_total_rate' => $Saleret_total_rate,
         'Purret_total_rate' => $Purret_total_rate,
         'Purret_total_qty' => $Purret_total_qty,
-      
         'from' => $start_date,
         'to' => $end_date,
     );
@@ -1079,7 +980,7 @@ function get_trading_income_account_wise($start_date, $end_date, $id)
     // }
     foreach ($pg_income as $row) {
 
-        $row['pg_amount'] = (float)$row['pg_amount'];
+        $row['pg_amount'] = (float) $row['sub_total'] + (float) $row['added_amt'];
        
         $total = (((float) @$tot_income['general_sales'][$row['pg_type']]) ? (float) $tot_income['general_sales'][$row['pg_type']] : 0) + (float) $row['pg_amount'];
         
@@ -1189,7 +1090,7 @@ function get_trading_expence_account_wise($start_date, $end_date, $id)
     $pg_expence = $query->getResultArray();
 
     $total = 0;
-    $tot_expence = array();
+
     foreach ($pg_expence as $row) {
 
         $row['pg_amount'] = (float) $row['sub_total'] + (float) $row['added_amt'];
@@ -1238,7 +1139,7 @@ function get_trading_expence_account_wise($start_date, $end_date, $id)
     $builder->where(array('DATE(jv.date)  <= ' => db_date($end_date)));
     $query = $builder->get();
     $jv_expence = $query->getResultArray();
-    
+
     $tot_expence['jv_parti']['total'] = 0;
     $total = 0;
 
@@ -1255,7 +1156,7 @@ function get_trading_expence_account_wise($start_date, $end_date, $id)
     $tot_expence['from'] = $start_date;
     $tot_expence['to'] = $end_date;
     $tot_expence['id'] = $id;
-    
+    // echo '<pre>';print_r($tot_expence);exit;
     return $tot_expence;
 }
 function get_generalSales_monthly_AcWise($start_date, $end_date, $id)
@@ -1308,7 +1209,7 @@ function get_generalSales_monthly_AcWise($start_date, $end_date, $id)
         $total = ((@$tot_income['generalSale'][$row['month']][$row['pg_type']]) ? $tot_income['generalSale'][$row['month']][$row['pg_type']] : 0) + $row['pg_amount'];
         $tot_income['generalSale'][$row['month']][$row['pg_type']] = $total;
 
-        $tot_income['generalSale'][$row['month']]['total'] = (float)@$tot_income['generalSale'][$row['month']]['general'] - (float) @$tot_income['generalSale'][$row['month']]['return'];
+        $tot_income['generalSale'][$row['month']]['total'] = (float) $tot_income['generalSale'][$row['month']]['general'] - (float) @$tot_income['generalSale'][$row['month']]['return'];
         $tot_income['generalSale'][$row['month']]['year'] = $row['year'];
         $tot_income['generalSale'][$row['month']]['month'] = $row['month'];
 

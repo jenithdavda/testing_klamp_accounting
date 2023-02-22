@@ -33,7 +33,8 @@ class Profitloss extends BaseController{
         $pl_exp_id = $this->gmodel->get_data_table('gl_group',array('name'=>'P & L Expenses','is_delete'=>0),'id,name');
         
         $pl_inc_id = $this->gmodel->get_data_table('gl_group',array('name'=>'P & L Incomes','is_delete'=>0),'id,name');
-        
+        $gl_opening_id = $this->gmodel->get_data_table('gl_group',array('name'=>'Opening Stock'),'id,name');
+       
         $init_total =0;
 
         if(!empty($post)){
@@ -152,6 +153,10 @@ class Profitloss extends BaseController{
             $manualy_closing_bal = $this->tmodel->get_manualy_stock();
             $closing_data = $this->tmodel->get_closing_detail();
         }
+        $opening_stock[$gl_opening_id['id']] = opening_stock_data($gl_opening_id['id']);
+        $opening_stock[$gl_opening_id['id']]['name'] = $gl_opening_id['name'];
+        $opening_stock[$gl_opening_id['id']]['sub_categories'] = get_opening_stock_sub_grp_data($gl_opening_id['id']);
+            
         
         $data['trading'] = $sale_pur;
         $data['pl'] = $pl ;
@@ -161,6 +166,8 @@ class Profitloss extends BaseController{
 
         $exp_pl_total = subGrp_total($exp_pl,$init_total);
         $inc_pl_total = subGrp_total($inc_pl,$init_total);
+
+        $opening_total = subGrp_total($opening_stock,$init_total);
 
         $data['pl']['exp'] = @$exp_pl;
         $data['pl']['inc'] = @$inc_pl;
@@ -175,6 +182,7 @@ class Profitloss extends BaseController{
         $data['trading']['closing_bal'] = @$closing_data['closing_bal']; 
         $data['trading']['closing_stock'] = @$closing_data['closing_stock'];
         $data['trading']['manualy_closing_bal'] = @$manualy_closing_bal;
+        $data['trading']['opening_bal_total'] = @$opening_total;
 
         //update trupti 03-12-2022
         $data['start_date'] = $post['from']?$post['from']:$company_from;
@@ -255,6 +263,7 @@ class Profitloss extends BaseController{
         return view('trading/expence/sub_group_detail',$data);
 
     }
+
 
     public function Profit_loss_xls(){
 

@@ -126,8 +126,8 @@
                                     </tr>
 
                                     <tr>
-                                        <td><a href="<?= url('Trading/salesItem_voucher_wise?month=7&year=' . @$sales[7]['year']) ?>">July</a></td>
-                                        <td><?= isset($sales[7]['total']) ? number_format($sales[7]['total'], 2) : 0; ?></td>
+                                        <td><a href="<?= url('Trading/salesItem_voucher_wise?month=7&year=' . @$purchase[7]['year']) ?>">July</a></td>
+                                        <td><?= isset($purchase[7]['total']) ? number_format($purchase[7]['total'], 2) : 0; ?></td>
                                     </tr>
 
                                     <tr>

@@ -13,7 +13,7 @@
         </div>
     </div>
     <div class="btn btn-list">
-       
+        
 
         <a href="#" class="btn ripple btn-secondary navresponsive-toggler" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <i class="fe fe-filter mr-1"></i> Filter <i class="fas fa-caret-down ml-1"></i>
@@ -102,17 +102,10 @@
                                 <div class="col-md-5">
                                     <div class="table-responsive">
                                         <?php
-                                        //echo '<pre>';Print_r(@$trading['opening_bal_total']);exit;
-                                        
-                                        // if (session('is_stock') == 1) {
-                                        //     $closing_stock = @$trading['closing'] ? @$trading['closing'] : @$trading['opening_bal'];
-                                        // } else {
-                                        //     $closing_stock  = $trading['closing_bal'];
-                                        // }
                                         if(session('is_stock') == 1 ){
                                             $closing_bal = @$trading['manualy_closing_bal'];
                                         }else{
-                                            $closing_bal  = @$trading['closing_bal'] + @$trading['opening_bal_total'];
+                                            $closing_bal  = @$trading['closing_bal'];
                                         }
                                         ?>
                                         <table class="table">
@@ -133,8 +126,8 @@
                                             <?php
                                             $total = 0;
 
-                                            $lib_total = @$bl['capital_total'] + @$bl['loan_total'] + @$bl['current_lib_total'] + @$net_profit;
-                                            $assets_total = @$bl['otherassets_total'] + @$bl['currentassets_total'] + @$bl['fixedassets_total'] + @$closing_bal + $net_loss;
+                                            $lib_total = @$bl['capital_total'] + @$bl['loan_total'] + @$bl['current_lib_total'];
+                                            $assets_total = @$bl['otherassets_total'] + @$bl['currentassets_total'] + @$bl['fixedassets_total'];
 
                                             foreach ($bl['capital'] as $key => $value) { ?>
                                                 <tr>
@@ -286,17 +279,12 @@
                                             ?>
                                             <!------------------------ Current Liabilities End ----------------------->
 
-                                            
-                                            <?php 
-                                            
-                                            
-                                            if (isset($net_profit) && !empty($net_profit)) { 
-                            
-                                                ?>
+
+                                            <?php if (isset($net_profit) && !empty($net_profit)) { ?>
                                                 <tr>
                                                     <td><b>Net Profit </b></td>
                                                     <td></td>
-                                                    <td><b><?= number_format(@$net_profit, 2) ?></b>
+                                                    <td><b><?= number_format($net_profit, 2) ?></b>
                                                     </td>
                                                 </tr>
                                             <?php } ?>
@@ -479,22 +467,9 @@
 
                                             <tr>
                                                 <td>Colsing Bal </td>
-                                                <td><?= number_format($closing_bal, 2) ?></td>
+                                                <td><?= number_format(@$closing_bal,2) ?></td>
                                                 <td></td>
                                             </tr>
-                                            <?php 
-                                            
-                                            
-                                            if (isset($net_loss) && !empty($net_loss)) { 
-                                                //echo '<pre>';Print_r($net_profit);exit;
-                                                ?>
-                                                <tr>
-                                                    <td><b>Net Loss </b></td>
-                                                    <td></td>
-                                                    <td><b><?= number_format(@$net_loss, 2) ?></b>
-                                                    </td>
-                                                </tr>
-                                            <?php } ?>
                                         </table>
                                     </div>
                                 </div>
@@ -510,12 +485,12 @@
                                             ?>
                                             <tr>
                                                 <td><b>Total</b></td>
-                                                <td style="color:<?= ($is_color == 1) ? 'red' : '' ?>;"><b><?= number_format($lib_total,2) ?></b></td>
+                                                <td style="color:<?= ($is_color == 1) ? 'red' : '' ?>;"><b><?= $lib_total ?></b></td>
                                                 <!-- <td><b></b> -->
                                                 </td>
                                                 <td></td>
                                                 <td><b>Total</b></td>
-                                                <td><b><?= number_format($assets_total,2); ?></b></td>
+                                                <td><b><?= $assets_total ?></b></td>
                                                 <!-- <td><b></b> -->
                                                 </td>
                                             </tr>

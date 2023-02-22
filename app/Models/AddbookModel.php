@@ -5609,9 +5609,12 @@ class AddbookModel extends Model
         $builder = $db->table('gl_group_summary');
         $builder->select('*');
         $builder->where('is_delete', 0);
+        //$builder->where('id', 44);
         $builder->orderBy('id', 'desc');
         $query = $builder->get();
         $result = $query->getResultArray();
+       // echo '<pre>';Print_r($result);exit;
+        
         $gnmodel = new GeneralModel();
         foreach ($result as $row) {
             
@@ -5639,7 +5642,9 @@ class AddbookModel extends Model
                 {
                      $result_gl = $gnmodel->update_data_table('gl_group_summary', array('id' => $gl_data['id']), array('all_sub_glgroup' => $row['id']));
                 }
-              
+                //update_gl
+                //$result_up = $gnmodel->update_data_table('gl_group_summary', array('id' => $gl_data['id']), array('update_gl' => 1));
+
             }
            
         }
@@ -5647,6 +5652,7 @@ class AddbookModel extends Model
         if(isset($result_gl))
         {
             $msg = array("st"=>"succsess","msg"=>"succsess");
+
         }
         else
         {
@@ -5695,7 +5701,7 @@ class AddbookModel extends Model
                 $capital_account_list = $capital_data['account'];
                
             }
-          
+            //secho '<pre>';Print_r($capital_account_list);exit;
             
             $loan_account_list = array();
             if(!empty($gl_loan['all_sub_glgroup']))
@@ -5754,6 +5760,8 @@ class AddbookModel extends Model
                 $liability_account_list = $liability_data['account'];
                
             }
+           
+            
             $current_assets_account_list = array();
             if(!empty($gl_currentassets['all_sub_glgroup']))
             {
@@ -5781,7 +5789,11 @@ class AddbookModel extends Model
                 $current_assets_account_list = $current_assets_data['account'];
                
             }
+            //echo '<pre>';Print_r($current_assets_account_list);exit;
+            
             $fixed_assets_account_list = array();
+            
+            
             if(!empty($gl_fixedassets['all_sub_glgroup']))
             {
                
@@ -5794,12 +5806,14 @@ class AddbookModel extends Model
                 foreach($array_sub_gl as $array_sub_glrow)
                 { 
                     $fixed_assets_data_gl = Fixed_Assets_data($array_sub_glrow,$start_date,$end_date);
+                    //echo '<pre>';Print_r($fixed_assets_data_gl);
                     $sub_gl_account_data = $fixed_assets_data_gl['account'];
                     foreach($sub_gl_account_data as $key => $row)
                     {
                         $sub_gl_account[$key] = $row;
                     }
                 }
+                //exit;
                 $fixed_assets_account_list = array_merge($main_gl_account_data,$sub_gl_account);
             }
             else
@@ -5808,7 +5822,7 @@ class AddbookModel extends Model
                 $fixed_assets_account_list = $fixed_assets_data['account'];
                
             }
-           
+            //echo '<pre>';Print_r($fixed_assets_account_list);exit;
             $other_assets_account_list = array();
             if(!empty($gl_otherassets['all_sub_glgroup']))
             {
@@ -5847,10 +5861,21 @@ class AddbookModel extends Model
         $acc = $gmodel->get_data_table('account', array('id' => $post['account_id']), 'opening_bal,opening_type');
         $data = array();
         $opening_bal = 0;
-        if ($acc['opening_type'] == 'Debit') {
-            $opening_bal -= (float)@$acc['opening_bal'];
-        } else {
-            $opening_bal += (float)@$acc['opening_bal'];
+        if($post['type'] == 'capital' OR $post['type'] == 'loan' OR $post['type'] == 'current liabilities')
+        {
+            if ($acc['opening_type'] == 'Debit') {
+                $opening_bal -= (float)@$acc['opening_bal'];
+            } else {
+                $opening_bal += (float)@$acc['opening_bal'];
+            }
+        }
+        else
+        {
+            if ($acc['opening_type'] == 'Debit') {
+                $opening_bal = (float)@$acc['opening_bal'];
+            } else {
+                $opening_bal -= (float)@$acc['opening_bal'];
+            }
         }
         $send['id'] = $post['account_id'];
         $send['from'] = $post['from'];
@@ -5895,6 +5920,7 @@ class AddbookModel extends Model
             $data['purchase_general'] = $purchase_general['purchase'];
             $data['bank'] = $bank_data['fixedassets_banktrans'];
             $data['jv'] = $jv_data['fixedassets_jv'];
+           // echo '<pre>';Print_r($data);exit;
             
         }
         elseif($post['type'] == 'current assets')
@@ -5908,16 +5934,18 @@ class AddbookModel extends Model
             $contra_per_data = $bmodel->currentassets_contra_voucher_Perwise($send);
             $contra_acc_data = $bmodel->currentassets_contra_voucher_Acwise($send);
             $jv_data= $bmodel->currentassets_jv_voucher_wise($send); 
+            //echo '<pre>';Print_r($bank_per_data);exit;
+            
 
             $data['sales_invoice'] = $sales_invoice['currentassets_salesinvoice'];
             $data['sales_return'] = $sales_return['currentassets_salesreturn'];
-            $data['sales_general'] = $sales_general['currentassets_salesinvoice'];
+            $data['curr_sales_general'] = $sales_general['currentassets_salesinvoice'];
             $data['sales_general_return'] = $sales_general_return['currentassets_salesreturn'];
             $data['bank_per'] = $bank_per_data['currentassets_banktrans'];
             $data['bank_acc'] = $bank_acc_data['currentassets_banktrans'];
             $data['contra_per'] = $contra_per_data['currentassets_contratrans'];
             $data['contra_acc'] = $contra_acc_data['currentassets_ac_contratrans'];
-            $data['jv'] = $jv_data['currentassets_jv'];
+            $data['curr_jv'] = $jv_data['currentassets_jv'];
         }
         else
         {
@@ -5927,7 +5955,11 @@ class AddbookModel extends Model
         $data['end_date'] = $post['to'];
         $data['type'] = $post['type'];
         $data['account_id'] = $post['account_id'];
-
+        $data['opening_bal'] = @$opening_bal;
+        $data['opening_type'] = $acc['opening_type'];
+        //echo '<pre>';Print_r($data);exit;
+        
+        
         return $data;
         //echo '<pre>';Print_r($data);exit;
         

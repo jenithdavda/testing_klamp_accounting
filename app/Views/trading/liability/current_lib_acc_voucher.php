@@ -110,14 +110,20 @@
                         </thead>
 
                         <tbody>
+                              
                             <tr>
                                 <th scope="row">1</th>
+                                <td>Opening Balance</td>
+                                <td><?=number_format(@$opening['total'],2)?></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">2</th>
                                 <td><a href="<?=url('Balancesheet/purchase_monthly_AcWise?from='.$from.'&to='.$to.'&id='.$id)?>">Purchase Invoice </a></td>
                                 <td><?=number_format(@$purchase['total'] + @$purchase_igst['total'] + @$purchase_cgst['total'] + + @$purchase_sgst['total'],2)?></td>
                             </tr>
 
                             <tr>
-                                <th scope="row">2</th>
+                                <th scope="row">3</th>
                                 <td><a href="<?=url('Balancesheet/purchase_ret_monthly?from='.$from.'&to='.$to.'&id='.$id)?>">Purchase Return </a></td>
                                 <td><?=number_format(@$purchase_return['total'] + @$purchase_return_igst['total'] + @$purchase_return_cgst['total'] + @$purchase_return_sgst['total'],2)?></td>
                             </tr>
@@ -131,54 +137,43 @@
 
 
                                 ?>
-                                <th scope="row">3</th>
+                                <th scope="row">4</th>
                                 <td><a href="<?=url('Balancesheet/generalPurchase_monthly?from='.$from.'&to='.$to.'&id='.$id)?>">General Purchase</a></td>
                                 <td><?=number_format(@$general_purchase + @$general_purchase_igst + @$general_purchase_cgst + @$general_purchase_sgst,2)?></td>
                             </tr>
 
-                            <!-- <tr>
-                                <th scope="row">3</th>
-                                <td><a href="<?=url('Balancesheet/gray_finish_monthly?from='.$from.'&to='.$to.'&id='.$id)?>">Gray/Finish Purchase </a></td>
-                                <td><?=@$mill_purchase['total']?></td>
-                            </tr>
-                            
-                            <tr>
-                                <th scope="row">4</th>
-                                <td><a href="<?=url('Balancesheet/gray_finish_ret_monthly?from='.$from.'&to='.$to.'&id='.$id)?>">Gray/Finish Purchase Return</a></td>
-                                <td><?=@$mill_purchase_ret['total']?></td>
-                            </tr> -->
-                            <tr>
-                                <th scope="row">4</th>
+                           
+                                <th scope="row">5</th>
                                 <td><a href="<?=url('Balancesheet/sales_monthly_AcWise?from='.$from.'&to='.$to.'&id='.$id)?>">Sales Invoice </a></td>
                                 <td><?=number_format( @$sales_igst['total'] + @$sales_cgst['total'] + + @$sales_sgst['total'],2)?></td>
                             </tr>
 
                             <tr>
-                                <th scope="row">5</th>
+                                <th scope="row">6</th>
                                 <td><a href="<?=url('Balancesheet/sales_ret_monthly?from='.$from.'&to='.$to.'&id='.$id)?>">Sales Return </a></td>
                                 <td><?= number_format(@$sales_return_igst['total'] + @$sales_return_cgst['total'] + @$sales_return_sgst['total'],2)?></td>
                             </tr>
 
                             <tr>
                                 <?php
-                                 //$general_sales = @$general_sa['total'] ? $general_purchase['total'] : 0;
+                               
                                  $general_sales_igst = @$sales_general_igst['total'] ? $sales_general_igst['total'] : 0;
                                  $general_sales_cgst = @$sales_general_cgst['total'] ? $sales_general_cgst['total'] : 0;
                                  $general_sales_sgst = @$sales_general_sgst['total'] ? $sales_general_sgst['total'] : 0;
 
 
                                 ?>
-                                <th scope="row">6</th>
+                                <th scope="row">7</th>
                                 <td><a href="<?=url('Balancesheet/generalsales_monthly?from='.$from.'&to='.$to.'&id='.$id)?>">General Sales</a></td>
                                 <td><?= number_format(@$general_sales_igst + @$general_sales_cgst + @$general_sales_sgst,2)?></td>
                             </tr>
                             <tr>
-                                <th scope="row">7</th>
+                                <th scope="row">8</th>
                                 <td><a href="<?=url('Balancesheet/bank_cash_monthly_AcWise?from='.$from.'&to='.$to.'&id='.$id)?>">Bank/Cash Transaction </a></td>
                                 <td><?=number_format(@$bank_trans['total'],2)?></td>
                             </tr>
                             <tr>
-                                <th scope="row">8</th>
+                                <th scope="row">9</th>
                                 <td><a href="<?=url('Balancesheet/jv_monthly_AcWise?from='.$from.'&to='.$to.'&id='.$id)?>">Journal Voucher</a></td>
                                 <td><?=number_format(@$jv_parti['total'],2)?></td>
                             </tr>

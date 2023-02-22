@@ -199,8 +199,8 @@
                                         ?>
                                                 <tr>
                                                     <td><input type="checkbox" name="invoice[]" value="<?= @$row['party_account']; ?>"></td>
-                                                    <td><?= @$row['party_account_name']; ?></td>
-                                                    <td><?= @$row['total']; ?></td>
+                                                    <td><a href="<?= url('Testing/ac_invoice_list?month='.@$month.'&year='.@$year.'&plateform_id='.@$platform_id.'&ac_id='.@$row['party_account'].'&type=invoice') ?>"><?= @$row['party_account_name']; ?></a></td>
+                                                   <td><?= @$row['total']; ?></td>
                                                     <td><?= @$row['status']; ?></td>
 
                                                 </tr>
@@ -250,7 +250,7 @@
                                         ?>
                                                 <tr>
                                                     <td><input type="checkbox" name="return[]" value="<?= @$row['party_account']; ?>"></td>
-                                                    <td><?= @$row['party_account_name']; ?></td>
+                                                    <td><a href="<?= url('Testing/ac_invoice_list?month='.@$month.'&year='.@$year.'&plateform_id='.@$platform_id.'&ac_id='.@$row['party_account'].'&type=return') ?>"><?= @$row['party_account_name']; ?></a></td>
                                                     <td><?= @$row['total']; ?></td>
                                                     <td><?= @$row['status']; ?></td>
                                                 </tr>

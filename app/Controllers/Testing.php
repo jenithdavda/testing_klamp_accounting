@@ -150,15 +150,28 @@ class Testing extends BaseController{
         if (!session('uid')) {
             return redirect()->to(url('Auth'));
         } 
-        // $post = $this->request->getPost();
-        // if(!empty($post)){
-        //     $data = $this->model->add_jv_return($post);
-        //     return $this->response->setJSON($data);
-        // }
         $data['jv_id'] = $id;
         $data['title']="Party Invoice List";
         
 		return view('testing/party_invoice_list',$data);
+        
+    }
+    public function ac_invoice_list()
+    {
+        if (!session('uid')) {
+            return redirect()->to(url('Auth'));
+        } 
+        $post = $this->request->getGet();
+        //echo '<pre>';Print_r($post);exit;
+        
+        $data['invoice_list'] = $this->model->get_acinvoice_list($post);
+        //echo '<pre>';Print_r($data);exit;
+        
+        // $data['ac_id'] = $id;
+        // $data['type'] = $type;
+        $data['title']="Party Invoice List";
+        
+		return view('testing/ac_invoice_list',$data);
         
     }
     public function tds_report()
@@ -229,6 +242,14 @@ class Testing extends BaseController{
             $data = $this->model->get_plateform_data();
             return $this->response->setJSON($data);
         }
+
+        if ($method == 'ac_inv_list') {
+            $get = $this->request->getGet();
+            echo '<pre>';Print_r($get);exit;
+            
+            $this->model->get_acinvoice_data($get);
+        }
+
     }
 
 }
