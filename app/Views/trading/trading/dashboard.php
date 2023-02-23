@@ -127,7 +127,7 @@
                                            // echo '<pre>';Print_r(@$trading['opening_bal']);exit;
                                             
                                             if(session('is_stock') == 1 ){
-                                                $closing_bal = @$trading['manualy_closing_bal'];
+                                                $closing_bal = @$trading['manualy_closing_bal'] + @$trading['opening_bal_total'];
                                             }else{
                                                 $closing_bal  = @$trading['closing_bal'] + @$trading['opening_bal_total'];
                                             }
@@ -138,21 +138,7 @@
                                             
                                             $all_sale = $trading['sale_total_rate'] ;
                                             $all_sale_return = $trading['saleret_total_rate'] ;
-                                            // echo '<pre>all sale';Print_r($all_sale);
-                                            // echo '<pre>all sale ret';Print_r($all_sale_return);
-                                            // echo '<pre>all pur';Print_r($all_purchase);
-                                            // echo '<pre>all pur ret';Print_r($all_purchase_return);
-                                            // echo '<pre>closing';Print_r($closing_stock);
-                                            // echo '<pre>opening';Print_r($trading['opening_bal']);exit;
-                                            // if($closing_stock < 0)
-                                            // {
-                                            //     $cstock = 0;
-                                            // }
-                                            // else
-                                            // {
-                                            //     $cstock = $closing_stock;
-                                            // }
-                                            
+                                     
                                             $income_total = (float)$all_sale - (float)$all_sale_return + $closing_bal +$trading['inc_total'];
                                             $expens_total = $trading['opening_bal'] + (float)$all_purchase  - (float)$all_purchase_return + $trading['exp_total'];
                                             

@@ -21,10 +21,12 @@
         </a>
     </div>
 </div>
+<!--Start Navbar -->
+
 <div class="responsive-background">
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <div class="advanced-search">
-            <form method="get" action="<?=url('Balancesheet/get_current_lib_sub_grp')?>">
+            <form method="get" action="<?=url('Balancesheet/get_otherassets_account_data')?>">
                 <div class="row align-items-center">
                     <div class="col-md-6">
                         <div class="row">
@@ -39,7 +41,6 @@
                                         </div>
                                         <input class="form-control fc-datepicker" id="" name="from" required
                                             placeholder="YYYY-MM-DD" type="text">
-                                       
                                     </div>
                                 </div>
                             </div>
@@ -54,8 +55,7 @@
                                         </div>
                                         <input class="form-control fc-datepicker" id="" name="to" required
                                             placeholder="YYYY-MM-DD" type="text">
-                                            <input type="hidden" name="id" value="<?=@$id?>">
-                                            <input type="hidden" name="name" value="<?=@$name?>">
+                                            <input name="id" value="<?=@$id?>" type="hidden">
                                     </div>
                                 </div>
                             </div>
@@ -76,8 +76,6 @@
         </div>
     </div>
 </div>
-<!--Start Navbar -->
-
 <div class="row">
     <div class="col-lg-12">
         <div class="card custom-card">
@@ -86,14 +84,12 @@
                     <table class="table table-hover table-bordered table-fw-widget">
                         <tr>
                             <td>
-                                <span style="size:20px;"><b><?=$title?></b></span>
+                                <span style="size:20px;"><b>Other Assets Voucher</b></span>
                                 </br>
-                                <?php
-                                    $from =date_create($date['from']) ;                                         
-                                    $to = date_create($date['to']);
-                                ?>
-                                <b><?=date_format($from,"d/m/Y"); ?></b> to
-                                <b><?=date_format($to,"d/m/Y"); ?></b>
+                                  
+                                <b><?=user_date($from)?></b> to
+                                <b><?=user_date($to); ?></b>
+
 
                             </td>
                         </tr>
@@ -101,68 +97,52 @@
                         </tr>
                     </table>
                 </div>
-
+                
                 <div class="table-responsive">
-                    <table class="table main-table-reference mt-0 mb-0 text-center">
+                    <table class="table table-striped mg-b-0">
                         <thead>
                             <tr>
-                                <th>Name</th>
-                                <th>Total</th>
-                                <th>Total</th>
+                                <th>ID</th>
+                                <th>Voucher Name</th>
+                                <th>Total Taxable</th>
+                               
                             </tr>
                         </thead>
 
                         <tbody>
-                            <?php
-                                $total = 0;
-                                foreach($bl['current_lib'] as $key => $value) { ?>
                             <tr>
-                                <td><b><?=@$value['name']?></b></td>
-                                <td></td>
-                                <td><b><?=number_format(@$bl['current_lib_total'],2)?></b><br>
-                                  
-                                </td>
+                                <th scope="row">1</th>
+                                <td>Opening Balance</td>
+                                <td><?=@$opening['total']?></td>   
                             </tr>
-
-                            <?php   
-                                if(!empty($value['account'])) {
-                                    foreach(@$value['account'] as $ac_key => $ac_value){ ?>
                             <tr>
-                                <td><a href="<?=url('Balancesheet/get_current_lib_account_data?from='.$date['from'].'&to='.$date['to'].'&id='.$ac_value['account_id'])?>"><?=$ac_key ?></a>
-                                </td>
-                                <td><?=number_format($ac_value['total'],2) ?>
-                                  
-                                </td>
-                                <td> </td>
+                                <th scope="row">2</th>
+                                <td><a href="<?=url('Balancesheet/otherassets_banktrans_monthly_PerWise?from='.$from.'&to='.$to.'&id='.$id)?>">Bank/Cash Transaction</a></td>
+                                <td><?=@$per_bank_trans['total']?></td>
+                               
                             </tr>
-                            <?php 
-                                    }    
-                                }
-                            ?>
-
-                            <?php 
-                                if(!empty($value['sub_categories'])) {
-                                    foreach(@$value['sub_categories'] as $sub_key => $sub_value){
-                                        $total = 0;
-                                        $arr[$sub_key] = $sub_value;
-                                        $total = subGrp_total($arr,0);                          
-                            ?>
                             <tr>
-                                <td><a href = "<?=url('Balancesheet/get_current_lib_sub_grp?'.'id='.$sub_key.'&name='.$sub_value['name'].'&from='.$date['from'].'&to='.$date['to'])?>"><?=$sub_value['name']?></a>
-                                </td>
-                                <td><?=number_format($total,2) ?>
-                                   
-                                </td>
-                                <td> </td>
+                                <th scope="row">3</th>
+                                <td><a href="<?=url('Balancesheet/otherassets_jv_monthly?from='.$from.'&to='.$to.'&id='.$id)?>">Journal Voucher</a></td>
+                                <td><?=@$jv_otherassets['total']?></td>
+                               
                             </tr>
-                            <?php 
-                                    unset($arr);
-                                    }
-                                }
-                            }
-                            ?>
+                            <tr>
+                                <th scope="row">4</th>
+                                <td><a href="<?=url('Balancesheet/otherassets_salesgeneral_monthly_AcWise?from='.$from.'&to='.$to.'&id='.$id)?>">Sales Invoice</a></td>
+                                <td><?=@$income_otherassets['total']?></td>
+                            </tr>
+                            <tr>
+                                <th scope="row">5</th>
+                                <td><a href="<?=url('Balancesheet/otherassets_purchasegeneral_monthly_AcWise?from='.$from.'&to='.$to.'&id='.$id)?>">Purchase Invoice</a></td>
+                                <td><?=@$expence_otherassets['total']?></td>
+                            </tr>
+                            
+                            <tr>
+                                <th scope="row" colspan="2"><b>TOTAL</b></th>
+                                <td><b><?=@$expence_otherassets['total'] + @$income_otherassets['total'] + @$jv_otherassets['total'] + @$per_bank_trans['total'] + @$opening['total']?></b></td>
+                            </tr>
                         </tbody>
-
                     </table>
                 </div>
             </div>
@@ -170,6 +150,8 @@
     </div>
 </div>
 <!--End Navbar -->
+
+
 
 
 <?= $this->endSection() ?>
@@ -183,6 +165,38 @@ $(document).ready(function() {
     });
 
     $('.dateMask').mask('99-99-9999');
+
+});
+
+$('#abc').click(function() {
+    abc = $('#abc').val();
+
+    if (abc == 1) {
+        var data = 0;
+        $('#abc').val('0');
+    } else {
+        var data = 1;
+        $('#abc').val('1');
+    }
+    var url = PATH;
+    $.ajax({
+        url: PATH + '/company/update_company',
+        type: 'POST',
+        data: {
+            'id': data
+        },
+        success: function(response) {
+            if (response.st == 'success') {
+                swal("success!", "Your update successfully..!!", "success");
+                window.location = PATH + '/Trading/dashboard';
+            } else {
+                $('.error-msg').html(response.msg);
+            }
+        },
+        error: function() {
+            alert('Error');
+        }
+    });
 
 });
 </script>

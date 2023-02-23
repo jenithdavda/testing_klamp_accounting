@@ -119,7 +119,9 @@
                             <?php 
                           
                             if(!empty($sales)){
-                                foreach(@$sales as $row){ ?>
+                                $total = 0;
+                                foreach(@$sales as $row){ 
+                                    ?>
                             <tr>
                                 <td><?=user_date($row['date'])?></td>
                                 <td><a
@@ -129,13 +131,17 @@
 
                                 <td><?=$row['voucher_no']?></td>
 
-                                <?php if($row['pg_type'] == 'return'){?>
+                                <?php if($row['pg_type'] == 'return'){
+                                    $total +=$row['pg_amount'];
+                                    ?>
                                 <td></td>
-                                <td>-<?=number_format($row['pg_amount'],2)?></td>
-
-                                <?php }else{ ?>
-
                                 <td><?=number_format($row['pg_amount'],2)?></td>
+
+                                <?php }else{
+                                    $total -=$row['pg_amount'];
+                                    ?>
+
+                                <td>-<?=number_format($row['pg_amount'],2)?></td>
                                 <td></td>
                                 <?php } ?>
                                
@@ -151,9 +157,9 @@
                         <tfooter>
                             <tr>
                                 <th>Closing</th>
-                                <th colspan="3"></th>
-                                <th><?=number_format($credit,2)?></th>
-                                <th>-<?=number_format($debit,2)?></th>
+                                <th colspan="4"></th>
+                                <!-- <th><?=number_format($credit,2)?></th> -->
+                                <th><?=number_format($total,2)?></th>
                             </tr>
                         </tfooter>
                     </table>

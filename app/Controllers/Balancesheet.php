@@ -200,7 +200,8 @@ class Balancesheet extends BaseController
 
         $data['bl']['otherassets'] = $otherassets;
         $data['bl']['otherassets_total'] = $otherassets_total;
-
+        //echo '<pre>';Print_r($otherassets);exit;
+        
         $data['pl'] = $pl;
         $data['bl_sheet'] = $balancesheet;
 
@@ -219,15 +220,8 @@ class Balancesheet extends BaseController
         $data['trading']['closing_stock'] = @$closing_data['closing_stock'];
         $data['trading']['manualy_closing_bal'] = @$manualy_closing_bal;
         $data['trading']['opening_bal_total'] = @$opening_total;
-
-       
-       
-
-
         return view('trading/balancesheet/balancesheet_view', $data);
     }
-
-
     public function Balancesheet_xls(){
 
         if (!session('uid')) {
@@ -246,7 +240,6 @@ class Balancesheet extends BaseController
         ->setContentType('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
        
     }
-
     //*******************************capital account****************//
     public function get_capital_account_data()
     {
@@ -264,7 +257,6 @@ class Balancesheet extends BaseController
         $data['ac_name'] = $acc['name'];
         return view('trading/liability/capital_acc_voucher', $data);
     }
-
     public function get_capital_sub_grp(){
         
         if(!session('cid')){
@@ -293,7 +285,7 @@ class Balancesheet extends BaseController
 
     }
 
-    
+    ///*********************loan account***************** */
     public function get_loan_account_data()
     {
         if (!session('cid')) {
@@ -312,7 +304,59 @@ class Balancesheet extends BaseController
         $data['ac_name'] = $acc['name'];
         return view('trading/liability/loan_acc_voucher', $data);
     }
+    public function get_loan_sub_grp(){
+        
+        if(!session('cid')){
+            return redirect()->to(url('company'));
+        }
 
+        $get = $this->request->getGet();
+        
+        $loan[$get['id']] = loans_data($get['id'],db_date($get['from']),db_date($get['to']));
+        $loan[$get['id']]['name'] = $get['name'];
+        
+        $loan[$get['id']]['sub_categories'] = get_loans_sub_grp_data($get['id'],db_date($get['from']),db_date($get['to']));
+
+        $data['title'] =  "Loan Sub Group";
+    
+        $init_total = 0;
+        $loan_total = subGrp_total($loan,$init_total);
+
+        $data['bl']['loan'] = @$loan;
+
+        $data['bl']['loan_total'] = @$loan_total;
+        
+        $data['date']['from'] = $get['from'];
+        $data['date']['to'] = $get['to'];
+
+        
+        return view('trading/liability/loan_sub_group_detail',$data);
+
+    }
+
+    ///*********************current liability account***************** */
+    public function get_current_lib_account_data()
+    {
+
+        if (!session('cid')) {
+            return redirect()->to(url('company'));
+        }
+
+        $get = $this->request->getGet();
+
+        $data = get_current_lib_account_wise($get['from'], $get['to'], $get['id']);
+        //echo '<pre>';Print_r($data);exit;
+        
+        $gmodel = new GeneralModel();
+        $acc = $gmodel->get_data_table('account', array("id" => $get['id']), 'name');
+        $data['title'] = "Current Liabilities Voucher";
+        $data['ac_name'] = $acc['name'];
+        //update trupti 26-12-2022
+        $data['ac_id'] = $get['id'];
+        // exit;
+        // echo '<pre>';print_r($data);exit;
+        return view('trading/liability/current_lib_acc_voucher', $data);
+    }
     public function get_current_lib_sub_grp()
     {
 
@@ -337,33 +381,14 @@ class Balancesheet extends BaseController
 
         $data['date']['from'] = $get['from'];
         $data['date']['to'] = $get['to'];
+        $data['id'] = $get['id'];
+        $data['name'] = $get['name'];
 
 
+        //echo '<pre>';Print_r($data);exit;
+        
         return view('trading/liability/current_lib_sub_group_detail', $data);
     }
-
-    public function get_current_lib_account_data()
-    {
-
-        if (!session('cid')) {
-            return redirect()->to(url('company'));
-        }
-
-        $get = $this->request->getGet();
-
-        $data = get_current_lib_account_wise($get['from'], $get['to'], $get['id']);
-
-        $gmodel = new GeneralModel();
-        $acc = $gmodel->get_data_table('account', array("id" => $get['id']), 'name');
-        $data['title'] = "Current Liabilities Voucher";
-        $data['ac_name'] = $acc['name'];
-        //update trupti 26-12-2022
-        $data['ac_id'] = $get['id'];
-        // exit;
-        // echo '<pre>';print_r($data);exit;
-        return view('trading/liability/current_lib_acc_voucher', $data);
-    }
-
     public function purchase_monthly_AcWise()
     {
         if (!session('cid')) {
@@ -381,7 +406,6 @@ class Balancesheet extends BaseController
         // echo '<pre>';print_r($data);exit;
         return view('trading/liability/purchase_monthly', $data);
     }
-
     public function purchase_voucher_wise()
     {
 
@@ -396,7 +420,6 @@ class Balancesheet extends BaseController
 
         return view('trading/liability/purchase_voucher', $data);
     }
-    
     public function purchase_ret_monthly()
     {
         if (!session('cid')) {
@@ -414,7 +437,6 @@ class Balancesheet extends BaseController
         // echo '<pre>';print_r($data);exit;
         return view('trading/liability/purchase_ret_monthly', $data);
     }
-
     public function purchase_ret_voucher_wise()
     {
 
@@ -431,7 +453,6 @@ class Balancesheet extends BaseController
 
         return view('trading/liability/purchase_ret_voucher', $data);
     }
-
     public function generalPurchase_monthly()
     {
         if (!session('cid')) {
@@ -449,7 +470,6 @@ class Balancesheet extends BaseController
 
         return view('trading/liability/general_purchase_monthly', $data);
     }
-
     public function generalPurchase_voucher_wise_liability()
     {
         if (!session('cid')) {
@@ -463,7 +483,6 @@ class Balancesheet extends BaseController
 
         return view('trading/liability/generalPurchase_liab_voucher', $data);
     }
-
     public function sales_monthly_AcWise()
     {
         if (!session('cid')) {
@@ -480,7 +499,6 @@ class Balancesheet extends BaseController
 
         return view('trading/liability/sales_monthly', $data);
     }
-
     public function sales_voucher_wise()
     {
 
@@ -495,7 +513,6 @@ class Balancesheet extends BaseController
 
         return view('trading/liability/sales_voucher', $data);
     }
-
     public function sales_ret_monthly()
     {
         if (!session('cid')) {
@@ -513,7 +530,6 @@ class Balancesheet extends BaseController
         //echo '<pre>';print_r($data);exit;
         return view('trading/liability/sales_ret_monthly', $data);
     }
-
     public function sales_ret_voucher_wise()
     {
 
@@ -528,7 +544,6 @@ class Balancesheet extends BaseController
 
         return view('trading/liability/sales_ret_voucher', $data);
     }
-
     public function generalsales_monthly()
     {
         if (!session('cid')) {
@@ -598,6 +613,29 @@ class Balancesheet extends BaseController
         
         return view('trading/income/jv_monthlyAcc',$data);
     }
+    //***********************current assets account******************* */
+    public function get_currentassets_account_data(){
+        if(!session('cid')){
+            return redirect()->to(url('company'));
+        }
+        $get = $this->request->getGet();
+        
+        $data = get_currentassets_account_wise($get['from'],$get['to'],$get['id']);
+        
+        $gmodel = new GeneralModel();
+        $acc = $gmodel->get_data_table('account',array("id"=>$get['id']),'name');
+       
+       
+        $data['title'] = "Current Assets Voucher";
+        $data['ac_name'] =$acc['name'] ;
+        $data['from'] =$get['from'];
+        $data['to'] =$get['to'];
+        $data['id'] =$get['id'];
+       // echo '<pre>';Print_r($data);exit;
+        
+        return view('trading/assets/current_assets',$data);
+        
+    }
     public function get_current_assets_sub_grp(){
         
         if(!session('cid')){
@@ -629,26 +667,6 @@ class Balancesheet extends BaseController
         
         return view('trading/assets/current_assets_sub_group_detail',$data);
 
-    }
-    public function get_currentassets_account_data(){
-        if(!session('cid')){
-            return redirect()->to(url('company'));
-        }
-        $get = $this->request->getGet();
-        
-        $data = get_currentassets_account_wise($get['from'],$get['to'],$get['id']);
-        
-        $gmodel = new GeneralModel();
-        $acc = $gmodel->get_data_table('account',array("id"=>$get['id']),'name');
-       
-       
-        $data['title'] = "Current Assets Voucher";
-        $data['ac_name'] =$acc['name'] ;
-        $data['from'] =$get['from'];
-        $data['to'] =$get['to'];
-        $data['id'] =$get['id'];
-        return view('trading/assets/current_assets',$data);
-        
     }
     public function currentassets_banktrans_monthly_PerWise(){
         if(!session('cid')){
@@ -911,6 +929,7 @@ class Balancesheet extends BaseController
               
         return view('trading/assets/current_asset_contra_voucher_Acwise',$data);
     }
+    //*****************fixed assets account */
     public function get_fixedassets_account_data(){
         if(!session('cid')){
             return redirect()->to(url('company'));
@@ -931,6 +950,36 @@ class Balancesheet extends BaseController
         
         return view('trading/assets/fixed_assets',$data);
         
+    }
+    public function get_fixed_assets_sub_grp(){
+        
+        if(!session('cid')){
+            return redirect()->to(url('company'));
+        }
+
+        $get = $this->request->getGet();
+        
+        $fixed_assets[$get['id']] = Fixed_Assets_data($get['id'],db_date($get['from']),db_date($get['to']));
+        $fixed_assets[$get['id']]['name'] = $get['name'];
+        
+        $fixed_assets[$get['id']]['sub_categories'] = get_FixedAssets_sub_grp_data($get['id'],db_date($get['from']),db_date($get['to']));
+
+        $data['title'] =  "Fixed Assets Sub Group";
+    
+        $init_total = 0;
+        $fixed_assets_total = subGrp_total($fixed_assets,$init_total);
+
+        $data['bl']['fixed_assets'] = @$fixed_assets;
+
+        $data['bl']['fixed_assets_total'] = @$fixed_assets_total;
+        
+        $data['date']['from'] = $get['from'];
+        $data['date']['to'] = $get['to'];
+       // echo '<pre>';print_r($data);exit;
+
+        
+        return view('trading/assets/fixed_assets_sub_group_detail',$data);
+
     }
     public function fixedassets_banktrans_monthly_PerWise(){
         if(!session('cid')){
@@ -1046,6 +1095,58 @@ class Balancesheet extends BaseController
         $data['title'] = "General Purchase Voucher Wise";
        
         return view('trading/assets/generalPurchase_voucher',$data);
+    }
+    //**************************other aseets*************** */
+    public function get_otherassets_account_data(){
+        if(!session('cid')){
+            return redirect()->to(url('company'));
+        }
+        $get = $this->request->getGet();
+        
+        $data= get_otherassets_account_wise($get['from'],$get['to'],$get['id']);
+       
+        $gmodel = new GeneralModel();
+        $acc = $gmodel->get_data_table('account',array("id"=>$get['id']),'name');
+       
+       
+        $data['title'] = "Other Assets Voucher";
+        $data['ac_name'] =$acc['name'] ;
+        $data['from'] =$get['from'];
+        $data['to'] =$get['to'];
+        $data['id'] =$get['id'];
+        
+        return view('trading/assets/other_assets',$data);
+        
+    }
+    public function get_other_assets_sub_grp(){
+        
+        if(!session('cid')){
+            return redirect()->to(url('company'));
+        }
+
+        $get = $this->request->getGet();
+        
+        $other_assets[$get['id']] = Other_Assets_data($get['id'],db_date($get['from']),db_date($get['to']));
+        $other_assets[$get['id']]['name'] = $get['name'];
+        
+        $other_assets[$get['id']]['sub_categories'] = get_OtherAssets_sub_grp_data($get['id'],db_date($get['from']),db_date($get['to']));
+
+        $data['title'] =  "Other Assets Sub Group";
+    
+        $init_total = 0;
+        $other_assets_total = subGrp_total($other_assets,$init_total);
+
+        $data['bl']['other_assets'] = @$other_assets;
+
+        $data['bl']['other_assets_total'] = @$other_assets_total;
+        
+        $data['date']['from'] = $get['from'];
+        $data['date']['to'] = $get['to'];
+       // echo '<pre>';print_r($data);exit;
+
+        
+        return view('trading/assets/other_assets_sub_group_detail',$data);
+
     }
 }
 

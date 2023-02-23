@@ -309,7 +309,7 @@ class BalancesheetModel extends Model
             $builder = $db->table('purchase_particu pp');
             $builder->select('ac.name as party_name,pg.doc_date as date,pg.invoice_no as voucher_no ,pg.id as id ,pg.v_type as pg_type,pp.account as pp_acc,pg.net_amount as pg_amount,pg.disc_type,pg.discount,pg.amty,pg.amty_type');
             $builder->join('purchase_general pg', 'pg.id = pp.parent_id');
-            $builder->join('account ac', 'ac.id = pp.account');
+            $builder->join('account ac', 'ac.id = pg.party_account');
             $builder->where('pg.party_account',$get['id']);
             $builder->where(array('pp.is_delete' => '0'));
             $builder->where(array('pg.is_delete' => '0'));
@@ -773,7 +773,7 @@ class BalancesheetModel extends Model
             $builder = $db->table('sales_ACparticu pp');
             $builder->select('ac.name as party_name,pg.invoice_date as date,pg.invoice_no as voucher_no ,pg.id as id ,pg.v_type as pg_type,pp.account as pp_acc,pg.net_amount as pg_amount,pg.disc_type,pg.discount,pg.amty,pg.amty_type');
             $builder->join('sales_ACinvoice pg', 'pg.id = pp.parent_id');
-            $builder->join('account ac', 'ac.id = pp.account');
+            $builder->join('account ac', 'ac.id = pg.party_account');
             $builder->where('pg.party_account',$get['id']);
             $builder->where(array('pp.is_delete' => '0'));
             $builder->where(array('pg.is_delete' => '0'));

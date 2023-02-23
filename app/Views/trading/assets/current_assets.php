@@ -187,6 +187,11 @@
                                         Contra Transaction</a></td>
                                 <td><?=number_format(@$ac_contra_trans['total'],2)?></td>
                             </tr>
+                            <tr>
+                                <th scope="row">11</th>
+                                <td><a href="<?=url('Balancesheet/currentassets_gen_purchase_monthly_AcWise?from='.$from.'&to='.$to.'&id='.$id)?>">Purchase General</a></td>
+                                <td><?=number_format(@$general_purchase['total'],2)?></td>
+                            </tr>
 
                         </tbody>
                     </table>

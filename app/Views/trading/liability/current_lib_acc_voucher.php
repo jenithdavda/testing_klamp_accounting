@@ -156,7 +156,7 @@
 
                             <tr>
                                 <?php
-                               
+                                 $general_sales = @$general_sales['total'] ? $general_sales['total'] : 0;
                                  $general_sales_igst = @$sales_general_igst['total'] ? $sales_general_igst['total'] : 0;
                                  $general_sales_cgst = @$sales_general_cgst['total'] ? $sales_general_cgst['total'] : 0;
                                  $general_sales_sgst = @$sales_general_sgst['total'] ? $sales_general_sgst['total'] : 0;
@@ -165,7 +165,7 @@
                                 ?>
                                 <th scope="row">7</th>
                                 <td><a href="<?=url('Balancesheet/generalsales_monthly?from='.$from.'&to='.$to.'&id='.$id)?>">General Sales</a></td>
-                                <td><?= number_format(@$general_sales_igst + @$general_sales_cgst + @$general_sales_sgst,2)?></td>
+                                <td><?= number_format(@$general_sales + @$general_sales_igst + @$general_sales_cgst + @$general_sales_sgst,2)?></td>
                             </tr>
                             <tr>
                                 <th scope="row">8</th>

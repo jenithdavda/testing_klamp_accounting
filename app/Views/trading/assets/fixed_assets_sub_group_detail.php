@@ -74,7 +74,7 @@
                                 if(!empty($value['account'])) {
                                     foreach(@$value['account'] as $ac_key => $ac_value){ ?>
                             <tr>
-                                <td><a href="<?=url('Trading/get_fixedassets_account_data?from='.$date['from'].'&to='.$date['to'].'&id='.$ac_value['account_id'])?>"><?=$ac_key ?></a>
+                                <td><a href="<?=url('Balancesheet/get_fixedassets_account_data?from='.$date['from'].'&to='.$date['to'].'&id='.$ac_value['account_id'])?>"><?=$ac_key ?></a>
                                 </td>
                                 <td><?=$ac_value['total'] ?>
                                   
@@ -94,7 +94,7 @@
                                         $total = subGrp_total($arr,0);                          
                             ?>
                             <tr>
-                                <td><a href = "<?=url('Trading/get_fixed_assets_sub_grp?'.'id='.$sub_key.'&name='.$sub_value['name'].'&from='.$date['from'].'&to='.$date['to'])?>"><?=$sub_value['name']?></a>
+                                <td><a href = "<?=url('Balancesheet/get_fixed_assets_sub_grp?'.'id='.$sub_key.'&name='.$sub_value['name'].'&from='.$date['from'].'&to='.$date['to'])?>"><?=$sub_value['name']?></a>
                                 </td>
                                 <td><?=$total ?>
                                    

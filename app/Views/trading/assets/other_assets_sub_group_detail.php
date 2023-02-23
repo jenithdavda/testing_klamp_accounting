@@ -21,61 +21,7 @@
         </a>
     </div>
 </div>
-<div class="responsive-background">
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <div class="advanced-search">
-            <form method="get" action="<?=url('Balancesheet/get_current_lib_sub_grp')?>">
-                <div class="row align-items-center">
-                    <div class="col-md-6">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group mb-lg-0">
-                                    <!-- <label class="">From :</label> -->
-                                    <div class="input-group">
-                                        <div class="input-group-prepend">
-                                            <div class="input-group-text">
-                                                FROM:
-                                            </div>
-                                        </div>
-                                        <input class="form-control fc-datepicker" id="" name="from" required
-                                            placeholder="YYYY-MM-DD" type="text">
-                                       
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group mb-lg-0">
-                                    <!-- <label class="">To :</label> -->
-                                    <div class="input-group">
-                                        <div class="input-group-prepend">
-                                            <div class="input-group-text">
-                                                TO:
-                                            </div>
-                                        </div>
-                                        <input class="form-control fc-datepicker" id="" name="to" required
-                                            placeholder="YYYY-MM-DD" type="text">
-                                            <input type="hidden" name="id" value="<?=@$id?>">
-                                            <input type="hidden" name="name" value="<?=@$name?>">
-                                    </div>
-                                </div>
-                            </div>
 
-                        </div>
-                    </div>
-
-                </div>
-
-                <div class="text-right">
-                    <button type="submit" class="btn btn-primary">Apply</button>
-                    <a href="#" id="SearchButtonReset" class="btn btn-secondary" data-toggle="collapse"
-                        data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">Reset</a>
-
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
 <!--Start Navbar -->
 
 <div class="row">
@@ -115,11 +61,11 @@
                         <tbody>
                             <?php
                                 $total = 0;
-                                foreach($bl['current_lib'] as $key => $value) { ?>
+                                foreach($bl['other_assets'] as $key => $value) { ?>
                             <tr>
                                 <td><b><?=@$value['name']?></b></td>
                                 <td></td>
-                                <td><b><?=number_format(@$bl['current_lib_total'],2)?></b><br>
+                                <td><b><?=@$bl['other_assets_total']?></b><br>
                                   
                                 </td>
                             </tr>
@@ -128,9 +74,9 @@
                                 if(!empty($value['account'])) {
                                     foreach(@$value['account'] as $ac_key => $ac_value){ ?>
                             <tr>
-                                <td><a href="<?=url('Balancesheet/get_current_lib_account_data?from='.$date['from'].'&to='.$date['to'].'&id='.$ac_value['account_id'])?>"><?=$ac_key ?></a>
+                                <td><a href="<?=url('Balancesheet/get_otherassets_account_data?from='.$date['from'].'&to='.$date['to'].'&id='.$ac_value['account_id'])?>"><?=$ac_key ?></a>
                                 </td>
-                                <td><?=number_format($ac_value['total'],2) ?>
+                                <td><?=$ac_value['total'] ?>
                                   
                                 </td>
                                 <td> </td>
@@ -148,9 +94,9 @@
                                         $total = subGrp_total($arr,0);                          
                             ?>
                             <tr>
-                                <td><a href = "<?=url('Balancesheet/get_current_lib_sub_grp?'.'id='.$sub_key.'&name='.$sub_value['name'].'&from='.$date['from'].'&to='.$date['to'])?>"><?=$sub_value['name']?></a>
+                                <td><a href = "<?=url('Balancesheet/get_other_assets_sub_grp?'.'id='.$sub_key.'&name='.$sub_value['name'].'&from='.$date['from'].'&to='.$date['to'])?>"><?=$sub_value['name']?></a>
                                 </td>
-                                <td><?=number_format($total,2) ?>
+                                <td><?=$total ?>
                                    
                                 </td>
                                 <td> </td>
