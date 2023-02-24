@@ -114,7 +114,7 @@
                                             //     $closing_stock  = @$trading['closing_bal'] ? @$trading['closing_bal'] : @$trading['opening_bal'] ;
                                             // }
                                             if(session('is_stock') == 1 ){
-                                                $closing_stock = @$trading['manualy_closing_bal'] + @$trading['opening_bal_total'];
+                                                $closing_stock = @$trading['manualy_closing_bal'];
                                             }else{
                                                 $closing_stock  = $trading['closing_bal'] + @$trading['opening_bal_total'];
                                             }

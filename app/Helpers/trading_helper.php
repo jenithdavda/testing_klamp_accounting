@@ -172,14 +172,133 @@ function trading_expense_data($id, $start_date = '', $end_date = '')
         $tot_pg_expens[$row['account_name']]['account_id'] = $row['account_id'];
 
     }
-    //echo '<pre>';Print_r($jv_expens);exit;
+
+    $builder = $db->table('gl_group gl');
+    $builder->select('gl.id as gl_id,gl.name,gl.parent,pg.v_type as pg_type,pp.account as pp_acc,ac.name as account_name,ac.id as account_id,pp.sub_total as pg_amount,pp.added_amt');
+    $builder->join('account ac', 'gl.id =ac.gl_group');
+    $builder->join('purchase_particu pp', 'pp.account = ac.id');
+    $builder->join('purchase_general pg', 'pg.id = pp.parent_id');
+    $builder->where('(pg.v_type="general" OR pg.v_type = "return")');
+    $builder->where(array('gl.id' => $id));
+    $builder->where(array('ac.is_delete' => '0'));
+    $builder->where(array('pg.is_delete' => '0'));
+    $builder->where(array('pg.is_cancle' => '0'));
+    $builder->where(array('pp.is_delete' => '0'));
+    $builder->where(array('DATE(pg.doc_date)  >= ' => $start_date));
+    $builder->where(array('DATE(pg.doc_date)  <= ' => $end_date));
+    $query = $builder->get();
+    $pg_expense = $query->getResultArray();
+    //echo '<pre>';Print_r($pg_expense);exit;
     
+    $tot_pg_expens = array();
+    foreach ($pg_expense as $row) {
+        $row['pg_amount'] = (float) $row['pg_amount'] + (float) $row['added_amt'];
+        $total = ((@$tot_pg_expens[$row['account_name']][$row['pg_type']]) ? $tot_pg_expens[$row['account_name']][$row['pg_type']] : 0) + $row['pg_amount'];
+        $tot_pg_expens[$row['account_name']][$row['pg_type']] = $total;
+        $tot_pg_expens[$row['account_name']]['account_id'] = $row['account_id'];
+    }
+
+    $builder = $db->table('gl_group gl');
+    $builder->select('gl.id as gl_id,gl.name,gl.parent,pp.item_id as pp_acc,ac.name as account_name,pp.sub_total as pg_amount,pp.added_amt');
+    $builder->join('account ac', 'gl.id =ac.gl_group');
+    $builder->join('sales_item pp', 'pp.item_id =ac.id');
+    $builder->join('sales_invoice pg', 'pg.id = pp.parent_id');
+    $builder->where(array('gl.id' => $id));
+    $builder->where('(pp.type="invoice")');
+    $builder->where(array('pp.is_delete' => '0','pp.is_expence' => '1'));
+    $builder->where(array('ac.is_delete' => '0'));
+    $builder->where(array('pg.is_delete' => '0','pg.is_cancle' => '0'));
+    $builder->where(array('DATE(pg.invoice_date)  >= ' => db_date($start_date)));
+    $builder->where(array('DATE(pg.invoice_date)  <= ' => db_date($end_date)));
+    $query = $builder->get();
+    $sales_invoice = $query->getResultArray();
+    $tot_pg_expens = array();
+
+    foreach ($sales_invoice as $row) {
+        $row['pg_amount'] = (float) $row['pg_amount'] + (float) $row['added_amt'];
+        $total += $row['pg_amount'];
+        $tot_pg_expens[$row['account_name']]['sales_invoice_exp'] = $total;
+        $tot_pg_expens[$row['account_name']]['account_id'] = $row['pp_acc'];
+    }
+
+    $builder = $db->table('gl_group gl');
+    $builder->select('gl.id as gl_id,gl.name,gl.parent,pp.item_id as pp_acc,ac.name as account_name,pp.sub_total as pg_amount,pp.added_amt');
+    $builder->join('account ac', 'gl.id =ac.gl_group');
+    $builder->join('sales_item pp', 'pp.item_id =ac.id');
+    $builder->join('sales_return pg', 'pg.id = pp.parent_id');
+    $builder->where(array('gl.id' => $id));
+    $builder->where('(pp.type="return")');
+    $builder->where(array('pp.is_delete' => '0','pp.is_expence' => '1'));
+    $builder->where(array('ac.is_delete' => '0'));
+    $builder->where(array('pg.is_delete' => '0','pg.is_cancle' => '0'));
+    $builder->where(array('DATE(pg.return_date)  >= ' => db_date($start_date)));
+    $builder->where(array('DATE(pg.return_date)  <= ' => db_date($end_date)));
+    $query = $builder->get();
+    $sales_return = $query->getResultArray();
+    $tot_pg_expens = array();
+
+    foreach ($sales_return as $row) {
+        $row['pg_amount'] = (float) $row['pg_amount'] + (float) $row['added_amt'];
+        $total += $row['pg_amount'];
+        $tot_pg_expens[$row['account_name']]['sales_return_exp'] = $total;
+        $tot_pg_expens[$row['account_name']]['account_id'] = $row['pp_acc'];
+    }
+
+    $builder = $db->table('gl_group gl');
+    $builder->select('gl.id as gl_id,gl.name,gl.parent,pp.item_id as pp_acc,ac.name as account_name,pp.sub_total as pg_amount,pp.added_amt');
+    $builder->join('account ac', 'gl.id =ac.gl_group');
+    $builder->join('purchase_item pp', 'pp.item_id =ac.id');
+    $builder->join('purchase_invoice pg', 'pg.id = pp.parent_id');
+    $builder->where(array('gl.id' => $id));
+    $builder->where('(pp.type="invoice")');
+    $builder->where(array('pp.is_delete' => '0','pp.is_expence' => '1'));
+    $builder->where(array('ac.is_delete' => '0'));
+    $builder->where(array('pg.is_delete' => '0','pg.is_cancle' => '0'));
+    $builder->where(array('DATE(pg.invoice_date)  >= ' => db_date($start_date)));
+    $builder->where(array('DATE(pg.invoice_date)  <= ' => db_date($end_date)));
+    $query = $builder->get();
+    $purchase_invoice = $query->getResultArray();
+    $tot_pg_expens = array();
+
+    foreach ($purchase_invoice as $row) {
+        $row['pg_amount'] = (float) $row['pg_amount'] + (float) $row['added_amt'];
+        $total += $row['pg_amount'];
+        $tot_pg_expens[$row['account_name']]['purchase_invoice_exp'] = $total;
+        $tot_pg_expens[$row['account_name']]['account_id'] = $row['pp_acc'];
+    }
+
+    $builder = $db->table('gl_group gl');
+    $builder->select('gl.id as gl_id,gl.name,gl.parent,pp.item_id as pp_acc,ac.name as account_name,pp.sub_total as pg_amount,pp.added_amt');
+    $builder->join('account ac', 'gl.id =ac.gl_group');
+    $builder->join('purchase_item pp', 'pp.item_id =ac.id');
+    $builder->join('purchase_return pg', 'pg.id = pp.parent_id');
+    $builder->where(array('gl.id' => $id));
+    $builder->where('(pp.type="return")');
+    $builder->where(array('pp.is_delete' => '0','pp.is_expence' => '1'));
+    $builder->where(array('ac.is_delete' => '0'));
+    $builder->where(array('pg.is_delete' => '0','pg.is_cancle' => '0'));
+    $builder->where(array('DATE(pg.return_date)  >= ' => db_date($start_date)));
+    $builder->where(array('DATE(pg.return_date)  <= ' => db_date($end_date)));
+    $query = $builder->get();
+    $purchase_return = $query->getResultArray();
+    $tot_pg_expens = array();
+
+    foreach ($purchase_return as $row) {
+        $row['pg_amount'] = (float) $row['pg_amount'] + (float) $row['added_amt'];
+        $total += $row['pg_amount'];
+        $tot_pg_expens[$row['account_name']]['purchase_return_exp'] = $total;
+        $tot_pg_expens[$row['account_name']]['account_id'] = $row['pp_acc'];
+    }
+
 
     $total_ex_arr = array();
     
     foreach ($tot_pg_expens as $key => $value) {
-        $tot_pg_expens[$key]['total'] = @$value['general']-@$value['return']+@$value['jv_total']+@$value['bt_total'];
-        $total_ex_arr[] = @$value['general']-@$value['return']+@$value['jv_total']+@$value['bt_total'];
+        $tot_pg_expens[$key]['total'] = @$value['general']-@$value['return']+@$value['jv_total']+@$value['bt_total']
+                                      - @$value['sales_invoice_exp'] + @$value['sales_return_exp'] + @$value['purchase_invoice_exp'] - @$value['purchase_return_exp'];
+        $total_ex_arr[] = @$value['general']-@$value['return']+@$value['jv_total']+@$value['bt_total'] 
+                        - @$value['sales_invoice_exp'] + @$value['sales_return_exp'] + @$value['purchase_invoice_exp'] - @$value['purchase_return_exp'];
+       
     }
     //echo '<pre>';Print_r($total_ex_arr);exit;
     
@@ -1139,6 +1258,34 @@ function get_trading_income_account_wise($start_date, $end_date, $id)
     }
     $tot_income['jv_parti']['total'] += $total;
 
+    $builder = $db->table('purchase_particu pp');
+    $builder->select('pg.id as voucher_id,pg.v_type as pg_type,pp.account as pp_acc,ac.name as account_name,pp.amount as pg_amount,pp.sub_total,pp.added_amt,pg.is_delete,pp.is_delete as pp_delete');
+    $builder->join('purchase_general pg', 'pg.id = pp.parent_id');
+    $builder->join('account ac', 'ac.id = ' . $id);
+    $builder->where('(pg.v_type="general" OR pg.v_type = "return")');
+    $builder->where(array('pp.account' => $id));
+    $builder->where(array('ac.is_delete' => '0'));
+    $builder->where(array('pg.is_delete' => '0'));
+    $builder->where(array('pg.is_cancle' => '0'));
+    $builder->where(array('pp.is_delete' => '0'));
+    $builder->where(array('DATE(pg.doc_date)  >= ' => db_date($start_date)));
+    $builder->where(array('DATE(pg.doc_date)  <= ' => db_date($end_date)));
+    $query = $builder->get();
+    $pg_expence = $query->getResultArray();
+
+    $total = 0;
+    $tot_expence = array();
+    foreach ($pg_expence as $row) {
+
+        $row['pg_amount'] = (float) $row['sub_total'] + (float) $row['added_amt'];
+       
+        $total = (((float) @$tot_expence['general_purchase']['purchase'.$row['pg_type']]) ? (float) $tot_income['general_purchase']['purchase'.$row['pg_type']] : 0) + (float) $row['pg_amount'];
+        
+        $tot_income['general_purchase']['purchase'.$row['pg_type']] = $total;
+        
+        $tot_income['general_purchase']['total'] = (float)@$tot_income['general_purchase']['return'] - (float)@$tot_income['general_purchase']['general'];
+    }
+
     $tot_income['from'] = $start_date;
     $tot_income['to'] = $end_date;
     $tot_income['id'] = $id;
@@ -1252,6 +1399,33 @@ function get_trading_expence_account_wise($start_date, $end_date, $id)
     }
     $tot_expence['jv_parti']['total'] += $total;
 
+    $builder = $db->table('sales_ACparticu sp');
+    $builder->select('sa.id as voucher_id,sa.v_type as sg_type,sp.account as sp_acc,ac.name as account_name,sp.amount as sg_amount,sp.sub_total,sp.added_amt,sa.is_delete,sp.is_delete as sp_delete');
+    $builder->join('sales_ACinvoice sa', 'sa.id = sp.parent_id');
+    $builder->join('account ac', 'ac.id = ' . $id);
+    $builder->where('(sa.v_type="general" OR sa.v_type = "return")');
+    $builder->where(array('sp.account' => $id));
+    $builder->where(array('ac.is_delete' => '0'));
+    $builder->where(array('sa.is_delete' => '0'));
+    $builder->where(array('sa.is_cancle' => '0'));
+    $builder->where(array('sp.is_delete' => '0'));
+    $builder->where(array('DATE(sa.invoice_date)  >= ' => db_date($start_date)));
+    $builder->where(array('DATE(sa.invoice_date)  <= ' => db_date($end_date)));
+    $query = $builder->get();
+    $sg_income = $query->getResultArray();
+
+    $total = 0;
+    
+    foreach ($sg_income as $row) {
+        $row['sg_amount'] = (float) $row['sub_total'] + (float) $row['added_amt'];
+        $total = (((float) @$tot_expence['general_sales'][$row['sg_type']]) ? (float) $tot_expence['general_sales'][$row['sg_type']] : 0) + (float) $row['sg_amount'];
+        $tot_expence['general_sales'][$row['sg_type']] = $total; 
+        $tot_expence['general_sales']['total'] = (float)@$tot_expence['general_sales']['return'] - (float)@$tot_expence['general_sales']['general'];
+    }
+    
+    
+    //echo '<pre>';Print_r($tot_expence);exit;
+    
     $tot_expence['from'] = $start_date;
     $tot_expence['to'] = $end_date;
     $tot_expence['id'] = $id;

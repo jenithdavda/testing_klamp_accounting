@@ -5923,9 +5923,152 @@ function get_parent_gl_group_old($id)
     // $parent_id = $result->parent;
     return $result;
 }
+// function get_otherassets_account_wise($start_date, $end_date, $id)
+// {
+
+//     if ($start_date == '') {
+//         if (date('m') < '03') {
+//             $year = date('Y') - 1;
+//             $start_date = $year . '-04-01';
+//         } else {
+//             $year = date('Y');
+//             $start_date = $year . '-04-01';
+//         }
+//     }
+
+//     if ($end_date == '') {
+
+//         if (date('m') < '03') {
+//             $year = date('Y');
+//         } else {
+//             $year = date('Y') + 1;
+//         }
+//         $end_date = $year . '-03-31';
+//     }
+
+//     $db = \Config\Database::connect();
+
+//     if (session('DataSource')) {
+//         $db->setDatabase(session('DataSource'));
+//     }
+//     $tot_otherassets = array();
+
+//     $gmodel  = new GeneralModel();
+//     $acc = $gmodel->get_data_table('account', array('id' => $id), 'opening_bal,opening_type');
+
+//     $tot_otherassets['opening']['total'] = 0;
+
+//     if ($acc['opening_type'] == 'Debit') {
+//         $tot_otherassets['opening']['total'] += (float)@$acc['opening_bal'];
+//     } else {
+//         $tot_otherassets['opening']['total'] -= (float)@$acc['opening_bal'];
+//     }
+
+//     $builder = $db->table('bank_tras bt');
+//     $builder->select('ac.id as account_id,ac.name as account_name,bt.amount as bt_total,bt.mode');
+//     $builder->join('account ac', 'ac.id =' . $id);
+//     $builder->where(array('bt.particular' => $id));
+//     $builder->where(array('ac.is_delete' => '0'));
+//     $builder->where(array('DATE(bt.receipt_date)  >= ' => db_date($start_date)));
+//     $builder->where(array('DATE(bt.receipt_date)  <= ' => db_date($end_date)));
+//     $query = $builder->get();
+//     $bank_otherAssets = $query->getResultArray();
+
+//     $tot_otherassets['per_bank_trans']['total'] = 0;
+
+//     $total = 0;
+
+//     foreach ($bank_otherAssets as $row) {
+
+//         if ($row['mode'] == 'Payment') {
+//             $total += $row['bt_total'];
+//         } else {
+//             $total -= $row['bt_total'];
+//         }
+//     }
+//     $tot_otherassets['per_bank_trans']['total'] += $total;
+
+//     $builder = $db->table('jv_particular jv');
+//     $builder->select('ac.id as account_id,jv.amount as total,ac.name as account_name,jv.dr_cr');
+//     $builder->join('account ac', 'ac.id = jv.particular');
+//     $builder->where('jv.particular', $id);
+//     $builder->where(array('ac.is_delete' => '0'));
+//     $builder->where(array('jv.is_delete' => '0'));
+//     $builder->where(array('DATE(jv.date)  >= ' => db_date($start_date)));
+//     $builder->where(array('DATE(jv.date)  <= ' => db_date($end_date)));
+//     $query = $builder->get();
+//     $jv_otherAssets = $query->getResultArray();
+//     $tot_otherassets['jv_otherassets']['total'] = 0;
+//     $total = 0;
+
+//     foreach ($jv_otherAssets as $row) {
+//         if ($row['dr_cr'] == 'cr') {
+//             $total -= $row['total'];
+//         } else {
+//             $total += $row['total'];
+//         }
+//     }
+//     $tot_otherassets['jv_otherassets']['total'] += $total;
+
+//     $builder = $db->table('purchase_particu pp');
+//     $builder->select('ac.id as account_id,pp.sub_total,pp.added_amt,ac.name as account_name,pp.type');
+//     $builder->join('purchase_general pg', 'pp.parent_id = pg.id');
+//     $builder->join('account ac', 'ac.id = pp.account');
+//     $builder->where('pp.account', $id);
+//     $builder->where(array('ac.is_delete' => '0'));
+//     $builder->where(array('pg.is_delete' => '0'));
+//     $builder->where(array('DATE(pg.doc_date)  >= ' => db_date($start_date)));
+//     $builder->where(array('DATE(pg.doc_date)  <= ' => db_date($end_date)));
+//     $query = $builder->get();
+//     $expence_otherAssets = $query->getResultArray();
+//     //echo '<pre>';Print_r($expence_FixedAssets);exit;
+    
+//     $tot_otherassets['expence_otherassets']['total'] = 0;
+//     $total = 0;
+
+//     foreach ($expence_otherAssets as $row) {
+//         $total1 = $row['sub_total'] + $row['added_amt'];
+//         if ($row['type'] == 'general') {
+//             $total += $total1;
+//         } else {
+//             $total -= $total1;
+//         }
+//     }
+//     $tot_otherassets['expence_otherassets']['total'] = $total;
+
+
+//     $builder = $db->table('sales_ACparticu pp');
+//     $builder->select('ac.id as account_id,pp.sub_total,pp.added_amt,ac.name as account_name,pp.type');
+//     $builder->join('sales_ACinvoice pg', 'pp.parent_id = pg.id');
+//     $builder->join('account ac', 'ac.id = pp.account');
+//     $builder->where('pp.account', $id);
+//     $builder->where(array('ac.is_delete' => '0'));
+//     $builder->where(array('pg.is_delete' => '0'));
+//     $builder->where(array('DATE(pg.invoice_date)  >= ' => db_date($start_date)));
+//     $builder->where(array('DATE(pg.invoice_date)  <= ' => db_date($end_date)));
+//     $query = $builder->get();
+//     $income_otherAssets = $query->getResultArray();
+//     $tot_otherassets['income_otherassets']['total'] = 0;
+//     $total = 0;
+
+//     foreach ($income_otherAssets as $row) {
+//         $total1 = $row['sub_total'] + $row['added_amt'];
+//         if ($row['type'] == 'general') {
+//             $total += $total1;
+//         } else {
+//             $total -= $total1;
+//         }
+//     }
+//     $tot_otherassets['income_othersssets']['total'] = $total;
+
+//     $tot_otherassets['from'] = $start_date;
+//     $tot_otherassets['to'] = $end_date;
+//     $tot_otherassets['id'] = $id;
+
+//     return $tot_otherassets;
+// }
 function get_otherassets_account_wise($start_date, $end_date, $id)
 {
-
     if ($start_date == '') {
         if (date('m') < '03') {
             $year = date('Y') - 1;
@@ -5937,7 +6080,6 @@ function get_otherassets_account_wise($start_date, $end_date, $id)
     }
 
     if ($end_date == '') {
-
         if (date('m') < '03') {
             $year = date('Y');
         } else {
@@ -5951,119 +6093,171 @@ function get_otherassets_account_wise($start_date, $end_date, $id)
     if (session('DataSource')) {
         $db->setDatabase(session('DataSource'));
     }
-    $tot_otherassets = array();
-
-    $gmodel  = new GeneralModel();
-    $acc = $gmodel->get_data_table('account', array('id' => $id), 'opening_bal,opening_type');
-
-    $tot_otherassets['opening']['total'] = 0;
-
-    if ($acc['opening_type'] == 'Debit') {
-        $tot_otherassets['opening']['total'] += (float)@$acc['opening_bal'];
-    } else {
-        $tot_otherassets['opening']['total'] -= (float)@$acc['opening_bal'];
-    }
 
     $builder = $db->table('bank_tras bt');
-    $builder->select('ac.id as account_id,ac.name as account_name,bt.amount as bt_total,bt.mode');
-    $builder->join('account ac', 'ac.id =' . $id);
-    $builder->where(array('bt.particular' => $id));
+    $builder->select('MONTH(bt.receipt_date) as month,YEAR(bt.receipt_date) as year,ac.id as account_id,ac.name as account_name,bt.amount as bt_total,bt.mode');
+    $builder->join('account ac', 'ac.id =bt.particular');
+    $builder->where(array('bt.particular' => $id,'bt.payment_type !=' => 'contra'));
     $builder->where(array('ac.is_delete' => '0'));
+    $builder->where(array('bt.is_delete' => '0'));
     $builder->where(array('DATE(bt.receipt_date)  >= ' => db_date($start_date)));
     $builder->where(array('DATE(bt.receipt_date)  <= ' => db_date($end_date)));
     $query = $builder->get();
-    $bank_otherAssets = $query->getResultArray();
-
-    $tot_otherassets['per_bank_trans']['total'] = 0;
+    $bank_income = $query->getResultArray();
 
     $total = 0;
+    $arr = array();
+   // echo '<pre><br> detail :';print_r($bank_income);
 
-    foreach ($bank_otherAssets as $row) {
+    foreach ($bank_income as $row) {
 
-        if ($row['mode'] == 'Payment') {
-            $total += $row['bt_total'];
+        if ($row['mode'] == 'Receipt') {
+
+            $rec_total = (@$arr[$row['month']]['debit'] ? $arr[$row['month']]['debit'] : 0) + $row['bt_total'];
+            $arr[$row['month']]['debit'] = $rec_total;
+            $total = (@$arr[$row['month']]['total'] ? $arr[$row['month']]['total'] : 0) + $row['bt_total'];
+            $arr[$row['month']]['total'] = $total;
+            $arr[$row['month']]['month'] = $row['month'];
+            $arr[$row['month']]['year'] = $row['year'];
+            $arr[$row['month']]['account_id'] = $row['account_id'];
+            $arr[$row['month']]['account_name'] = $row['account_name'];
+
         } else {
-            $total -= $row['bt_total'];
+
+            $pay_total = (@$arr[$row['month']]['credit'] ? $arr[$row['month']]['credit'] : 0) + $row['bt_total'];
+            $arr[$row['month']]['credit'] = $pay_total;
+
+            $total = (@$arr[$row['month']]['total'] ? $arr[$row['month']]['total'] : 0) - $row['bt_total'];
+            $arr[$row['month']]['total'] = $total;
+            $arr[$row['month']]['month'] = $row['month'];
+            $arr[$row['month']]['year'] = $row['year'];
+            $arr[$row['month']]['account_id'] = $row['account_id'];
+            $arr[$row['month']]['account_name'] = $row['account_name'];
+
         }
     }
-    $tot_otherassets['per_bank_trans']['total'] += $total;
 
     $builder = $db->table('jv_particular jv');
-    $builder->select('ac.id as account_id,jv.amount as total,ac.name as account_name,jv.dr_cr');
-    $builder->join('account ac', 'ac.id = jv.particular');
-    $builder->where('jv.particular', $id);
+    $builder->select('MONTH(jv.date) as month,YEAR(jv.date) as year,ac.id as account_id,jv.amount as total, ac.name as account_name,jv.dr_cr');
+    $builder->join('account ac', 'ac.id =jv.particular');
+    $builder->where(array('jv.particular' => $id));
     $builder->where(array('ac.is_delete' => '0'));
     $builder->where(array('jv.is_delete' => '0'));
     $builder->where(array('DATE(jv.date)  >= ' => db_date($start_date)));
     $builder->where(array('DATE(jv.date)  <= ' => db_date($end_date)));
     $query = $builder->get();
-    $jv_otherAssets = $query->getResultArray();
-    $tot_otherassets['jv_otherassets']['total'] = 0;
-    $total = 0;
+    $jv_income = $query->getResultArray();
+    // echo '<pre>';print_r($jv_income);exit;
 
-    foreach ($jv_otherAssets as $row) {
+    foreach ($jv_income as $row) {
         if ($row['dr_cr'] == 'cr') {
-            $total -= $row['total'];
+            $cr_tot = ((@$arr[$row['month']]['credit']) ? @$arr[$row['month']]['credit'] : 0) + $row['total'];
+            $arr[$row['month']]['credit'] = $cr_tot;
+
+            $total = (@$arr[$row['month']]['total'] ? $arr[$row['month']]['total'] : 0) + $row['total'];
+            $arr[$row['month']]['total'] = $total;
+            $arr[$row['month']]['month'] = $row['month'];
+            $arr[$row['month']]['year'] = $row['year'];
+            $arr[$row['month']]['account_id'] = $row['account_id'];
+            $arr[$row['month']]['account_name'] = $row['account_name'];
         } else {
-            $total += $row['total'];
+
+            $dr_tot = ((@$arr[$row['month']]['debit']) ? @$arr[$row['month']]['debit'] : 0) + $row['total'];
+            $arr[$row['month']]['debit'] = $dr_tot;
+
+            $total = (@$arr[$row['month']]['total'] ? $arr[$row['month']]['total'] : 0) - $row['total'];
+            $arr[$row['month']]['total'] = $total;
+            $arr[$row['month']]['month'] = $row['month'];
+            $arr[$row['month']]['year'] = $row['year'];
+            $arr[$row['month']]['account_id'] = $row['account_id'];
+            $arr[$row['month']]['account_name'] = $row['account_name'];
         }
     }
-    $tot_otherassets['jv_otherassets']['total'] += $total;
 
-    $builder = $db->table('purchase_particu pp');
-    $builder->select('ac.id as account_id,pp.sub_total,pp.added_amt,ac.name as account_name,pp.type');
-    $builder->join('purchase_general pg', 'pp.parent_id = pg.id');
-    $builder->join('account ac', 'ac.id = pp.account');
-    $builder->where('pp.account', $id);
-    $builder->where(array('ac.is_delete' => '0'));
+    $builder = $db->table('sales_ACinvoice pg');
+    $builder->select('MONTH(pg.invoice_date) as month,YEAR(pg.invoice_date) as year,pg.v_type as pg_type,pg.net_amount as pg_amount,ac.id as account_id,ac.name as account_name');
+    $builder->join('sales_ACparticu pp', 'pg.id = pp.parent_id');
+    $builder->join('account ac', 'ac.id =pg.party_account');
+    $builder->where('(pg.v_type="general" OR pg.v_type = "return")');
+    $builder->where(array('pg.party_account' => $id));
+    // $builder->where(array('ac.is_delete' => '0'));
     $builder->where(array('pg.is_delete' => '0'));
-    $builder->where(array('DATE(pg.doc_date)  >= ' => db_date($start_date)));
-    $builder->where(array('DATE(pg.doc_date)  <= ' => db_date($end_date)));
-    $query = $builder->get();
-    $expence_otherAssets = $query->getResultArray();
-    //echo '<pre>';Print_r($expence_FixedAssets);exit;
-    
-    $tot_otherassets['expence_otherassets']['total'] = 0;
-    $total = 0;
-
-    foreach ($expence_otherAssets as $row) {
-        $total1 = $row['sub_total'] + $row['added_amt'];
-        if ($row['type'] == 'general') {
-            $total += $total1;
-        } else {
-            $total -= $total1;
-        }
-    }
-    $tot_otherassets['expence_otherassets']['total'] = $total;
-
-
-    $builder = $db->table('sales_ACparticu pp');
-    $builder->select('ac.id as account_id,pp.sub_total,pp.added_amt,ac.name as account_name,pp.type');
-    $builder->join('sales_ACinvoice pg', 'pp.parent_id = pg.id');
-    $builder->join('account ac', 'ac.id = pp.account');
-    $builder->where('pp.account', $id);
-    $builder->where(array('ac.is_delete' => '0'));
-    $builder->where(array('pg.is_delete' => '0'));
+    $builder->where(array('pg.is_cancle' => '0'));
     $builder->where(array('DATE(pg.invoice_date)  >= ' => db_date($start_date)));
     $builder->where(array('DATE(pg.invoice_date)  <= ' => db_date($end_date)));
+    $builder->groupBy('pg.id');
     $query = $builder->get();
-    $income_otherAssets = $query->getResultArray();
-    $tot_otherassets['income_otherassets']['total'] = 0;
-    $total = 0;
+    $sg_expence = $query->getResultArray();
 
-    foreach ($income_otherAssets as $row) {
-        $total1 = $row['sub_total'] + $row['added_amt'];
-        if ($row['type'] == 'general') {
-            $total += $total1;
+    foreach ($sg_expence as $row) {
+        if ($row['pg_type'] == 'return') {
+            $cr_tot = ((@$arr[$row['month']]['credit']) ? @$arr[$row['month']]['credit'] : 0) + $row['pg_amount'];
+            $arr[$row['month']]['credit'] = $cr_tot;
+
+            $total = (@$arr[$row['month']]['total'] ? $arr[$row['month']]['total'] : 0) + $row['pg_amount'];
+            $arr[$row['month']]['total'] = $total;
+            $arr[$row['month']]['month'] = $row['month'];
+            $arr[$row['month']]['year'] = $row['year'];
+            $arr[$row['month']]['account_id'] = $row['account_id'];
+            $arr[$row['month']]['account_name'] = $row['account_name'];
         } else {
-            $total -= $total1;
+
+            $dr_tot = ((@$arr[$row['month']]['debit']) ? @$arr[$row['month']]['debit'] : 0) + $row['pg_amount'];
+            $arr[$row['month']]['debit'] = $dr_tot;
+
+            $total = (@$arr[$row['month']]['total'] ? $arr[$row['month']]['total'] : 0) - $row['pg_amount'];
+            $arr[$row['month']]['total'] = $total;
+            $arr[$row['month']]['month'] = $row['month'];
+            $arr[$row['month']]['year'] = $row['year'];
+            $arr[$row['month']]['account_id'] = $row['account_id'];
+            $arr[$row['month']]['account_name'] = $row['account_name'];
         }
     }
-    $tot_otherassets['income_othersssets']['total'] = $total;
 
-    $tot_otherassets['from'] = $start_date;
-    $tot_otherassets['to'] = $end_date;
-    $tot_otherassets['id'] = $id;
+    $builder = $db->table('purchase_general pg');
+    $builder->select('MONTH(pg.doc_date) as month,YEAR(pg.doc_date) as year,pg.v_type as pg_type,pg.net_amount as pg_amount,ac.id as account_id,ac.name as account_name');
+    $builder->join('purchase_particu pp', 'pg.id = pp.parent_id');
+    $builder->join('account ac', 'ac.id =pg.party_account');
+    $builder->where('(pg.v_type="general" OR pg.v_type = "return")');
+    $builder->where(array('pg.party_account' => $id));
+    // $builder->where(array('ac.is_delete' => '0'));
+    $builder->where(array('pg.is_delete' => '0'));
+    $builder->where(array('pg.is_cancle' => '0'));
+    $builder->where(array('DATE(pg.doc_date)  >= ' => db_date($start_date)));
+    $builder->where(array('DATE(pg.doc_date)  <= ' => db_date($end_date)));
+    $builder->groupBy('pg.id');
+    $query = $builder->get();
+    $pg_expence = $query->getResultArray();
 
-    return $tot_otherassets;
+    foreach ($pg_expence as $row) {
+        if ($row['pg_type'] == 'general') {
+            $cr_tot = ((@$arr[$row['month']]['credit']) ? @$arr[$row['month']]['credit'] : 0) + $row['pg_amount'];
+            $arr[$row['month']]['credit'] = $cr_tot;
+
+            $total = (@$arr[$row['month']]['total'] ? $arr[$row['month']]['total'] : 0) + $row['pg_amount'];
+            $arr[$row['month']]['total'] = $total;
+            $arr[$row['month']]['month'] = $row['month'];
+            $arr[$row['month']]['year'] = $row['year'];
+            $arr[$row['month']]['account_id'] = $row['account_id'];
+            $arr[$row['month']]['account_name'] = $row['account_name'];
+        } else {
+
+            $dr_tot = ((@$arr[$row['month']]['debit']) ? @$arr[$row['month']]['debit'] : 0) + $row['pg_amount'];
+            $arr[$row['month']]['debit'] = $dr_tot;
+
+            $total = (@$arr[$row['month']]['total'] ? $arr[$row['month']]['total'] : 0) - $row['pg_amount'];
+            $arr[$row['month']]['total'] = $total;
+            $arr[$row['month']]['month'] = $row['month'];
+            $arr[$row['month']]['year'] = $row['year'];
+            $arr[$row['month']]['account_id'] = $row['account_id'];
+            $arr[$row['month']]['account_name'] = $row['account_name'];
+        }
+    }
+
+    $result = array();
+    $result['other_assets'] = $arr;
+    $result['from'] = $start_date;
+    $result['to'] = $end_date;
+    echo '<pre>';print_r($result);exit;
+    return $result;
 }

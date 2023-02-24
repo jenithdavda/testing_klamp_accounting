@@ -144,12 +144,36 @@ function pl_expense_data($id, $start_date = '', $end_date = '')
         $tot_pl_expense[$row['account_name']]['account_id'] = $row['account_id'];
         
     }
+    $builder = $db->table('gl_group gl');
+    $builder->select('sa.v_type as sa_type,sp.account as sp_acc,ac.id as account_id,ac.name as account_name,sp.amount as sa_amount,sp.sub_total,sp.added_amt');
+    $builder->join('account ac', 'gl.id =ac.gl_group');
+    $builder->join('sales_ACparticu sp', 'sp.account = ac.id');
+    $builder->join('sales_ACinvoice sa', 'sa.id = sp.parent_id');
+    $builder->where('gl.id', $id);
+    $builder->where(array('ac.is_delete' => '0'));
+    $builder->where(array('sa.is_delete' => '0'));
+    $builder->where(array('sa.is_cancle' => '0'));
+    $builder->where(array('DATE(sa.invoice_date)  >= ' => $start_date));
+    $builder->where(array('DATE(sa.invoice_date)  <= ' => $end_date));
+    $query = $builder->get();
+    $pl_income = $query->getResultArray();
+    
+ 
+
+    foreach ($pl_income as $row) {
+        $row['sa_amount'] = (float) $row['sub_total'] + (float) $row['added_amt'];
+       
+        $total = ((@$tot_pl_expense[$row['account_name']]['sales_'.$row['sa_type']]) ? $tot_pl_expense[$row['account_name']]['sales_'.$row['sa_type']] : 0) + $row['sa_amount'];
+        $tot_pl_expense[$row['account_name']]['sales_'.$row['sa_type']] = $total;
+        $tot_pl_expense[$row['account_name']]['account_id'] = $row['account_id'];
+
+    }
 
 
     $total_arr = array();
     foreach ($tot_pl_expense as $key => $value) {
-        $tot_pl_expense[$key]['total'] = @$value['general']-@$value['return']+@$value['jv_total']+@$value['sale_brokrage']+@$value['pur_brokrage']+@$value['bt_total'];
-        $total_arr[] = @$value['general']-@$value['return']+@$value['jv_total']+@$value['sale_brokrage']+@$value['pur_brokrage']+@$value['bt_total'];
+        $tot_pl_expense[$key]['total'] = @$value['general']-@$value['return']+@$value['jv_total']+@$value['sale_brokrage']+@$value['pur_brokrage']+@$value['bt_total'] - @$value['sales_general'] + @$value['sales_return'];
+        $total_arr[] = @$value['general']-@$value['return']+@$value['jv_total']+@$value['sale_brokrage']+@$value['pur_brokrage']+@$value['bt_total'] - @$value['sales_general'] + @$value['sales_return'];
     }
 
     if (!empty($total_arr)) {
@@ -210,7 +234,7 @@ function pl_income_data($id, $start_date = '', $end_date = '')
     $tot_pl_income = array();
 
     foreach ($pl_income as $row) {
-        $row['pg_amount'] = (float) $row['sub_total'] + (float) $row['added_amt'];
+        $row['sa_amount'] = (float) $row['sub_total'] + (float) $row['added_amt'];
        
         $total = ((@$tot_pl_income[$row['account_name']][$row['sa_type']]) ? $tot_pl_income[$row['account_name']][$row['sa_type']] : 0) + $row['sa_amount'];
         $tot_pl_income[$row['account_name']][$row['sa_type']] = $total;
@@ -530,6 +554,134 @@ function pl_tot_data($start_date = '', $end_date = '')
 
     // echo '<pre>';print_r($data);exit;
     return $data;
+}
+function pl_get_generalSales_monthly_AcWise($start_date, $end_date, $id)
+{
+
+    if ($start_date == '') {
+        if (date('m') < '03') {
+            $year = date('Y') - 1;
+            $start_date = $year . '-04-01';
+        } else {
+            $year = date('Y');
+            $start_date = $year . '-04-01';
+        }
+    }
+
+    if ($end_date == '') {
+
+        if (date('m') < '03') {
+            $year = date('Y');
+        } else {
+            $year = date('Y') + 1;
+        }
+        $end_date = $year . '-03-31';
+    }
+
+    $db = \Config\Database::connect();
+
+    if (session('DataSource')) {
+        $db->setDatabase(session('DataSource'));
+    }
+    $builder = $db->table('sales_ACinvoice pg');
+    $builder->select('MONTH(pg.invoice_date) as month,YEAR(pg.invoice_date) as year,pg.v_type as pg_type,pp.amount as pg_amount,pp.sub_total,pp.added_amt');
+    $builder->join('sales_ACparticu pp', 'pg.id = pp.parent_id');
+    $builder->where(array('pp.account' => $id));
+    $builder->where(array('pg.is_delete' => '0','pg.is_cancle' => '0'));
+    $builder->where(array('DATE(pg.invoice_date)  >= ' => db_date($start_date)));
+    $builder->where(array('DATE(pg.invoice_date)  <= ' => db_date($end_date)));
+    $query = $builder->get();
+    $pg_income = $query->getResultArray();
+    $arr = array();
+    // echo '<pre>';print_r($pg_income);
+    $tot_income = array();
+    foreach ($pg_income as $row) {
+
+        $after_disc = 0;
+
+       
+            $row['pg_amount'] = (float) $row['sub_total'] + (float) $row['added_amt'];
+      
+        $total = ((@$tot_income['generalSale'][$row['month']][$row['pg_type']]) ? $tot_income['generalSale'][$row['month']][$row['pg_type']] : 0) + $row['pg_amount'];
+        $tot_income['generalSale'][$row['month']][$row['pg_type']] = $total;
+
+        $tot_income['generalSale'][$row['month']]['total'] = (float)@$tot_income['generalSale'][$row['month']]['return'] - (float) @$tot_income['generalSale'][$row['month']]['general'];
+        $tot_income['generalSale'][$row['month']]['year'] = $row['year'];
+        $tot_income['generalSale'][$row['month']]['month'] = $row['month'];
+
+    }
+
+    $result = array();
+    $result = @$tot_income;
+    $result['from'] = $start_date;
+    $result['to'] = $end_date;
+    // echo '<pre>';print_r($result);exit;
+
+    return $result;
+}
+function pl_get_generalSales_monthly_AcWise($start_date, $end_date, $id)
+{
+
+    if ($start_date == '') {
+        if (date('m') < '03') {
+            $year = date('Y') - 1;
+            $start_date = $year . '-04-01';
+        } else {
+            $year = date('Y');
+            $start_date = $year . '-04-01';
+        }
+    }
+
+    if ($end_date == '') {
+
+        if (date('m') < '03') {
+            $year = date('Y');
+        } else {
+            $year = date('Y') + 1;
+        }
+        $end_date = $year . '-03-31';
+    }
+
+    $db = \Config\Database::connect();
+
+    if (session('DataSource')) {
+        $db->setDatabase(session('DataSource'));
+    }
+    $builder = $db->table('purchase_general pg');
+    $builder->select('MONTH(pg.invoice_date) as month,YEAR(pg.invoice_date) as year,pg.v_type as pg_type,pp.amount as pg_amount,pp.sub_total,pp.added_amt');
+    $builder->join('sales_ACparticu pp', 'pg.id = pp.parent_id');
+    $builder->where(array('pp.account' => $id));
+    $builder->where(array('pg.is_delete' => '0','pg.is_cancle' => '0'));
+    $builder->where(array('DATE(pg.invoice_date)  >= ' => db_date($start_date)));
+    $builder->where(array('DATE(pg.invoice_date)  <= ' => db_date($end_date)));
+    $query = $builder->get();
+    $pg_income = $query->getResultArray();
+    $arr = array();
+    // echo '<pre>';print_r($pg_income);
+    $tot_income = array();
+    foreach ($pg_income as $row) {
+
+        $after_disc = 0;
+
+       
+            $row['pg_amount'] = (float) $row['sub_total'] + (float) $row['added_amt'];
+      
+        $total = ((@$tot_income['generalSale'][$row['month']][$row['pg_type']]) ? $tot_income['generalSale'][$row['month']][$row['pg_type']] : 0) + $row['pg_amount'];
+        $tot_income['generalSale'][$row['month']][$row['pg_type']] = $total;
+
+        $tot_income['generalSale'][$row['month']]['total'] = (float)@$tot_income['generalSale'][$row['month']]['return'] - (float) @$tot_income['generalSale'][$row['month']]['general'];
+        $tot_income['generalSale'][$row['month']]['year'] = $row['year'];
+        $tot_income['generalSale'][$row['month']]['month'] = $row['month'];
+
+    }
+
+    $result = array();
+    $result = @$tot_income;
+    $result['from'] = $start_date;
+    $result['to'] = $end_date;
+    // echo '<pre>';print_r($result);exit;
+
+    return $result;
 }
 
 

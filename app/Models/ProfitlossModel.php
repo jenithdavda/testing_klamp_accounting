@@ -397,6 +397,73 @@ class ProfitlossModel extends Model
         $writer = new Xlsx($spreadsheet);
         $writer->save('php://output');
     }
+    public function generalSales_voucher_wise_data($get){
+
+        $db = $this->db;
+        $db->setDatabase(session('DataSource')); 
+       
+        if(!empty($get['year'])){
+
+            $start = strtotime("{$get['year']}-{$get['month']}-01");
+            $end = strtotime('-1 second', strtotime('+1 month', $start));
+             
+            $start_date = date('Y-m-d',$start);
+            $end_date = date('Y-m-d',$end);
+           
+            $builder = $db->table('sales_ACparticu pp');
+            $builder->select('ac.name as party_name,pg.invoice_date as date,pg.invoice_no as voucher_no,pg.id,pg.v_type as pg_type,pp.account as pp_acc,pp.amount as pg_amount,pp.discount,pp.added_amt,pp.sub_total');
+            $builder->join('sales_ACinvoice pg', 'pg.id = pp.parent_id');
+            $builder->join('account ac', 'ac.id = pp.account');
+            $builder->where('pp.account',$get['id']);
+            $builder->where(array('pp.is_delete' => '0','pg.is_delete' => '0','pg.is_cancle' => '0'));
+            $builder->where(array('DATE(pg.invoice_date)  >= ' => $start_date));
+            $builder->where(array('DATE(pg.invoice_date)  <= ' => $end_date));
+            $query = $builder->get();
+            $pg_income['sales'] = $query->getResultArray();
+            // echo $db->getLastQuery();exit;
+
+
+        }else if(!empty(@$get['from'])){
+            $start_date = @$get['from']  ? db_date($get['from']) : '';
+            $end_date = @$get['to'] ? db_date($get['to']) : '';
+
+            $builder = $db->table('sales_ACparticu pp');
+            $builder->select('ac.name as party_name,pg.invoice_date as date,pg.invoice_no as voucher_no,pg.id,pg.v_type as pg_type,pp.account as pp_acc,pp.amount as pg_amount,pp.discount,pp.added_amt,pp.sub_total');
+            $builder->join('sales_ACinvoice pg', 'pg.id = pp.parent_id');
+            $builder->join('account ac', 'ac.id = pp.account');
+            $builder->where('pp.account',$get['id']);
+            $builder->where(array('pp.is_delete' => '0','pg.is_delete' => '0','pg.is_cancle' => '0'));
+            $builder->where(array('DATE(pg.invoice_date)  >= ' => $start_date));
+            $builder->where(array('DATE(pg.invoice_date)  <= ' => $end_date));
+            $query = $builder->get();
+            $pg_income['sales'] = $query->getResultArray();
+
+        }else{
+            $pg_income['sales'] = array();
+            $start_date = '';
+            $end_date = '';
+        }   
+        // echo '<pre>';print_r($pg_income);exit;
+        $result['sales'] = array();
+        $total = 0;
+        if(!empty($pg_income['sales'])){
+            foreach ($pg_income['sales'] as $row) {
+    
+                $row['pg_amount'] = (float)$row['sub_total'] + (float)$row['added_amt']; 
+                $row['taxable'] = $row['pg_amount'];
+                $result['sales'][] = $row; 
+            }
+        }
+
+        $result['date']['from'] = $start_date;
+        $result['date']['to'] = $end_date;
+        $result['ac_id'] = $get['id'];
+        $result['month'] = @$get['month'];
+        $result['year'] = @$get['year'];
+
+        // echo '<pre>';print_r($result);exit;
+        return $result;     
+    }
     
 }
 ?>

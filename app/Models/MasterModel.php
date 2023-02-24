@@ -1262,35 +1262,86 @@ public function insert_edit_uom($post)
     }
 
 
-    public function search_acc_particular_data($term) {
+    // public function search_acc_particular_data($term) {
+    //     $db = $this->db;
+    //     $db->setDatabase(session('DataSource'));
+    //     $builder = $db->table('account');
+    //     $builder->select('*');
+    //     $where = "(`code` LIKE '%".$term."%' OR  `name` LIKE '%".$term."%') AND `is_delete` = '0'";
+        
+    //     $builder->where($where);           
+    //     $builder->limit(10);
+    //     $query = $builder->get();
+    //     $getdata = $query->getResultArray();
+    //   // update trupti 24-11-2022
+    //     foreach($getdata as $row){     
+
+    //         $paticular_data = array(
+
+    //             "id" => $row['id'],
+    //             'igst' => $row['igst'],
+    //             'cgst' => $row['cgst'],
+    //             'sgst' => $row['sgst'],
+    //             'taxability' => $row['taxability'],
+            
+    //         );
+    //         $result[] = array(
+    //             "text" => $row['name'] .' ('. $row['hsn'] .')',
+    //             "id" => $row['id'],
+    //             "paticular" => $paticular_data,
+    //             "is_expence" => 1,
+    //         );
+    //     }
+    //     return $result;
+    // }
+    public function search_acc_particular_data($post)
+    {
         $db = $this->db;
         $db->setDatabase(session('DataSource'));
+        $gmodel = new GeneralModel();
+        $in = $gmodel->get_data_table('gl_group',array('name'=>'Incomes'),'id');
+        $ex = $gmodel->get_data_table('gl_group',array('name'=>'Expenses'),'id');
+        $gl_ids = gl_list([$in['id'],$ex['id']]);
+        $gl_ids[]=$in['id'];
+        $gl_ids[]=$ex['id'];
+        
         $builder = $db->table('account');
         $builder->select('*');
-        $where = "(`code` LIKE '%".$term."%' OR  `name` LIKE '%".$term."%') AND `is_delete` = '0'";
-        
-        $builder->where($where);           
-        $builder->limit(10);
+        $builder->where(array('is_delete' => '0'  ));        
+        $builder->whereIn('gl_group',$gl_ids);        
+        if(isset($post['searchTerm'])){
+            $builder->like('name',(@$post['searchTerm']) ? @$post['searchTerm'] : 'A');
+        }
+        // $builder->limit(5);
         $query = $builder->get();
         $getdata = $query->getResultArray();
-      // update trupti 24-11-2022
-        foreach($getdata as $row){     
 
-            $paticular_data = array(
+        $result = array();
+        foreach($getdata as $row){
+            // $result[] = array(
+            //     "text" => $row['name'],
+            //     "id" => $row['id'],
+            //     "gsttin"=>$row['gst'],
+            //     "tds"=>$row['tds_rate'],
+            //     "tds_limit"=>$row['tds_limit'],
+            //     "state"=>$row['state'],
+            //     "address"=>$row['gst_add']);
 
-                "id" => $row['id'],
-                'igst' => $row['igst'],
-                'cgst' => $row['cgst'],
-                'sgst' => $row['sgst'],
-                'taxability' => $row['taxability'],
-            
-            );
-            $result[] = array(
-                "text" => $row['name'] .' ('. $row['hsn'] .')',
-                "id" => $row['id'],
-                "paticular" => $paticular_data,
-                "is_expence" => 1,
-            );
+                $paticular_data = array(
+
+                                "id" => $row['id'],
+                                'igst' => $row['igst'],
+                                'cgst' => $row['cgst'],
+                                'sgst' => $row['sgst'],
+                                'taxability' => $row['taxability'],
+                            
+                            );
+                            $result[] = array(
+                                "text" => $row['name'],
+                                "id" => $row['id'],
+                                "paticular" => $paticular_data,
+                                "is_expence" => 1,
+                            );
         }
         return $result;
     }

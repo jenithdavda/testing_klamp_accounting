@@ -1156,7 +1156,7 @@
             width: 'resolve',
             placeholder: 'Type Party Account',
             ajax: {
-                url: PATH + "Master/Getdata/search_account",
+                url: PATH + "Master/Getdata/search_sun_debtor",
                 type: "post",
                 allowClear: true,
                 dataType: 'json',

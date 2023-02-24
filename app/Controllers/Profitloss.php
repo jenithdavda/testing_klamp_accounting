@@ -283,6 +283,60 @@ class Profitloss extends BaseController{
         ->setContentType('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
        
     }
+    public function pl_generalSales_monthly_AcWise(){
+        if(!session('cid')){
+            return redirect()->to(url('company'));
+        }
+        $get = $this->request->getGet();
+        
+        $data = pl_get_generalSales_monthly_AcWise($get['from'],$get['to'],$get['id']);
+        $gmodel = new GeneralModel();
+        $acc = $gmodel->get_data_table('account',array("id"=>$get['id']),'name');
+        $data['title'] = "General Sales Monthly Account Wise";
+        $data['ac_name'] =$acc['name'];
+        $data['ac_id'] =@$get['id'];
+        $data['type'] =@$get['type'];
+        // echo '<pre>';print_r($data);exit;
+        return view('trading/expence/general_sales_monthlyAcc',$data);
+    }
+    public function generalSales_voucher_wise(){
+        if(!session('cid')){
+            return redirect()->to(url('company'));
+        }
+        $get = $this->request->getGet();
+        $data = $this->model->generalSales_voucher_wise_data($get);        
+        $data['title'] = "General Sales Voucher Wise";
+        $data['type']=@$get['type'];
+        $data['id']=@$get['id'];
+        return view('trading/expence/salesgeneralItem_voucher',$data);
+    }
+    public function pl_generalPurchase_monthly_AcWise(){
+        if(!session('cid')){
+            return redirect()->to(url('company'));
+        }
+        $get = $this->request->getGet();
+        
+        $data = pl_get_generalPurchase_monthly_AcWise($get['from'],$get['to'],$get['id']);
+        $gmodel = new GeneralModel();
+        $acc = $gmodel->get_data_table('account',array("id"=>$get['id']),'name');
+        $data['title'] = "General Sales Monthly Account Wise";
+        $data['ac_name'] =$acc['name'];
+        $data['ac_id'] =@$get['id'];
+        $data['type'] =@$get['type'];
+        // echo '<pre>';print_r($data);exit;
+        return view('trading/income/general_purchase_monthlyAcc',$data);
+    }
+    public function generalPurchase_voucher_wise(){
+        if(!session('cid')){
+            return redirect()->to(url('company'));
+        }
+        $get = $this->request->getGet();
+        $data = $this->model->generalPurchase_voucher_wise_data($get);        
+        $data['title'] = "General Sales Voucher Wise";
+        $data['type']=@$get['type'];
+        $data['id']=@$get['id'];
+        return view('trading/income/purchasegeneralItem_voucher',$data);
+    }
     
     
 

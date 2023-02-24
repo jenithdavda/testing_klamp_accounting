@@ -137,6 +137,17 @@
                             <?php
                                 
                             }
+                            if (isset($general_purchase['total'])) {
+                               
+                                ?>
+                                        <tr>
+                                            <th scope="row">4</th>
+                                            <td><a href="<?= url('Profitloss/pl_generalPurchase_monthly_AcWise?from=' . $from . '&to=' . $to . '&id=' . $id . '&type=' . $type) ?>">General Purchase</a></td>
+                                            <td><?= number_format(@$general_purchase['total'], 2) ?></td>
+                                        </tr>
+                                    <?php
+                                
+                                }
                             ?>
 
                         </tbody>
@@ -145,7 +156,7 @@
                                 <th colspan="2">
                                     <center>Total</center>
                                 </th>
-                                <th><?= number_format(@$general_sales['total'] + @$bank_trans['total'] + @$jv_parti['total'], 2) ?></th>
+                                <th><?= number_format(@$general_sales['total'] + @$bank_trans['total'] + @$jv_parti['total'] + @$general_purchase['total'], 2) ?></th>
 
                             </tr>
                         </tfoot>

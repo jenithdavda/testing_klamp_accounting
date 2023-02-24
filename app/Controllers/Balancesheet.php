@@ -1113,9 +1113,9 @@ class Balancesheet extends BaseController
         $data['ac_name'] =$acc['name'] ;
         $data['from'] =$get['from'];
         $data['to'] =$get['to'];
-        $data['id'] =$get['id'];
+        $data['ac_id'] =$get['id'];
         
-        return view('trading/assets/other_assets',$data);
+        return view('trading/assets/otherassets_monthly_data',$data);
         
     }
     public function get_other_assets_sub_grp(){
@@ -1147,6 +1147,22 @@ class Balancesheet extends BaseController
         
         return view('trading/assets/other_assets_sub_group_detail',$data);
 
+    }
+    public function otherassets_voucher_wise(){
+        if(!session('cid')){
+            return redirect()->to(url('company'));
+        }
+
+        $get = $this->request->getGet();
+        $data = $this->model->otherassets_voucher_wise_data($get);
+        
+        $acc = $this->gmodel->get_data_table('account',array('id'=>$get['id'],'name'));
+        
+
+        $data['title'] = "JV Voucher Wise";
+        $data['ac_name'] = $acc['name'];
+
+        return view('trading/assets/currentassets_jv_voucher_wise',$data);
     }
 }
 

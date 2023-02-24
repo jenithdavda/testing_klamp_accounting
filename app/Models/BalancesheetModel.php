@@ -2205,11 +2205,7 @@ class BalancesheetModel extends Model
             $inc_pl[$pl_inc_id['id']]['name'] = $pl_inc_id['name'];
             $inc_pl[$pl_inc_id['id']]['sub_categories'] = get_PL_income_sub_grp_data($pl_inc_id['id']);
         }
-        if(session('is_stock') == 1 ){
-            $closing_stock = @$manualy_closing_bal;
-        }else{
-            $closing_stock  = @$closing_data['closing_bal'];
-        }
+       
        // echo '<pre>';Print_r($sale_pur);exit;
         $all_purchase = $sale_pur['pur_total_rate'] ;
         $all_purchase_return = $sale_pur['Purret_total_rate'] ;
@@ -2228,7 +2224,13 @@ class BalancesheetModel extends Model
         $inc_pl_total = subGrp_total($inc_pl,$init_total);
         $opening_total = subGrp_total($opening_stock,$init_total);
 
-        $income_total = (float)$all_sale - (float)$all_sale_return + $closing_stock + $opening_total + $inc_total;
+        if(session('is_stock') == 1 ){
+            $closing_stock = @$manualy_closing_bal;
+        }else{
+            $closing_stock  = @$closing_data['closing_bal'] + $opening_total;
+        }
+
+        $income_total = (float)$all_sale - (float)$all_sale_return + $closing_stock + $inc_total;
         $expens_total = $opening_total + (float)$all_purchase  - (float)$all_purchase_return + $exp_total;
 
         if(($expens_total -  $income_total) < 0 ){
@@ -2250,6 +2252,63 @@ class BalancesheetModel extends Model
         //echo '<pre>';print_r($data);exit;
         return $data;
     }
+    public function otherassets_voucher_wise_data($get){
+
+        $db = $this->db;
+        $db->setDatabase(session('DataSource')); 
+       
+        if(!empty($get['year'])){
+
+            $start = strtotime("{$get['year']}-{$get['month']}-01");
+            $end = strtotime('-1 second', strtotime('+1 month', $start));
+             
+            $start_date = date('Y-m-d',$start);
+            $end_date = date('Y-m-d',$end);
+            
+            $builder = $db->table('bank_tras bt');
+            $builder->select('bt.id,ac.id as account_id,ac.name as party_name,bt.receipt_date as date,bt.amount as taxable,bt.mode,bt.payment_type');
+            $builder->join('account ac', 'ac.id =bt.particular');
+            $builder->where(array('bt.particular' => $get['id']));
+            $builder->where(array('ac.is_delete' => '0'));
+            $builder->where(array('bt.is_delete' => '0'));
+            $builder->where(array('DATE(bt.receipt_date)  >= ' => $start_date));
+            $builder->where(array('DATE(bt.receipt_date)  <= ' => $end_date));
+            $builder->groupBy('bt.id');
+            $query = $builder->get();
+            $bank_income = $query->getResultArray();     
+            
+
+        }else if(!empty(@$get['from'])){
+
+            $start_date = @$get['from']  ? db_date($get['from']) : '';
+            $end_date = @$get['to'] ? db_date($get['to']) : '';
+            $builder = $db->table('bank_tras bt');
+            $builder->select('bt.id,ac.id as account_id,ac.name as party_name,bt.receipt_date as date,bt.amount as taxable,bt.mode,bt.payment_type');
+            $builder->join('account ac', 'ac.id =bt.particular');
+            $builder->where(array('bt.particular' => $get['id']));
+            $builder->where(array('ac.is_delete' => '0'));
+            $builder->where(array('bt.is_delete' => '0'));
+            $builder->where(array('DATE(bt.receipt_date)  >= ' => $start_date));
+            $builder->where(array('DATE(bt.receipt_date)  <= ' => $end_date));
+            $builder->groupBy('bt.id');
+            $query = $builder->get();
+            $bank_income = $query->getResultArray();  
+
+        }else{
+            $bank_income = array();
+            $start_date = '';
+            $end_date = '';
+        }   
+
+        $bank_income['date']['from'] = $start_date;
+        $bank_income['date']['to'] = $end_date;
+        $bank_income['ac_id'] = $get['id'];
+
+        // echo '<pre>';print_r($bank_income);exit;
+
+        return $bank_income;     
+    }
+    
    
 }
 ?>
