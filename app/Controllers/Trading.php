@@ -387,7 +387,8 @@ class Trading extends BaseController{
         }else{
             $data['title'] = "Trading Income Voucher";
         }
-
+       // echo '<pre>';Print_r($data);exit;
+        
         return view('trading/income/income_acc_voucher',$data);
     }
     public function get_expence_account_data(){
@@ -758,7 +759,6 @@ class Trading extends BaseController{
         return view('trading/income/sub_group_detail',$data);
 
     }
-
     public function get_expence_sub_grp(){
         
         if(!session('cid')){
@@ -828,6 +828,8 @@ class Trading extends BaseController{
         return view('trading/trading/sub_group_opening_detail',$data);
 
     }
+
+   
 
     
     

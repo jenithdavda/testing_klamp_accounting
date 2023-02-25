@@ -806,10 +806,7 @@ class TradingModel extends Model
 
         $db = $this->db;
         $db->setDatabase(session('DataSource')); 
-        $results_per_page = 15;
-        $page = $get['page'];
-        $page_first_result = ($page - 1) * $results_per_page;
-        $new_limit = ($page - 1) * 15;
+        
         if(!empty($get['year'])){
 
             $start = strtotime("{$get['year']}-{$get['month']}-01");
@@ -819,17 +816,6 @@ class TradingModel extends Model
             $end_date = date('Y-m-d',$end);
 
             $builder = $db->table('purchase_particu pp');
-            $builder->join('purchase_general pg', 'pg.id = pp.parent_id');
-            $builder->join('account ac', 'ac.id = pp.account');
-            $builder->join('account acc', 'acc.id = pg.party_account');
-            $builder->where('pp.account',$get['id']);
-            $builder->where(array('pp.is_delete' => '0'));
-            $builder->where(array('pg.is_delete' => '0','pg.is_cancle' => '0'));
-            $builder->where(array('DATE(pg.doc_date)  >= ' => $start_date));
-            $builder->where(array('DATE(pg.doc_date)  <= ' => $end_date));
-            $builder->where('(pg.v_type="general" OR pg.v_type = "return")');
-            $number_of_result = $builder->countAllResults();
-            $number_of_page = ceil($number_of_result / $results_per_page);
             $builder->select('acc.name as party_name,pg.doc_date as date,pg.invoice_no as voucher_no ,pg.id as id ,pg.v_type as pg_type,pp.account as pp_acc,pp.amount as pg_amount,pp.sub_total,pp.added_amt');
             $builder->join('purchase_general pg', 'pg.id = pp.parent_id');
             $builder->join('account ac', 'ac.id = pp.account');
@@ -841,7 +827,6 @@ class TradingModel extends Model
             $builder->where(array('DATE(pg.doc_date)  <= ' => $end_date));
             $builder->where('(pg.v_type="general" OR pg.v_type = "return")');
             $builder->groupBy('pg.id');
-            $builder->limit($results_per_page, $page_first_result);
             $query = $builder->get();
             $pg_expence['purchase'] = $query->getResultArray();
            
@@ -852,17 +837,6 @@ class TradingModel extends Model
             $end_date = @$get['to'] ? db_date($get['to']) : '';
 
             $builder = $db->table('purchase_particu pp');
-            $builder->join('purchase_general pg', 'pg.id = pp.parent_id');
-            $builder->join('account ac', 'ac.id = pp.account');
-            $builder->join('account acc', 'acc.id = pg.party_account');
-            $builder->where('pp.account',$get['id']);
-            $builder->where(array('pp.is_delete' => '0'));
-            $builder->where(array('pg.is_delete' => '0','pg.is_cancle' => '0'));
-            $builder->where(array('DATE(pg.doc_date)  >= ' => $start_date));
-            $builder->where(array('DATE(pg.doc_date)  <= ' => $end_date));
-            $builder->where('(pg.v_type="general" OR pg.v_type = "return")');
-            $number_of_result = $builder->countAllResults();
-            $number_of_page = ceil($number_of_result / $results_per_page);
             $builder->select('acc.name as party_name,pg.doc_date as date,pg.invoice_no as voucher_no ,pg.id as id ,pg.v_type as pg_type,pp.account as pp_acc,pp.amount as pg_amount,pp.sub_total,pp.added_amt');
             $builder->join('purchase_general pg', 'pg.id = pp.parent_id');
             $builder->join('account ac', 'ac.id = pp.account');
@@ -874,7 +848,6 @@ class TradingModel extends Model
             $builder->where(array('DATE(pg.doc_date)  <= ' => $end_date));
             $builder->where('(pg.v_type="general" OR pg.v_type = "return")');
             $builder->groupBy('pg.id');
-            $builder->limit($results_per_page, $page_first_result);
             $query = $builder->get();
             $pg_expence['purchase'] = $query->getResultArray();
 
@@ -903,8 +876,6 @@ class TradingModel extends Model
         $result['date']['from'] = $start_date;
         $result['date']['to'] = $end_date;
         $result['ac_id'] = $get['id'];
-        $result['page'] = $page;
-        $result['number_of_page'] = @$number_of_page;
         $result['month'] = @$get['month'];
         $result['year'] = @$get['year'];
       
@@ -1059,11 +1030,7 @@ class TradingModel extends Model
 
         $db = $this->db;
         $db->setDatabase(session('DataSource')); 
-        $results_per_page = 15;
-        $page = $get['page'];
-        $page_first_result = ($page - 1) * $results_per_page;
-        $new_limit = ($page - 1) * 15;
-       
+        
         if(!empty($get['year'])){
 
             $start = strtotime("{$get['year']}-{$get['month']}-01");
@@ -1073,14 +1040,6 @@ class TradingModel extends Model
             $end_date = date('Y-m-d',$end);
             
             $builder = $db->table('bank_tras bt');
-            $builder->join('account ac', 'ac.id =bt.particular');
-            $builder->where(array('bt.particular' => $get['id']));
-            $builder->where(array('ac.is_delete' => '0'));
-            $builder->where(array('bt.is_delete' => '0'));
-            $builder->where(array('DATE(bt.receipt_date)  >= ' => $start_date));
-            $builder->where(array('DATE(bt.receipt_date)  <= ' => $end_date));
-            $number_of_result = $builder->countAllResults();
-            $number_of_page = ceil($number_of_result / $results_per_page);
             $builder->select('bt.id,ac.id as account_id,ac.name as party_name,bt.receipt_date as date,bt.amount as taxable,bt.mode,bt.payment_type');
             $builder->join('account ac', 'ac.id =bt.particular');
             $builder->where(array('bt.particular' => $get['id']));
@@ -1088,7 +1047,6 @@ class TradingModel extends Model
             $builder->where(array('bt.is_delete' => '0'));
             $builder->where(array('DATE(bt.receipt_date)  >= ' => $start_date));
             $builder->where(array('DATE(bt.receipt_date)  <= ' => $end_date));
-            $builder->limit($results_per_page, $page_first_result);
             $builder->groupBy('bt.id');
             $query = $builder->get();
             $bank_expence['purchase'] = $query->getResultArray();     
@@ -1100,14 +1058,6 @@ class TradingModel extends Model
             $end_date = @$get['to'] ? db_date($get['to']) : '';
 
             $builder = $db->table('bank_tras bt');
-            $builder->join('account ac', 'ac.id =bt.particular');
-            $builder->where(array('bt.particular' => $get['id']));
-            $builder->where(array('ac.is_delete' => '0'));
-            $builder->where(array('bt.is_delete' => '0'));
-            $builder->where(array('DATE(bt.receipt_date)  >= ' => $start_date));
-            $builder->where(array('DATE(bt.receipt_date)  <= ' => $end_date));
-            $number_of_result = $builder->countAllResults();
-            $number_of_page = ceil($number_of_result / $results_per_page);
             $builder->select('bt.id,ac.id as account_id,ac.name as party_name,bt.receipt_date as date,bt.amount as taxable,bt.mode,bt.payment_type');
             $builder->join('account ac', 'ac.id =bt.particular');
             $builder->where(array('bt.particular' => $get['id']));
@@ -1115,7 +1065,6 @@ class TradingModel extends Model
             $builder->where(array('bt.is_delete' => '0'));
             $builder->where(array('DATE(bt.receipt_date)  >= ' => $start_date));
             $builder->where(array('DATE(bt.receipt_date)  <= ' => $end_date));
-            $builder->limit($results_per_page, $page_first_result);
             $builder->groupBy('bt.id');
             $query = $builder->get();
             $bank_expence['purchase'] = $query->getResultArray();      
@@ -1129,8 +1078,6 @@ class TradingModel extends Model
         $bank_expence['date']['from'] = $start_date;
         $bank_expence['date']['to'] = $end_date;
         $bank_expence['ac_id'] = $get['id'];
-        $bank_expence['page'] = $page;
-        $bank_expence['number_of_page'] = @$number_of_page;
         $bank_expence['month'] = @$get['month'];
         $bank_expence['year'] = @$get['year'];
         // echo '<pre>';print_r($bank_income);exit;
@@ -1140,11 +1087,7 @@ class TradingModel extends Model
 
         $db = $this->db;
         $db->setDatabase(session('DataSource')); 
-        $results_per_page = 15;
-        $page = $get['page'];
-        $page_first_result = ($page - 1) * $results_per_page;
-        $new_limit = ($page - 1) * 15;
-       
+        
         if(!empty($get['year'])){
 
             $start = strtotime("{$get['year']}-{$get['month']}-01");
@@ -1154,14 +1097,6 @@ class TradingModel extends Model
             $end_date = date('Y-m-d',$end);
             
             $builder = $db->table('jv_particular jv');
-            $builder->join('account ac', 'ac.id =jv.particular');
-            $builder->where(array('jv.particular' => $get['id']));
-            $builder->where(array('ac.is_delete' => '0'));
-            $builder->where(array('jv.is_delete' => '0'));
-            $builder->where(array('DATE(jv.date)  >= ' => $start_date));
-            $builder->where(array('DATE(jv.date)  <= ' => $end_date));
-            $number_of_result = $builder->countAllResults();
-            $number_of_page = ceil($number_of_result / $results_per_page);
             $builder->select('jv.jv_id as id,jv.date,ac.id as account_id,jv.amount as taxable, ac.name as party_name,jv.dr_cr');
             $builder->join('account ac', 'ac.id =jv.particular');
             $builder->where(array('jv.particular' => $get['id']));
@@ -1170,7 +1105,6 @@ class TradingModel extends Model
             $builder->where(array('DATE(jv.date)  >= ' => $start_date));
             $builder->where(array('DATE(jv.date)  <= ' => $end_date));
             $builder->groupBy('jv.id');
-            $builder->limit($results_per_page, $page_first_result);
             $query = $builder->get();
             $jv_expence['purchase'] = $query->getResultArray();
 
@@ -1180,14 +1114,6 @@ class TradingModel extends Model
             $end_date = @$get['to'] ? db_date($get['to']) : '';
 
             $builder = $db->table('jv_particular jv');
-            $builder->join('account ac', 'ac.id =jv.particular');
-            $builder->where(array('jv.particular' => $get['id']));
-            $builder->where(array('ac.is_delete' => '0'));
-            $builder->where(array('jv.is_delete' => '0'));
-            $builder->where(array('DATE(jv.date)  >= ' => $start_date));
-            $builder->where(array('DATE(jv.date)  <= ' => $end_date));
-            $number_of_result = $builder->countAllResults();
-            $number_of_page = ceil($number_of_result / $results_per_page);
             $builder->select('jv.jv_id as id,jv.date,ac.id as account_id,jv.amount as taxable, ac.name as party_name,jv.dr_cr');
             $builder->join('account ac', 'ac.id =jv.particular');
             $builder->where(array('jv.particular' => $get['id']));
@@ -1196,7 +1122,6 @@ class TradingModel extends Model
             $builder->where(array('DATE(jv.date)  >= ' => $start_date));
             $builder->where(array('DATE(jv.date)  <= ' => $end_date));
             $builder->groupBy('jv.id');
-            $builder->limit($results_per_page, $page_first_result);
             $query = $builder->get();
             $jv_expence['purchase'] = $query->getResultArray();
 
@@ -1210,8 +1135,6 @@ class TradingModel extends Model
         $jv_expence['date']['from'] = $start_date;
         $jv_expence['date']['to'] = $end_date;
         $jv_expence['ac_id'] = $get['id'];
-        $jv_expence['page'] = $page;
-        $jv_expence['number_of_page'] = @$number_of_page;
         $jv_expence['month'] = @$get['month'];
         $jv_expence['year'] = @$get['year'];
         

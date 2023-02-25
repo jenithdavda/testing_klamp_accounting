@@ -183,6 +183,8 @@ class Profitloss extends BaseController{
         $data['trading']['closing_stock'] = @$closing_data['closing_stock'];
         $data['trading']['manualy_closing_bal'] = @$manualy_closing_bal;
         $data['trading']['opening_bal_total'] = @$opening_total;
+        //echo '<pre>';Print_r($data);exit;
+        
 
         //update trupti 03-12-2022
         $data['start_date'] = $post['from']?$post['from']:$company_from;
@@ -310,32 +312,50 @@ class Profitloss extends BaseController{
         $data['id']=@$get['id'];
         return view('trading/expence/salesgeneralItem_voucher',$data);
     }
-    public function pl_generalPurchase_monthly_AcWise(){
+    // public function pl_generalPurchase_monthly_AcWise(){
+    //     if(!session('cid')){
+    //         return redirect()->to(url('company'));
+    //     }
+    //     $get = $this->request->getGet();
+        
+    //     $data = pl_get_generalPurchase_monthly_AcWise($get['from'],$get['to'],$get['id']);
+    //     $gmodel = new GeneralModel();
+    //     $acc = $gmodel->get_data_table('account',array("id"=>$get['id']),'name');
+    //     $data['title'] = "General Sales Monthly Account Wise";
+    //     $data['ac_name'] =$acc['name'];
+    //     $data['ac_id'] =@$get['id'];
+    //     $data['type'] =@$get['type'];
+    //     // echo '<pre>';print_r($data);exit;
+    //     return view('trading/income/general_purchase_monthlyAcc',$data);
+    // }
+    // public function generalPurchase_voucher_wise(){
+    //     if(!session('cid')){
+    //         return redirect()->to(url('company'));
+    //     }
+    //     $get = $this->request->getGet();
+    //     $data = $this->model->generalPurchase_voucher_wise_data($get);        
+    //     $data['title'] = "General Sales Voucher Wise";
+    //     $data['type']=@$get['type'];
+    //     $data['id']=@$get['id'];
+    //     return view('trading/income/purchasegeneralItem_voucher',$data);
+    // }
+    public function pl_sales_invoice_monthly_AcWise(){
         if(!session('cid')){
             return redirect()->to(url('company'));
         }
         $get = $this->request->getGet();
         
-        $data = pl_get_generalPurchase_monthly_AcWise($get['from'],$get['to'],$get['id']);
+        $data['purchase_invoice'] = get_pl_sales_invoice_monthly_data($get['from'],$get['to'],$get['id']);
         $gmodel = new GeneralModel();
         $acc = $gmodel->get_data_table('account',array("id"=>$get['id']),'name');
-        $data['title'] = "General Sales Monthly Account Wise";
+        $data['title'] = "Purchase Invoice Monthly Account Wise";
         $data['ac_name'] =$acc['name'];
         $data['ac_id'] =@$get['id'];
         $data['type'] =@$get['type'];
-        // echo '<pre>';print_r($data);exit;
-        return view('trading/income/general_purchase_monthlyAcc',$data);
-    }
-    public function generalPurchase_voucher_wise(){
-        if(!session('cid')){
-            return redirect()->to(url('company'));
-        }
-        $get = $this->request->getGet();
-        $data = $this->model->generalPurchase_voucher_wise_data($get);        
-        $data['title'] = "General Sales Voucher Wise";
-        $data['type']=@$get['type'];
-        $data['id']=@$get['id'];
-        return view('trading/income/purchasegeneralItem_voucher',$data);
+        $data['from'] =@$get['from'];
+        $data['to'] =@$get['to'];
+       
+        return view('trading/expence/purchase_invoice_monthlyAcc',$data);
     }
     
     

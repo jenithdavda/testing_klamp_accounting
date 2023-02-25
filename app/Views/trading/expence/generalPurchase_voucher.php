@@ -96,7 +96,7 @@
                 </div>
 
                 <div class="table-responsive">
-                    <table class="table main-table-reference mt-0 mb-0 text-center">
+                <table class="table main-table-reference mt-0 mb-0 text-center my_table" style="width: 100%;">
                         <thead>
                             <tr>
                                 <th>Date</th>
@@ -158,84 +158,7 @@
                                 <th colspan="3"><?= number_format($closing, 2) ?></th>
 
                             </tr>
-                            <tr>
-                                <td colspan="7">
-                                    <div class="paginate-section">
-                                        <div class="container-fluid">
-                                            <div class="row">
-                                                <!-- <div class="col-lg-3 col-md-3 col-sm-12 col-xl-3">
-                                                                            <div class="page">
-                                                                                <h5>Page 1 of 2</h5>
-                                                                            </div>
-                                                                        </div> -->
-                                                <div class="col-lg-12 col-md-12 col-sm-12 col-xl-12">
-                                                    <div class="pagination-list" id="pagination_link">
-                                                        <ul class="pagination justify-content-center">
-                                                            <?php
-
-                                                            if ($page > 1) {
-                                                            ?>
-                                                                <li class="page-item"><a class="page-link" href="<?= url('Trading/generalPurchase_voucher_wise?from=' . @$date['from'] . '&to=' . @$date['to'] . '&page=' . ($page - 1)) ?>" data-ci-pagination-page="<?= $page - 1 ?>">PREV</a>
-                                                                </li>
-                                                            <?php
-                                                            }
-                                                            if ($page > 9) {
-                                                            ?>
-                                                                <li class="page-item"><a class="page-link" href="<?= url('Trading/generalPurchase_voucher_wise?from=' . @$date['from'] . '&to=' . @$date['to'] . '&page=' . ($page - 1)) ?>" data-ci-pagination-page="1">1</a></li>
-                                                                <li class="blank">...</li>
-                                                            <?php
-                                                            }
-                                                            if ($page - 2 > 0) {
-                                                            ?>
-                                                                <li class="page-item"><a class="page-link" href="<?= url('Trading/generalPurchase_voucher_wise?from=' . @$date['from'] . '&to=' . @$date['to'] . '&page=' . ($page - 2)) ?>" data-ci-pagination-page="<?= ($page - 2) ?>"><?= ($page - 2) ?></a>
-                                                                </li>
-                                                            <?php
-                                                            }
-                                                            if ($page - 1 > 0) {
-                                                            ?>
-                                                                <li class="page-item"><a class="page-link" href="<?= url('Trading/generalPurchase_voucher_wise?from=' . @$date['from'] . '&to=' . @$date['to'] . '&page=' . ($page - 1)) ?>" data-ci-pagination-page="<?= ($page - 1) ?>"><?= ($page - 1) ?></a>
-                                                                </li>
-                                                            <?php
-                                                            }
-                                                            ?>
-                                                            <li class="page-item"><a class="page-link current" href="<?= url('Trading/generalPurchase_voucher_wise?from=' . @$date['from'] . '&to=' . @$date['to'] . '&page=' . ($page)) ?>" data-ci-pagination-page="<?= ($page) ?>"><?= $page ?></a>
-                                                            </li>
-                                                            <?php
-                                                            if ($page + 1 < $number_of_page + 1) {
-                                                            ?>
-                                                                <li class="page-item"><a class="page-link" href="<?= url('Trading/generalPurchase_voucher_wise?from=' . @$date['from'] . '&to=' . @$date['to'] . '&page=' . ($page + 1)) ?>" data-ci-pagination-page="<?= ($page + 1) ?>"><?= ($page + 1) ?></a>
-                                                                </li>
-                                                            <?php
-                                                            }
-                                                            if ($page + 2 < $number_of_page + 1) {
-                                                            ?>
-                                                                <li class="page-item"><a class="page-link" href="<?= url('Trading/generalPurchase_voucher_wise?from=' . @$date['from'] . '&to=' . @$date['to'] . '&page=' . ($page + 2)) ?>" data-ci-pagination-page="<?= ($page + 2) ?>"><?= ($page + 2) ?></a>
-                                                                </li>
-                                                            <?php
-                                                            }
-                                                            if ($page < $number_of_page - 2) {
-
-                                                            ?>
-                                                                <li lass="page-item">...</li>
-                                                                <li><a class="page-link" href="<?= url('Trading/generalPurchase_voucher_wise?from=' . @$date['from'] . '&to=' . @$date['to'] . '&page=' . ($number_of_page)) ?>" data-ci-pagination-page="<?= ($number_of_page) ?>"><?= $number_of_page ?></a>
-                                                                </li>
-                                                            <?php
-                                                            }
-                                                            if ($page < $number_of_page) {
-                                                            ?>
-                                                                <li class="page-item"><a class="page-link" href="<?= url('Trading/generalPurchase_voucher_wise?from=' . @$date['from'] . '&to=' . @$date['to'] . '&page=' . ($page + 1)) ?>" data-ci-pagination-page="<?= ($page + 1) ?>">Next</a>
-                                                                </li>
-                                                            <?php
-                                                            }
-                                                            ?>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
-                            </tr>
+                           
                         </tfooter>
                     </table>
                 </div>
@@ -250,6 +173,11 @@
 <?= $this->section('scripts') ?>
 <script type="text/javascript">
     $(document).ready(function() {
+        $(".my_table").DataTable({
+            "order": [
+                [3, "asc"]
+            ],
+        });
         $('.fc-datepicker').datepicker({
             dateFormat: 'yy-mm-dd',
             showOtherMonths: true,

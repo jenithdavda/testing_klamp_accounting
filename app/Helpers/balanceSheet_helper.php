@@ -6258,6 +6258,6 @@ function get_otherassets_account_wise($start_date, $end_date, $id)
     $result['other_assets'] = $arr;
     $result['from'] = $start_date;
     $result['to'] = $end_date;
-    echo '<pre>';print_r($result);exit;
+    //echo '<pre>';print_r($result);exit;
     return $result;
 }

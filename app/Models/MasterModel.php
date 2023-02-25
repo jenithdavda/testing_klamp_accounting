@@ -1406,7 +1406,7 @@ public function insert_edit_uom($post)
         $db->setDatabase(session('DataSource')); 
         $builder = $db->table('gl_group');
         $builder->select('id,name,parent');
-        $builder->where(array('is_delete' => '0'));
+        $builder->where(array('is_delete' => '0','is_view' => '0'));
         if(isset($post['searchTerm'])){
             $builder->like('name',(@$post['searchTerm']) ? @$post['searchTerm'] : 'A');
         }

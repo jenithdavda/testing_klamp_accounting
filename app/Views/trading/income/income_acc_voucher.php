@@ -148,6 +148,51 @@
                                     <?php
                                 
                                 }
+                                if (isset($sales_invoice['total'])) {
+                               
+                                    ?>
+                                            <tr>
+                                                <th scope="row">5</th>
+                                                <td><a href="<?= url('Profitloss/pl_sales_invoice_monthly_AcWise?from=' . $from . '&to=' . $to . '&id=' . $id . '&type=' . $type) ?>">Sales Invoice</a></td>
+                                                <td><?= number_format(@$sales_invoice['total'], 2) ?></td>
+                                            </tr>
+                                        <?php
+                                    
+                            }
+                            if (isset($sales_return['total'])) {
+                               
+                                ?>
+                                        <tr>
+                                            <th scope="row">6</th>
+                                            <td><a href="<?= url('Profitloss/pl_sales_return_monthly_AcWise?from=' . $from . '&to=' . $to . '&id=' . $id . '&type=' . $type) ?>">Sales Return</a></td>
+                                            <td>-<?= number_format(@$sales_return['total'], 2) ?></td>
+                                        </tr>
+                                    <?php
+                                
+                            }
+                            if (isset($purchase_invoice['total'])) {
+                               
+                                ?>
+                                        <tr>
+                                            <th scope="row">7</th>
+                                            <td><a href="<?= url('Profitloss/pl_purchase_invoice_monthly_AcWise?from=' . $from . '&to=' . $to . '&id=' . $id . '&type=' . $type) ?>">Purchase Invoice</a></td>
+                                            <td>-<?= number_format(@$purchase_invoice['total'], 2) ?></td>
+                                        </tr>
+                                    <?php
+                                
+                            }
+                            if (isset($purchase_return['total'])) {
+                            
+                                ?>
+                                        <tr>
+                                            <th scope="row">8</th>
+                                            <td><a href="<?= url('Profitloss/pl_purchase_return_monthly_AcWise?from=' . $from . '&to=' . $to . '&id=' . $id . '&type=' . $type) ?>">Purchase Return</a></td>
+                                            <td><?= number_format(@$purchase_return['total'], 2) ?></td>
+                                        </tr>
+                                    <?php
+                                
+                        }
+                         
                             ?>
 
                         </tbody>
@@ -156,7 +201,7 @@
                                 <th colspan="2">
                                     <center>Total</center>
                                 </th>
-                                <th><?= number_format(@$general_sales['total'] + @$bank_trans['total'] + @$jv_parti['total'] + @$general_purchase['total'], 2) ?></th>
+                                <th><?= number_format(@$general_sales['total'] + @$bank_trans['total'] + @$jv_parti['total'] + @$general_purchase['total'] + @$sales_invoice['total'] - @$sales_return['total'] - @$purchase_invoice['total'] + @$purchase_return['total'], 2) ?></th>
 
                             </tr>
                         </tfoot>
