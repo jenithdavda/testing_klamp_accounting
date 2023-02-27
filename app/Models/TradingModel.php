@@ -210,15 +210,15 @@ class TradingModel extends Model
              
             $start_date = date('Y-m-d',$start);
             $end_date = date('Y-m-d',$end);
-             
 
-            $builder = $db->table('sales_invoice p');
-            $builder->select('p.invoice_no as voucher_id,p.custom_inv_no,p.id,p.taxable,ac.name as party_name,p.invoice_date  as date');
-            $builder->join('account ac', 'ac.id =p.account');
-            $builder->where('p.is_delete',0);
-            $builder->where('p.is_cancle',0);
-            $builder->where(array('DATE(p.invoice_date)  >= ' => $start_date));
-            $builder->where(array('DATE(p.invoice_date)  <= ' => $end_date));
+            $builder = $db->table('sales_invoice pi');
+            $builder->select('ac.name as party_name,pi.custom_inv_no,pi.invoice_date as date,pi.invoice_no as voucher_no,pi.id,pp.item_id as pp_acc,pp.discount,SUM(pp.added_amt) as added_amt,SUM(pp.sub_total) as sub_total');
+            $builder->join('sales_item pp', 'pp.parent_id =pi.id');
+            $builder->join('account ac', 'ac.id =pi.account');
+            $builder->where(array('pp.is_delete' => 0,'pi.is_cancle' => 0,'pi.is_delete' => 0,'pp.type'=>'invoice','pp.is_expence'=>0));
+            $builder->where(array('DATE(pi.invoice_date)  >= ' => $start_date));
+            $builder->where(array('DATE(pi.invoice_date)  <= ' => $end_date));
+            $builder->groupBy("pp.parent_id");
             $query = $builder->get();
             $sales['sales'] = $query->getResultArray();
 
@@ -228,13 +228,14 @@ class TradingModel extends Model
             $start_date = @$get['from']  ? db_date($get['from']) : '';
             $end_date = @$get['to'] ? db_date($get['to']) : '';
 
-            $builder = $db->table('sales_invoice p');
-            $builder->select('p.invoice_no as voucher_id,p.custom_inv_no,p.id,p.taxable,ac.name as party_name,p.invoice_date  as date');
-            $builder->join('account ac', 'ac.id =p.account');
-            $builder->where('p.is_delete',0);
-            $builder->where('p.is_cancle',0);
-            $builder->where(array('DATE(p.invoice_date)  >= ' => $start_date));
-            $builder->where(array('DATE(p.invoice_date)  <= ' => $end_date));
+            $builder = $db->table('sales_invoice pi');
+            $builder->select('ac.name as party_name,pi.custom_inv_no,pi.invoice_date as date,pi.invoice_no as voucher_no,pi.id,pp.item_id as pp_acc,pp.discount,SUM(pp.added_amt) as added_amt,SUM(pp.sub_total) as sub_total');
+            $builder->join('sales_item pp', 'pp.parent_id =pi.id');
+            $builder->join('account ac', 'ac.id =pi.account');
+            $builder->where(array('pp.is_delete' => 0,'pi.is_cancle' => 0,'pi.is_delete' => 0,'pp.type'=>'invoice','pp.is_expence'=>0));
+            $builder->where(array('DATE(pi.invoice_date)  >= ' => $start_date));
+            $builder->where(array('DATE(pi.invoice_date)  <= ' => $end_date));
+            $builder->groupBy("pp.parent_id");
             $query = $builder->get();
             $sales['sales'] = $query->getResultArray();
 
@@ -243,19 +244,30 @@ class TradingModel extends Model
             $start_date = '';
             $end_date = '';
         }   
-        $builder = $db->table('sales_invoice p');
-        $builder->select('SUM(p.taxable) as sales_total');
-        $builder->where(array('p.is_delete'=>0,'p.is_cancle'=>0));
-        $builder->where(array('DATE(p.invoice_date)  >= ' => $start_date));
-        $builder->where(array('DATE(p.invoice_date)  <= ' => $end_date));
-        $query = $builder->get();
-        $sales['total'] = $query->getRowArray();
+        //echo '<pre>';Print_r($purchase['purchase']);exit;
+        
+        $result['sales'] = array();
+        $total = 0;
+        if(!empty($sales['sales'])){
+            foreach ($sales['sales'] as $row) {
+    
+                $row['pg_amount'] = (float)$row['sub_total'] + (float)$row['added_amt']; 
+                $row['taxable'] = $row['pg_amount'];
+                $result['sales'][] = $row; 
+            }
+        }
 
-        $sales['date']['from'] = $start_date;
-        $sales['date']['to'] = $end_date;
+        $result['date']['from'] = $start_date;
+        $result['date']['to'] = $end_date;
+        $result['month'] = @$get['month'];
+        $result['year'] = @$get['year'];
 
-        //echo '<pre>';print_r($sales);exit;
-        return $sales;     
+        //echo '<pre>';print_r($result);exit;
+        return $result;      
+
+
+
+           
     }
     // public function salesReturnItem_voucher_wise_data($get){
     //     $db = $this->db;
@@ -353,8 +365,6 @@ class TradingModel extends Model
     public function salesReturnItem_voucher_wise_data($get){
         $db = $this->db;
         $db->setDatabase(session('DataSource')); 
-        $purchase = array();
-
         if(!empty($get['year'])){
 
             $start = strtotime("{$get['year']}-{$get['month']}-01");
@@ -362,15 +372,15 @@ class TradingModel extends Model
              
             $start_date = date('Y-m-d',$start);
             $end_date = date('Y-m-d',$end);
-             
 
-            $builder = $db->table('sales_return p');
-            $builder->select('p.return_no as voucher_id,p.id,p.taxable,ac.name as party_name,p.return_date  as date');
-            $builder->join('account ac', 'ac.id =p.account');
-            $builder->where('p.is_delete',0);
-            $builder->where('p.is_cancle',0);
-            $builder->where(array('DATE(p.return_date)  >= ' => $start_date));
-            $builder->where(array('DATE(p.return_date)  <= ' => $end_date));
+            $builder = $db->table('sales_return pi');
+            $builder->select('ac.name as party_name,pi.return_date as date,pi.return_no as voucher_no,pi.id,pp.item_id as pp_acc,pp.discount,SUM(pp.added_amt) as added_amt,SUM(pp.sub_total) as sub_total');
+            $builder->join('sales_item pp', 'pp.parent_id =pi.id');
+            $builder->join('account ac', 'ac.id =pi.account');
+            $builder->where(array('pp.is_delete' => 0,'pi.is_cancle' => 0,'pi.is_delete' => 0,'pp.type'=>'return','pp.is_expence'=>0));
+            $builder->where(array('DATE(pi.return_date)  >= ' => $start_date));
+            $builder->where(array('DATE(pi.return_date)  <= ' => $end_date));
+            $builder->groupBy("pp.parent_id");
             $query = $builder->get();
             $sales['sales'] = $query->getResultArray();
 
@@ -380,35 +390,42 @@ class TradingModel extends Model
             $start_date = @$get['from']  ? db_date($get['from']) : '';
             $end_date = @$get['to'] ? db_date($get['to']) : '';
 
-            $builder = $db->table('sales_return p');
-            $builder->select('p.return_no as voucher_id,p.id,p.taxable,ac.name as party_name,p.return_date  as date');
-            $builder->join('account ac', 'ac.id =p.account');
-            $builder->where('p.is_delete',0);
-            $builder->where('p.is_cancle',0);
-            $builder->where(array('DATE(p.return_date)  >= ' => $start_date));
-            $builder->where(array('DATE(p.return_date)  <= ' => $end_date));
+            $builder = $db->table('sales_return pi');
+            $builder->select('ac.name as party_name,pi.return_date as date,pi.return_no as voucher_no,pi.id,pp.item_id as pp_acc,pp.discount,SUM(pp.added_amt) as added_amt,SUM(pp.sub_total) as sub_total');
+            $builder->join('sales_item pp', 'pp.parent_id =pi.id');
+            $builder->join('account ac', 'ac.id =pi.account');
+            $builder->where(array('pp.is_delete' => 0,'pi.is_cancle' => 0,'pi.is_delete' => 0,'pp.type'=>'return','pp.is_expence'=>0));
+            $builder->where(array('DATE(pi.return_date)  >= ' => $start_date));
+            $builder->where(array('DATE(pi.return_date)  <= ' => $end_date));
+            $builder->groupBy("pp.parent_id");
             $query = $builder->get();
             $sales['sales'] = $query->getResultArray();
-
 
         }else{
             $sales['sales'] = array();
             $start_date = '';
             $end_date = '';
         }   
-        $builder = $db->table('sales_return p');
-        $builder->select('SUM(p.taxable) as sales_total');
-        $builder->where(array('p.is_delete'=>0,'p.is_cancle'=>0));
-        $builder->where(array('DATE(p.return_date)  >= ' => $start_date));
-        $builder->where(array('DATE(p.return_date)  <= ' => $end_date));
-        $query = $builder->get();
-        $sales['total'] = $query->getRowArray();
+        //echo '<pre>';Print_r($purchase['purchase']);exit;
+        
+        $result['sales'] = array();
+        $total = 0;
+        if(!empty($sales['sales'])){
+            foreach ($sales['sales'] as $row) {
+    
+                $row['pg_amount'] = (float)$row['sub_total'] + (float)$row['added_amt']; 
+                $row['taxable'] = $row['pg_amount'];
+                $result['sales'][] = $row; 
+            }
+        }
 
-        $sales['date']['from'] = $start_date;
-        $sales['date']['to'] = $end_date;
+        $result['date']['from'] = $start_date;
+        $result['date']['to'] = $end_date;
+        $result['month'] = @$get['month'];
+        $result['year'] = @$get['year'];
 
-        //echo '<pre>';print_r($sales);exit;
-        return $sales;     
+        //echo '<pre>';print_r($result);exit;
+        return $result;         
     }
     // public function purchaseItem_voucher_wise_data($get){
     //     $db = $this->db;
@@ -515,15 +532,15 @@ class TradingModel extends Model
              
             $start_date = date('Y-m-d',$start);
             $end_date = date('Y-m-d',$end);
-             
 
-            $builder = $db->table('purchase_invoice p');
-            $builder->select('p.invoice_no as voucher_id,p.custom_inv_no,p.id,p.taxable,ac.name as party_name,p.invoice_date  as date');
-            $builder->join('account ac', 'ac.id =p.account');
-            $builder->where('p.is_delete',0);
-            $builder->where('p.is_cancle',0);
-            $builder->where(array('DATE(p.invoice_date)  >= ' => $start_date));
-            $builder->where(array('DATE(p.invoice_date)  <= ' => $end_date));
+            $builder = $db->table('purchase_invoice pi');
+            $builder->select('ac.name as party_name,pi.invoice_date as date,pi.invoice_no as voucher_no,pi.id,pp.item_id as pp_acc,pp.discount,SUM(pp.added_amt) as added_amt,SUM(pp.sub_total) as sub_total');
+            $builder->join('purchase_item pp', 'pp.parent_id =pi.id');
+            $builder->join('account ac', 'ac.id =pi.account');
+            $builder->where(array('pp.is_delete' => 0,'pi.is_cancle' => 0,'pi.is_delete' => 0,'pp.type'=>'invoice','pp.is_expence'=>0));
+            $builder->where(array('DATE(pi.invoice_date)  >= ' => $start_date));
+            $builder->where(array('DATE(pi.invoice_date)  <= ' => $end_date));
+            $builder->groupBy("pp.parent_id");
             $query = $builder->get();
             $purchase['purchase'] = $query->getResultArray();
 
@@ -533,13 +550,14 @@ class TradingModel extends Model
             $start_date = @$get['from']  ? db_date($get['from']) : '';
             $end_date = @$get['to'] ? db_date($get['to']) : '';
 
-            $builder = $db->table('purchase_invoice p');
-            $builder->select('p.invoice_no as voucher_id,p.custom_inv_no,p.id,p.taxable,ac.name as party_name,p.invoice_date  as date');
-            $builder->join('account ac', 'ac.id =p.account');
-            $builder->where('p.is_delete',0);
-            $builder->where('p.is_cancle',0);
-            $builder->where(array('DATE(p.invoice_date)  >= ' => $start_date));
-            $builder->where(array('DATE(p.invoice_date)  <= ' => $end_date));
+            $builder = $db->table('purchase_invoice pi');
+            $builder->select('ac.name as party_name,pi.invoice_date as date,pi.invoice_no as voucher_no,pi.id,pp.item_id as pp_acc,pp.discount,SUM(pp.added_amt) as added_amt,SUM(pp.sub_total) as sub_total');
+            $builder->join('purchase_item pp', 'pp.parent_id =pi.id');
+            $builder->join('account ac', 'ac.id =pi.account');
+            $builder->where(array('pp.is_delete' => 0,'pi.is_cancle' => 0,'pi.is_delete' => 0,'pp.type'=>'invoice','pp.is_expence'=>0));
+            $builder->where(array('DATE(pi.invoice_date)  >= ' => $start_date));
+            $builder->where(array('DATE(pi.invoice_date)  <= ' => $end_date));
+            $builder->groupBy("pp.parent_id");
             $query = $builder->get();
             $purchase['purchase'] = $query->getResultArray();
 
@@ -548,19 +566,26 @@ class TradingModel extends Model
             $start_date = '';
             $end_date = '';
         }   
-        $builder = $db->table('purchase_invoice p');
-        $builder->select('SUM(p.taxable) as purchase_total');
-        $builder->where(array('p.is_delete'=>0,'p.is_cancle'=>0));
-        $builder->where(array('DATE(p.invoice_date)  >= ' => $start_date));
-        $builder->where(array('DATE(p.invoice_date)  <= ' => $end_date));
-        $query = $builder->get();
-        $purchase['total'] = $query->getRowArray();
+        //echo '<pre>';Print_r($purchase['purchase']);exit;
+        
+        $result['purchase'] = array();
+        $total = 0;
+        if(!empty($purchase['purchase'])){
+            foreach ($purchase['purchase'] as $row) {
+    
+                $row['pg_amount'] = (float)$row['sub_total'] + (float)$row['added_amt']; 
+                $row['taxable'] = $row['pg_amount'];
+                $result['purchase'][] = $row; 
+            }
+        }
 
-        $purchase['date']['from'] = $start_date;
-        $purchase['date']['to'] = $end_date;
+        $result['date']['from'] = $start_date;
+        $result['date']['to'] = $end_date;
+        $result['month'] = @$get['month'];
+        $result['year'] = @$get['year'];
 
-        //echo '<pre>';print_r($sales);exit;
-        return $purchase;     
+        //echo '<pre>';print_r($result);exit;
+        return $result;         
     }
     // public function purchaseReturnItem_voucher_wise_data($get){
     //     $db = $this->db;
@@ -667,14 +692,15 @@ class TradingModel extends Model
              
             $start_date = date('Y-m-d',$start);
             $end_date = date('Y-m-d',$end);
-             
 
-            $builder = $db->table('purchase_return p');
-            $builder->select('p.return_no as voucher_id,p.id,p.taxable,ac.name as party_name,p.return_date  as date');
-            $builder->join('account ac', 'ac.id =p.account');
-            $builder->where(array('p.is_delete'=>0,'p.is_cancle'=>0));
-            $builder->where(array('DATE(p.return_date)  >= ' => $start_date));
-            $builder->where(array('DATE(p.return_date)  <= ' => $end_date));
+            $builder = $db->table('purchase_return pi');
+            $builder->select('ac.name as party_name,pi.return_date as date,pi.return_no as voucher_no,pi.id,pp.item_id as pp_acc,pp.discount,SUM(pp.added_amt) as added_amt,SUM(pp.sub_total) as sub_total');
+            $builder->join('purchase_item pp', 'pp.parent_id =pi.id');
+            $builder->join('account ac', 'ac.id =pi.account');
+            $builder->where(array('pp.is_delete' => 0,'pi.is_cancle' => 0,'pi.is_delete' => 0,'pp.type'=>'return','pp.is_expence'=>0));
+            $builder->where(array('DATE(pi.return_date)  >= ' => $start_date));
+            $builder->where(array('DATE(pi.return_date)  <= ' => $end_date));
+            $builder->groupBy("pp.parent_id");
             $query = $builder->get();
             $purchase['purchase'] = $query->getResultArray();
 
@@ -684,12 +710,14 @@ class TradingModel extends Model
             $start_date = @$get['from']  ? db_date($get['from']) : '';
             $end_date = @$get['to'] ? db_date($get['to']) : '';
 
-            $builder = $db->table('purchase_return p');
-            $builder->select('p.return_no as voucher_id,p.id,p.taxable,ac.name as party_name,p.return_date  as date');
-            $builder->join('account ac', 'ac.id =p.account');
-            $builder->where(array('p.is_delete'=>0,'p.is_cancle'=>0));
-            $builder->where(array('DATE(p.return_date)  >= ' => $start_date));
-            $builder->where(array('DATE(p.return_date)  <= ' => $end_date));
+            $builder = $db->table('purchase_return pi');
+            $builder->select('ac.name as party_name,pi.return_date as date,pi.return_no as voucher_no,pi.id,pp.item_id as pp_acc,pp.discount,SUM(pp.added_amt) as added_amt,SUM(pp.sub_total) as sub_total');
+            $builder->join('purchase_item pp', 'pp.parent_id =pi.id');
+            $builder->join('account ac', 'ac.id =pi.account');
+            $builder->where(array('pp.is_delete' => 0,'pi.is_cancle' => 0,'pi.is_delete' => 0,'pp.type'=>'return','pp.is_expence'=>0));
+            $builder->where(array('DATE(pi.return_date)  >= ' => $start_date));
+            $builder->where(array('DATE(pi.return_date)  <= ' => $end_date));
+            $builder->groupBy("pp.parent_id");
             $query = $builder->get();
             $purchase['purchase'] = $query->getResultArray();
 
@@ -698,19 +726,26 @@ class TradingModel extends Model
             $start_date = '';
             $end_date = '';
         }   
-        $builder = $db->table('purchase_return p');
-        $builder->select('SUM(p.taxable) as purchase_total');
-        $builder->where(array('p.is_delete'=>0,'p.is_cancle'=>0));
-        $builder->where(array('DATE(p.return_date)  >= ' => $start_date));
-        $builder->where(array('DATE(p.return_date)  <= ' => $end_date));
-        $query = $builder->get();
-        $purchase['total'] = $query->getRowArray();
+        //echo '<pre>';Print_r($purchase['purchase']);exit;
+        
+        $result['purchase'] = array();
+        $total = 0;
+        if(!empty($purchase['purchase'])){
+            foreach ($purchase['purchase'] as $row) {
+    
+                $row['pg_amount'] = (float)$row['sub_total'] + (float)$row['added_amt']; 
+                $row['taxable'] = $row['pg_amount'];
+                $result['purchase'][] = $row; 
+            }
+        }
 
-        $purchase['date']['from'] = $start_date;
-        $purchase['date']['to'] = $end_date;
+        $result['date']['from'] = $start_date;
+        $result['date']['to'] = $end_date;
+        $result['month'] = @$get['month'];
+        $result['year'] = @$get['year'];
 
-        //echo '<pre>';print_r($sales);exit;
-        return $purchase;     
+        //echo '<pre>';print_r($result);exit;
+        return $result;         
     }
     // *************trading voucher data*******************//
     public function generalSales_voucher_wise_data($get){

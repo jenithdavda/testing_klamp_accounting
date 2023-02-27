@@ -103,7 +103,6 @@
                         <thead>
                             <tr>
                                 <th style="width: 50px;">Date</th>
-                                <th>Custom Inv No.</th>
                                 <th>Party Name</th>
                                 <th>Vch Type</th>
                                 <th>Vch No</th>
@@ -132,7 +131,7 @@
                                      <td>Sales <?=@$row['pg_type'];?></td>
                                   
                                    <td><?= $row['id'] ?></td>
-                                    <td></td>
+                                   
                                     <?php
                                         if($row['pg_type'] == 'general')
                                         {
@@ -162,7 +161,7 @@
                         </tbody>
                         <tr>
                                 <th>Closing</th>
-                                <th colspan="4"></th>
+                                <th colspan="3"></th>
                                 <th><?= number_format($debit , 2) ?></th>
                                 <th><?= number_format($credit , 2) ?></th>
 

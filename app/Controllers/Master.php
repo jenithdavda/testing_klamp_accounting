@@ -796,8 +796,8 @@ class Master extends BaseController{
         }
         
         if ($method == 'particular') {
-            $post= $this->request->getPost();
-            $data = $this->model->search_acc_particular_data((@$post['searchTerm']) ? @$post['searchTerm'] : 'A');
+            $post= $this->request->getPost(); 
+            $data = $this->model->search_acc_particular_data(@$post);
             return $this->response->setJSON($data);
         }
 
@@ -907,6 +907,16 @@ class Master extends BaseController{
         if ($method == 'search_cgst_account') {
             $post = $this->request->getPost();
             $data= $this->model->search_cgst_account_data(@$post);
+            return $this->response->setJSON($data);
+        }
+        if ($method == 'search_discount_account') {
+            $post = $this->request->getPost();
+            $data= $this->model->search_discount_account_data(@$post);
+            return $this->response->setJSON($data);
+        }
+        if ($method == 'search_round_account') {
+            $post = $this->request->getPost();
+            $data= $this->model->search_round_account_data(@$post);
             return $this->response->setJSON($data);
         }
     }

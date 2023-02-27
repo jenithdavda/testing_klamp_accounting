@@ -1505,7 +1505,7 @@ class SalesModel extends Model
     // update trupti 24-11-2022
     public function insert_edit_salesinvoice($post)
     {
-        // echo '<pre>';Print_r($post);exit;
+        //echo '<pre>';Print_r($post);exit;
 
 
         if (!@$post['pid']) {
@@ -1537,8 +1537,6 @@ class SalesModel extends Model
                 return $msg;
             }
         }
-
-
 
         $pid = $post['pid'];
         $qty = $post['qty'];
@@ -2097,6 +2095,7 @@ class SalesModel extends Model
                         }
                         $itemdata[] = array(
                             'parent_id' => $id,
+                            'expence_type'=>'',
                             'is_expence' => 0,
                             'item_id' => $post['pid'][$i],
                             'hsn' => $post['hsn'][$i],
@@ -2127,6 +2126,7 @@ class SalesModel extends Model
                     } else {
                         $itemdata[] = array(
                             'parent_id' => $id,
+                            'expence_type'=>'',
                             'is_expence' => 1,
                             'item_id' => $post['pid'][$i],
                             'hsn' => '',
@@ -2158,6 +2158,73 @@ class SalesModel extends Model
                 }
                 $item_builder = $db->table('sales_item');
                 $result1 = $item_builder->insertBatch($itemdata);
+
+                $round_itemdata[] = array(
+                    'parent_id' => $id,
+                    'expence_type'=>'rounding_invoices',
+                    'is_expence' => 1,
+                    'item_id' => $post['round'],
+                    'hsn' => '',
+                    'type' => 'invoice',
+                    'uom' => '',
+                    'rate' => $post['round_diff'],
+                    'qty' => 0,
+                    'igst' => '',
+                    'cgst' => '',
+                    'sgst' => '',
+                    'igst_amt' => '',
+                    'cgst_amt' => '',
+                    'sgst_amt' => '',
+                    'taxability' => '',
+                    //update discount column 17-01-2023
+                    'total' => $post['round_diff'],
+                    'item_disc' => 0,
+                    'discount' => 0,
+                    'divide_disc_item_per' => 0,
+                    'divide_disc_item_amt' => 0,
+                    'sub_total' => $post['round_diff'],
+                    // end
+                    'added_amt' =>'',
+                    'remark' => $post['remark'][$i],
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'created_by' => session('uid'),
+                );
+                $item_builder = $db->table('sales_item');
+                $result2 = $item_builder->insertBatch($round_itemdata);
+
+                $discount_itemdata[] = array(
+                    'parent_id' => $id,
+                    'expence_type'=>'discount',
+                    'is_expence' => 1,
+                    'item_id' => $post['discount_acc'],
+                    'hsn' => '',
+                    'type' => 'invoice',
+                    'uom' => '',
+                    'rate' => $post['new_discount_amount'],
+                    'qty' => 0,
+                    'igst' => '',
+                    'cgst' => '',
+                    'sgst' => '',
+                    'igst_amt' => '',
+                    'cgst_amt' => '',
+                    'sgst_amt' => '',
+                    'taxability' => '',
+                    //update discount column 17-01-2023
+                    'total' => $post['discount_amount_new'],
+                    'item_disc' => 0,
+                    'discount' => 0,
+                    'divide_disc_item_per' => 0,
+                    'divide_disc_item_amt' => 0,
+                    'sub_total' => $post['discount_amount_new'],
+                    // end
+                    'added_amt' => '',
+                    'remark' => $post['remark'][$i],
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'created_by' => session('uid'),
+                );
+                $item_builder = $db->table('sales_item');
+                $result3 = $item_builder->insertBatch($discount_itemdata);
+
                 if(session('DataSource')=='ACE20223HUY')
                 {
                     $platform_data = array(

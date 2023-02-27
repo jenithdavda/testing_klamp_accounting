@@ -1296,6 +1296,7 @@ public function insert_edit_uom($post)
     // }
     public function search_acc_particular_data($post)
     {
+       
         $db = $this->db;
         $db->setDatabase(session('DataSource'));
         $gmodel = new GeneralModel();
@@ -1307,26 +1308,18 @@ public function insert_edit_uom($post)
         
         $builder = $db->table('account');
         $builder->select('*');
-        $builder->where(array('is_delete' => '0'  ));        
-        $builder->whereIn('gl_group',$gl_ids);        
-        if(isset($post['searchTerm'])){
-            $builder->like('name',(@$post['searchTerm']) ? @$post['searchTerm'] : 'A');
+        if (isset($post['searchTerm'])) {
+            $where = "(`code` LIKE '%" . $post['searchTerm'] . "%' OR  `name` LIKE '%" . $post['searchTerm'] . "%') AND `is_delete` = '0' AND `tax_type` = ''";
+        } else {
+            $where = "`is_delete` = '0' AND `tax_type` = ''";
         }
-        // $builder->limit(5);
+        $builder->where($where);
+        $builder->whereIn('gl_group',$gl_ids);  
         $query = $builder->get();
         $getdata = $query->getResultArray();
 
         $result = array();
         foreach($getdata as $row){
-            // $result[] = array(
-            //     "text" => $row['name'],
-            //     "id" => $row['id'],
-            //     "gsttin"=>$row['gst'],
-            //     "tds"=>$row['tds_rate'],
-            //     "tds_limit"=>$row['tds_limit'],
-            //     "state"=>$row['state'],
-            //     "address"=>$row['gst_add']);
-
                 $paticular_data = array(
 
                                 "id" => $row['id'],
@@ -3194,10 +3187,6 @@ public function insert_edit_cashpayment($post)
         public function search_cgst_account_data($post)
         {
             $gmodel = new GeneralModel();
-            // $cgst = $gmodel->get_data_table('gl_group',array('name'=>'Cgst'),'id');
-     
-            // $cgst_account = gl_list([$cgst['id']]);
-            // $cgst_account[]=$cgst['id'];
             
             $db = $this->db;
             $db->setDatabase(session('DataSource')); 
@@ -3261,5 +3250,68 @@ public function insert_edit_cashpayment($post)
             }
             return $result;
         }
+        public function search_discount_account_data($post)
+        {
+            $gmodel = new GeneralModel();
+            
+            $db = $this->db;
+            $db->setDatabase(session('DataSource')); 
+            $builder = $db->table('account');
+            $builder->select('*');
+            $builder->where(array('is_delete' => '0' ));
+            $builder->where(array('tax_type'=>'discount'));
+            if(isset($post['searchTerm'])){
+                $builder->like('name',(@$post['searchTerm']) ? @$post['searchTerm'] : 'A');
+            }
+            $query = $builder->get();
+            $getdata = $query->getResultArray();
+            
+    
+            $result = array();
+            foreach($getdata as $row){
+                $city = $gmodel->get_data_table('cities',array('id'=>$row['ship_city']),'name');
+                $state = $gmodel->get_data_table('states',array('id'=>$row['ship_state']),'name');
+                $contry = $gmodel->get_data_table('countries',array('id'=>$row['ship_country']),'name');
+    
+                $row['country_name'] = @$contry['name']; 
+                $row['state_name'] = @$state['name']; 
+                $row['city_name'] = @$city['name']; 
+                
+                $result[] = array("text" => $row['name'],"id" => $row['id'],"gsttin"=>$row['gst'],"tds"=>$row['tds_rate'],"tds_limit"=>$row['tds_limit'],"state"=>$row['state'],"due_day"=>$row['default_due_days'],"data"=>$row);
+            }
+            return $result;
+        }
+        public function search_round_account_data($post)
+        {
+            $gmodel = new GeneralModel();
+            
+            $db = $this->db;
+            $db->setDatabase(session('DataSource')); 
+            $builder = $db->table('account');
+            $builder->select('*');
+            $builder->where(array('is_delete' => '0' ));
+            $builder->where(array('tax_type'=>'rounding_invoices'));
+            if(isset($post['searchTerm'])){
+                $builder->like('name',(@$post['searchTerm']) ? @$post['searchTerm'] : 'A');
+            }
+            $query = $builder->get();
+            $getdata = $query->getResultArray();
+            
+    
+            $result = array();
+            foreach($getdata as $row){
+                $city = $gmodel->get_data_table('cities',array('id'=>$row['ship_city']),'name');
+                $state = $gmodel->get_data_table('states',array('id'=>$row['ship_state']),'name');
+                $contry = $gmodel->get_data_table('countries',array('id'=>$row['ship_country']),'name');
+    
+                $row['country_name'] = @$contry['name']; 
+                $row['state_name'] = @$state['name']; 
+                $row['city_name'] = @$city['name']; 
+                
+                $result[] = array("text" => $row['name'],"id" => $row['id'],"gsttin"=>$row['gst'],"tds"=>$row['tds_rate'],"tds_limit"=>$row['tds_limit'],"state"=>$row['state'],"due_day"=>$row['default_due_days'],"data"=>$row);
+            }
+            return $result;
+        }
     }
+    
 ?>

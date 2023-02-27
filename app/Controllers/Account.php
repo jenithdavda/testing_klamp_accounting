@@ -70,6 +70,8 @@ class Account extends BaseController{
          }
          $data['id'] = $id;
          $data['title'] = "Add Account Data" ;
+         //echo '<pre>';Print_r($data);exit;
+         
          return view('account/create_account',$data);
      }
      

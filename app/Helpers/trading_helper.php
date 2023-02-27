@@ -24,40 +24,71 @@ function sale_purchase_vouhcer($start_date = '', $end_date = '')
         $db->setDatabase(session('DataSource'));
     }
     $result = array();
-    $builder = $db->table('purchase_invoice');
-    $builder->select('SUM(taxable) as pur_taxable');
-    $builder->where(array('is_delete' => 0,'is_cancle' => 0));
-    $builder->where(array('DATE(invoice_date)  >= ' => $start_date));
-    $builder->where(array('DATE(invoice_date)  <= ' => $end_date));
+    $builder = $db->table('purchase_invoice pi');
+    $builder->select('pi.id,SUM(pp.sub_total) as sub_total,SUM(pp.added_amt) as added_amt');
+    $builder->join('purchase_item pp', 'pp.parent_id =pi.id');
+    $builder->where(array('pp.is_delete' => 0,'pi.is_cancle' => 0,'pi.is_delete' => 0,'pp.type'=>'invoice','pp.is_expence'=>0));
+    $builder->where(array('DATE(pi.invoice_date)  >= ' => $start_date));
+    $builder->where(array('DATE(pi.invoice_date)  <= ' => $end_date));
+    $builder->groupBy("pp.parent_id");
     $query = $builder->get();
-    $purcahse = $query->getRowArray();
+    $purcahse_invoice = $query->getResultArray();
+    $purcahse['pur_taxable'] = 0;
+    foreach($purcahse_invoice as $row)
+    {
+        $total = $row['sub_total'] + $row['added_amt'];
+        $purcahse['pur_taxable']  += $total; 
+    }
 
-    $builder = $db->table('purchase_return');
-    $builder->select('SUM(taxable) as purRet_taxable');
-    $builder->where(array('is_delete' => 0,'is_cancle' => 0));
-    $builder->where(array('DATE(return_date)  >= ' => $start_date));
-    $builder->where(array('DATE(return_date)  <= ' => $end_date));
+    $builder = $db->table('purchase_return pi');
+    $builder->select('pi.id,SUM(pp.sub_total) as sub_total,SUM(pp.added_amt) as added_amt');
+    $builder->join('purchase_item pp', 'pp.parent_id =pi.id');
+    $builder->where(array('pp.is_delete' => 0,'pi.is_cancle' => 0,'pi.is_delete' => 0,'pp.type'=>'return','pp.is_expence'=>0));
+    $builder->where(array('DATE(pi.return_date)  >= ' => $start_date));
+    $builder->where(array('DATE(pi.return_date)  <= ' => $end_date));
+    $builder->groupBy("pp.parent_id");
     $query = $builder->get();
-    $pur_ret = $query->getRowArray();
+    $purcahse_return = $query->getResultArray();
+    $pur_ret['purRet_taxable'] = 0;
+    foreach($purcahse_return as $row)
+    {
+        $total = $row['sub_total'] + $row['added_amt'];
+        $pur_ret['purRet_taxable']  += $total; 
+    }
 
-    $builder = $db->table('sales_invoice');
-    $builder->select('SUM(taxable) as sale_taxable');
-    $builder->where(array('is_delete' => 0,'is_cancle' => 0));
-    $builder->where(array('DATE(invoice_date)  >= ' => $start_date));
-    $builder->where(array('DATE(invoice_date)  <= ' => $end_date));
+    $builder = $db->table('sales_invoice pi');
+    $builder->select('pi.id,SUM(pp.sub_total) as sub_total,SUM(pp.added_amt) as added_amt');
+    $builder->join('sales_item pp', 'pp.parent_id =pi.id');
+    $builder->where(array('pp.is_delete' => 0,'pi.is_cancle' => 0,'pi.is_delete' => 0,'pp.type'=>'invoice','pp.is_expence'=>0));
+    $builder->where(array('DATE(pi.invoice_date)  >= ' => $start_date));
+    $builder->where(array('DATE(pi.invoice_date)  <= ' => $end_date));
+    $builder->groupBy("pp.parent_id");
     $query = $builder->get();
-    $sale = $query->getRowArray();
+    $sales_invoice = $query->getResultArray();
+    $sale['sale_taxable'] = 0;
+    foreach($sales_invoice as $row)
+    {
+        $total = $row['sub_total'] + $row['added_amt'];
+        $sale['sale_taxable']  += $total; 
+    }
 
-    $builder = $db->table('sales_return');
-    $builder->select('SUM(taxable) as saleRet_taxable');
-    $builder->where(array('is_delete' => 0,'is_cancle' => 0));
-    $builder->where(array('DATE(return_date)  >= ' => $start_date));
-    $builder->where(array('DATE(return_date)  <= ' => $end_date));
+    $builder = $db->table('sales_return pi');
+    $builder->select('pi.id,SUM(pp.sub_total) as sub_total,SUM(pp.added_amt) as added_amt');
+    $builder->join('sales_item pp', 'pp.parent_id =pi.id');
+    $builder->where(array('pp.is_delete' => 0,'pi.is_cancle' => 0,'pi.is_delete' => 0,'pp.type'=>'return','pp.is_expence'=>0));
+    $builder->where(array('DATE(pi.return_date)  >= ' => $start_date));
+    $builder->where(array('DATE(pi.return_date)  <= ' => $end_date));
+    $builder->groupBy("pp.parent_id");
     $query = $builder->get();
-    $sale_ret = $query->getRowArray();
-    //echo $db->getLastQuery();exit;
+    $sales_return = $query->getResultArray();
+    $sale_ret['saleRet_taxable'] = 0;
+    foreach($sales_return as $row)
+    {
+        $total = $row['sub_total'] + $row['added_amt'];
+        $sale_ret['saleRet_taxable']  += $total; 
+    }
    
-
+   
     $result = array(
         'pur_total_rate' => @$purcahse['pur_taxable'] ? $purcahse['pur_taxable'] : 0,
         'Purret_total_rate' => @$pur_ret['purRet_taxable'] ? $pur_ret['purRet_taxable'] : 0,
@@ -983,32 +1014,30 @@ function salesItem_monthly_data($start_date = '', $end_date = '')
     if (session('DataSource')) {
         $db->setDatabase(session('DataSource'));
     }
+    $builder = $db->table('sales_invoice pg');
+    $builder->select('MONTH(pg.invoice_date) as month,YEAR(pg.invoice_date) as year,pp.sub_total,pp.added_amt');
+    $builder->join('sales_item pp', 'pg.id = pp.parent_id');
+    $builder->where(array('pp.is_expence'=>0,'pp.type'=>'invoice','pp.is_delete'=>0));
+    $builder->where(array('pg.is_delete' => '0','pg.is_cancle' => '0'));
+    $builder->where(array('DATE(pg.invoice_date)  >= ' => db_date($start_date)));
+    $builder->where(array('DATE(pg.invoice_date)  <= ' => db_date($end_date)));
+    $query = $builder->get();
+    $pg_income = $query->getResultArray();
+    //echo '<pre>';Print_r($pg_income);exit;
+    
+  
+    $arr = array();
+   
+    foreach ($pg_income as $row) {
+        $after_disc = 0;
+        $row['pg_amount'] = (float) $row['sub_total'] + (float) $row['added_amt'];
+        $total = ((@$arr[$row['month']]['total']) ? $arr[$row['month']]['total'] : 0) + $row['pg_amount'];
+        $arr[$row['month']]['total'] = $total;
+        $arr[$row['month']]['year'] = $row['year'];
+        $arr[$row['month']]['month'] = $row['month'];
 
-    $monthly_sales = array();
-
-    $builder = $db->table('sales_invoice p');
-    $builder->select('MONTH(p.invoice_date) as month,YEAR(p.invoice_date) as year,SUM(p.taxable) as total,SUM(p.net_amount) as total_net_amt,COUNT(id) as voucher_count');
-    $builder->where(array('p.is_delete'=>0,'p.is_cancle'=>0));
-    $builder->where(array('DATE(p.invoice_date)  >= ' => db_date($start_date)));
-    $builder->where(array('DATE(p.invoice_date)  <= ' => db_date($end_date)));
-    $builder->groupBy('MONTH(p.invoice_date)');
-    $result = $builder->get();
-    $monthly_sales = $result->getResultArray();
-
-    // echo '<pre>';print_r($monthly_sales);exit;
-    $arra = array();
-    foreach ($monthly_sales as $value) {
-
-        $arra[$value['month']] = array(
-            "total" => $value['total'],
-            "year" => $value['year'],
-            "voucher_count" => $value['voucher_count'],
-            "total_net" => $value['total_net_amt'],
-        );
     }
-
-    // echo '<pre>';print_r($arra);exit;
-    return $arra;
+    return $arr;
 }
 function salesReturnItem_monthly_data($start_date = '', $end_date = '')
 {
@@ -1036,26 +1065,30 @@ function salesReturnItem_monthly_data($start_date = '', $end_date = '')
     }
     $monthly_sales = array();
    
-    $builder = $db->table('sales_return p');
-    $builder->select('MONTH(p.return_date) as month,YEAR(p.return_date) as year,SUM(p.taxable) as total,SUM(p.net_amount) as total_net_amt,COUNT(id) as voucher_count');
-    $builder->where(array('p.is_delete'=>0,'p.is_cancle'=>0));
-    $builder->where(array('DATE(p.return_date)  >= ' => db_date($start_date)));
-    $builder->where(array('DATE(p.return_date)  <= ' => db_date($end_date)));
-    $builder->groupBy('MONTH(p.return_date)');
-    $result = $builder->get();
-    $monthly_sales = $result->getResultArray();
+    $builder = $db->table('sales_return pg');
+    $builder->select('MONTH(pg.return_date) as month,YEAR(pg.return_date) as year,pp.sub_total,pp.added_amt');
+    $builder->join('sales_item pp', 'pg.id = pp.parent_id');
+    $builder->where(array('pp.is_expence'=>0,'pp.type'=>'return','pp.is_delete'=>0));
+    $builder->where(array('pg.is_delete' => '0','pg.is_cancle' => '0'));
+    $builder->where(array('DATE(pg.return_date)  >= ' => db_date($start_date)));
+    $builder->where(array('DATE(pg.return_date)  <= ' => db_date($end_date)));
+    $query = $builder->get();
+    $pg_income = $query->getResultArray();
+    //echo '<pre>';Print_r($pg_income);exit;
+    
+  
+    $arr = array();
+   
+    foreach ($pg_income as $row) {
+        $after_disc = 0;
+        $row['pg_amount'] = (float) $row['sub_total'] + (float) $row['added_amt'];
+        $total = ((@$arr[$row['month']]['total']) ? $arr[$row['month']]['total'] : 0) + $row['pg_amount'];
+        $arr[$row['month']]['total'] = $total;
+        $arr[$row['month']]['year'] = $row['year'];
+        $arr[$row['month']]['month'] = $row['month'];
 
-    $arra = array();
-    foreach ($monthly_sales as $value) {
-        $arra[$value['month']] = array(
-            "total" => $value['total'],
-            "year" => $value['year'],
-            "voucher_count" => $value['voucher_count'],
-            "total_net" => $value['total_net_amt'],
-        );
     }
-
-    return $arra;
+    return $arr;
 }
 function purchaseItem_monthly_data($start_date = '', $end_date = '')
 {
@@ -1082,29 +1115,31 @@ function purchaseItem_monthly_data($start_date = '', $end_date = '')
         $db->setDatabase(session('DataSource'));
     }
 
-    $monthly_purchase = array();
+    $builder = $db->table('purchase_invoice pg');
+    $builder->select('MONTH(pg.invoice_date) as month,YEAR(pg.invoice_date) as year,pp.sub_total,pp.added_amt');
+    $builder->join('purchase_item pp', 'pg.id = pp.parent_id');
+    $builder->where(array('pp.is_expence'=>0,'pp.type'=>'invoice','pp.is_delete'=>0));
+    $builder->where(array('pg.is_delete' => '0','pg.is_cancle' => '0'));
+    $builder->where(array('DATE(pg.invoice_date)  >= ' => db_date($start_date)));
+    $builder->where(array('DATE(pg.invoice_date)  <= ' => db_date($end_date)));
+    $query = $builder->get();
+    $pg_income = $query->getResultArray();
+    //echo '<pre>';Print_r($pg_income);exit;
+    
+  
+    $arr = array();
+   
+    foreach ($pg_income as $row) {
+        $after_disc = 0;
+        $row['pg_amount'] = (float) $row['sub_total'] + (float) $row['added_amt'];
+        $total = ((@$arr[$row['month']]['total']) ? $arr[$row['month']]['total'] : 0) + $row['pg_amount'];
+        $arr[$row['month']]['total'] = $total;
+        $arr[$row['month']]['year'] = $row['year'];
+        $arr[$row['month']]['month'] = $row['month'];
 
-    $builder = $db->table('purchase_invoice p');
-    $builder->select('MONTH(p.invoice_date) as month,YEAR(p.invoice_date) as year,SUM(p.taxable) as total,SUM(p.net_amount) as total_net_amt,COUNT(id) as voucher_count');
-    $builder->where('p.is_delete', 0);
-    $builder->where('p.is_cancle', 0);
-    $builder->where(array('DATE(p.invoice_date)  >= ' => db_date($start_date)));
-    $builder->where(array('DATE(p.invoice_date)  <= ' => db_date($end_date)));
-    $builder->groupBy('MONTH(p.invoice_date)');
-    $result = $builder->get();
-    $monthly_purchase = $result->getResultArray();
-
-    $arra = array();
-    foreach ($monthly_purchase as $value) {
-        $arra[$value['month']] = array(
-            "total" => $value['total'],
-            "year" => $value['year'],
-            "voucher_count" => $value['voucher_count'],
-            "total_net" => $value['total_net_amt'],
-        );
     }
 
-    return $arra;
+    return $arr;
 }
 function purchaseReturnItem_monthly_data($start_date = '', $end_date = '')
 {
@@ -1131,28 +1166,31 @@ function purchaseReturnItem_monthly_data($start_date = '', $end_date = '')
         $db->setDatabase(session('DataSource'));
     }
 
-    $monthly_purchase = array();
+    $builder = $db->table('purchase_return pg');
+    $builder->select('MONTH(pg.return_date) as month,YEAR(pg.return_date) as year,pp.sub_total,pp.added_amt');
+    $builder->join('purchase_item pp', 'pg.id = pp.parent_id');
+    $builder->where(array('pp.is_expence'=>0,'pp.type'=>'return','pp.is_delete'=>0));
+    $builder->where(array('pg.is_delete' => '0','pg.is_cancle' => '0'));
+    $builder->where(array('DATE(pg.return_date)  >= ' => db_date($start_date)));
+    $builder->where(array('DATE(pg.return_date)  <= ' => db_date($end_date)));
+    $query = $builder->get();
+    $pg_income = $query->getResultArray();
+    //echo '<pre>';Print_r($pg_income);exit;
+    
+  
+    $arr = array();
+   
+    foreach ($pg_income as $row) {
+        $after_disc = 0;
+        $row['pg_amount'] = (float) $row['sub_total'] + (float) $row['added_amt'];
+        $total = ((@$arr[$row['month']]['total']) ? $arr[$row['month']]['total'] : 0) + $row['pg_amount'];
+        $arr[$row['month']]['total'] = $total;
+        $arr[$row['month']]['year'] = $row['year'];
+        $arr[$row['month']]['month'] = $row['month'];
 
-    $builder = $db->table('purchase_return p');
-    $builder->select('MONTH(p.return_date) as month,YEAR(p.return_date) as year,SUM(p.taxable) as total,SUM(p.net_amount) as total_net_amt,COUNT(id) as voucher_count');
-    $builder->where('p.is_delete', '0');
-    $builder->where(array('DATE(p.return_date)  >= ' => db_date($start_date)));
-    $builder->where(array('DATE(p.return_date)  <= ' => db_date($end_date)));
-    $builder->groupBy('MONTH(p.return_date)');
-    $result = $builder->get();
-    $monthly_purchase = $result->getResultArray();
-
-    $arra = array();
-    foreach ($monthly_purchase as $value) {
-        $arra[$value['month']] = array(
-            "total" => $value['total'],
-            "year" => $value['year'],
-            "voucher_count" => $value['voucher_count'],
-            "total_net" => $value['total_net_amt'],
-        );
     }
 
-    return $arra;
+    return $arr;
 }
 ///////////////////////************end Monthly sales purchase account***********//////////////////////
 function sale_purchase_itm_total($start_date = '', $end_date = '')
@@ -1628,6 +1666,15 @@ function get_trading_expence_account_wise($start_date, $end_date, $id)
         $total += $row['pg_amount'];
     }
     $tot_expence['sales_invoice']['total'] = $total;
+    // $total = 0;
+   
+    // foreach ($sales_invoice as $row) {
+    //     $row['pg_amount'] = (float) $row['sub_total'] + (float) $row['added_amt'];
+    //     $total = (@$tot_expence['sales_invoice']['total'] ? $tot_expence['sales_invoice']['total'] : 0) + $row['pg_amount'];
+    //     $tot_expence['sales_invoice']['total'] = $total;
+    //     $tot_expence['sales_invoice']['total'] = $row['pp_acc'];
+    // }
+   
 
     $builder = $db->table('sales_item pp');
     $builder->select('pg.id,pp.item_id as pp_acc,ac.name as account_name,pp.sub_total,pp.added_amt');

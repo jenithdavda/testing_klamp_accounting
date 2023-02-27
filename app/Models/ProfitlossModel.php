@@ -464,6 +464,270 @@ class ProfitlossModel extends Model
         // echo '<pre>';print_r($result);exit;
         return $result;     
     }
+    public function salesinvoice_voucher_wise_data($get){
+
+        $db = $this->db;
+        $db->setDatabase(session('DataSource')); 
+       
+        if(!empty($get['year'])){
+
+            $start = strtotime("{$get['year']}-{$get['month']}-01");
+            $end = strtotime('-1 second', strtotime('+1 month', $start));
+             
+            $start_date = date('Y-m-d',$start);
+            $end_date = date('Y-m-d',$end);
+           
+            $builder = $db->table('sales_item pp');
+            $builder->select('ac.name as party_name,pg.custom_inv_no,pg.invoice_date as date,pg.invoice_no as voucher_no,pg.id,pp.item_id as pp_acc,pp.discount,pp.added_amt,pp.sub_total');
+            $builder->join('sales_invoice pg', 'pg.id = pp.parent_id');
+            $builder->join('account ac', 'ac.id = pp.item_id');
+            $builder->where('pp.item_id',$get['id']);
+            $builder->where(array('pp.is_delete' => '0','is_expence'=>1,'pg.is_delete' => '0','pg.is_cancle' => '0','pp.type'=>'invoice'));
+            $builder->where(array('DATE(pg.invoice_date)  >= ' => $start_date));
+            $builder->where(array('DATE(pg.invoice_date)  <= ' => $end_date));
+            $query = $builder->get();
+            $pg_expence['sales'] = $query->getResultArray();
+            // echo $db->getLastQuery();exit;
+
+
+        }else if(!empty(@$get['from'])){
+            $start_date = @$get['from']  ? db_date($get['from']) : '';
+            $end_date = @$get['to'] ? db_date($get['to']) : '';
+
+            $builder = $db->table('sales_item pp');
+            $builder->select('ac.name as party_name,pg.custom_inv_no,pg.invoice_date as date,pg.invoice_no as voucher_no,pg.id,pp.item_id as pp_acc,pp.discount,pp.added_amt,pp.sub_total');
+            $builder->join('sales_invoice pg', 'pg.id = pp.parent_id');
+            $builder->join('account ac', 'ac.id = pp.item_id');
+            $builder->where('pp.item_id',$get['id']);
+            $builder->where(array('pp.is_delete' => '0','is_expence'=>1,'pg.is_delete' => '0','pg.is_cancle' => '0','pp.type'=>'invoice'));
+            $builder->where(array('DATE(pg.invoice_date)  >= ' => $start_date));
+            $builder->where(array('DATE(pg.invoice_date)  <= ' => $end_date));
+            $query = $builder->get();
+            $pg_expence['sales'] = $query->getResultArray();
+
+        }else{
+            $pg_expence['sales'] = array();
+            $start_date = '';
+            $end_date = '';
+        }   
+        // echo '<pre>';print_r($pg_income);exit;
+        $result['sales'] = array();
+        $total = 0;
+        if(!empty($pg_expence['sales'])){
+            foreach ($pg_expence['sales'] as $row) {
+    
+                $row['pg_amount'] = (float)$row['sub_total'] + (float)$row['added_amt']; 
+                $row['taxable'] = $row['pg_amount'];
+                $result['sales'][] = $row; 
+            }
+        }
+
+        $result['date']['from'] = $start_date;
+        $result['date']['to'] = $end_date;
+        $result['ac_id'] = $get['id'];
+        $result['month'] = @$get['month'];
+        $result['year'] = @$get['year'];
+
+        // echo '<pre>';print_r($result);exit;
+        return $result;     
+    }
+    public function salesreturn_voucher_wise_data($get){
+
+        $db = $this->db;
+        $db->setDatabase(session('DataSource')); 
+       
+        if(!empty($get['year'])){
+
+            $start = strtotime("{$get['year']}-{$get['month']}-01");
+            $end = strtotime('-1 second', strtotime('+1 month', $start));
+             
+            $start_date = date('Y-m-d',$start);
+            $end_date = date('Y-m-d',$end);
+           
+            $builder = $db->table('sales_item pp');
+            $builder->select('ac.name as party_name,pg.supp_inv,pg.return_date as date,pg.return_no as voucher_no,pg.id,pp.item_id as pp_acc,pp.discount,pp.added_amt,pp.sub_total');
+            $builder->join('sales_return pg', 'pg.id = pp.parent_id');
+            $builder->join('account ac', 'ac.id = pp.item_id');
+            $builder->where('pp.item_id',$get['id']);
+            $builder->where(array('pp.is_delete' => '0','is_expence'=>1,'pg.is_delete' => '0','pg.is_cancle' => '0','pp.type'=>'return'));
+            $builder->where(array('DATE(pg.return_date)  >= ' => $start_date));
+            $builder->where(array('DATE(pg.return_date)  <= ' => $end_date));
+            $query = $builder->get();
+            $pg_expence['sales_return'] = $query->getResultArray();
+            
+        }else if(!empty(@$get['from'])){
+            $start_date = @$get['from']  ? db_date($get['from']) : '';
+            $end_date = @$get['to'] ? db_date($get['to']) : '';
+
+            $builder = $db->table('sales_item pp');
+            $builder->select('ac.name as party_name,pg.supp_inv,pg.return_date as date,pg.return_no as voucher_no,pg.id,pp.item_id as pp_acc,pp.discount,pp.added_amt,pp.sub_total');
+            $builder->join('sales_return pg', 'pg.id = pp.parent_id');
+            $builder->join('account ac', 'ac.id = pp.item_id');
+            $builder->where('pp.item_id',$get['id']);
+            $builder->where(array('pp.is_delete' => '0','is_expence'=>1,'pg.is_delete' => '0','pg.is_cancle' => '0','pp.type'=>'return'));
+            $builder->where(array('DATE(pg.return_date)  >= ' => $start_date));
+            $builder->where(array('DATE(pg.return_date)  <= ' => $end_date));
+            $query = $builder->get();
+            $pg_expence['sales_return'] = $query->getResultArray();
+
+        }else{
+            $pg_expence['sales_return'] = array();
+            $start_date = '';
+            $end_date = '';
+        }   
+        // echo '<pre>';print_r($pg_income);exit;
+        $result['sales_return'] = array();
+        $total = 0;
+        if(!empty($pg_expence['sales_return'])){
+            foreach ($pg_expence['sales_return'] as $row) {
+    
+                $row['pg_amount'] = (float)$row['sub_total'] + (float)$row['added_amt']; 
+                $row['taxable'] = $row['pg_amount'];
+                $result['sales_return'][] = $row; 
+            }
+        }
+
+        $result['date']['from'] = $start_date;
+        $result['date']['to'] = $end_date;
+        $result['ac_id'] = $get['id'];
+        $result['month'] = @$get['month'];
+        $result['year'] = @$get['year'];
+
+        // echo '<pre>';print_r($result);exit;
+        return $result;     
+    }
+    public function purchaseinvoice_voucher_wise_data($get){
+
+        $db = $this->db;
+        $db->setDatabase(session('DataSource')); 
+       
+        if(!empty($get['year'])){
+
+            $start = strtotime("{$get['year']}-{$get['month']}-01");
+            $end = strtotime('-1 second', strtotime('+1 month', $start));
+             
+            $start_date = date('Y-m-d',$start);
+            $end_date = date('Y-m-d',$end);
+           
+            $builder = $db->table('purchase_item pp');
+            $builder->select('ac.name as party_name,pg.invoice_date as date,pg.invoice_no as voucher_no,pg.id,pp.item_id as pp_acc,pp.discount,pp.added_amt,pp.sub_total');
+            $builder->join('purchase_invoice pg', 'pg.id = pp.parent_id');
+            $builder->join('account ac', 'ac.id = pp.item_id');
+            $builder->where('pp.item_id',$get['id']);
+            $builder->where(array('pp.is_delete' => '0','is_expence'=>1,'pg.is_delete' => '0','pg.is_cancle' => '0','pp.type'=>'invoice'));
+            $builder->where(array('DATE(pg.invoice_date)  >= ' => $start_date));
+            $builder->where(array('DATE(pg.invoice_date)  <= ' => $end_date));
+            $query = $builder->get();
+            $pg_expence['purchase'] = $query->getResultArray();
+            // echo $db->getLastQuery();exit;
+
+
+        }else if(!empty(@$get['from'])){
+            $start_date = @$get['from']  ? db_date($get['from']) : '';
+            $end_date = @$get['to'] ? db_date($get['to']) : '';
+
+            $builder = $db->table('purchase_item pp');
+            $builder->select('ac.name as party_name,pg.invoice_date as date,pg.invoice_no as voucher_no,pg.id,pp.item_id as pp_acc,pp.discount,pp.added_amt,pp.sub_total');
+            $builder->join('purchase_invoice pg', 'pg.id = pp.parent_id');
+            $builder->join('account ac', 'ac.id = pp.item_id');
+            $builder->where('pp.item_id',$get['id']);
+            $builder->where(array('pp.is_delete' => '0','is_expence'=>1,'pg.is_delete' => '0','pg.is_cancle' => '0','pp.type'=>'invoice'));
+            $builder->where(array('DATE(pg.invoice_date)  >= ' => $start_date));
+            $builder->where(array('DATE(pg.invoice_date)  <= ' => $end_date));
+            $query = $builder->get();
+            $pg_expence['purchase'] = $query->getResultArray();
+
+        }else{
+            $pg_expence['purchase'] = array();
+            $start_date = '';
+            $end_date = '';
+        }   
+        //echo '<pre>';print_r($pg_expence);exit;
+        $result['purchase'] = array();
+        $total = 0;
+        if(!empty($pg_expence['purchase'])){
+            foreach ($pg_expence['purchase'] as $row) {
+    
+                $row['pg_amount'] = (float)$row['sub_total'] + (float)$row['added_amt']; 
+                $row['taxable'] = $row['pg_amount'];
+                $result['purchase'][] = $row; 
+            }
+        }
+
+        $result['date']['from'] = $start_date;
+        $result['date']['to'] = $end_date;
+        $result['ac_id'] = $get['id'];
+        $result['month'] = @$get['month'];
+        $result['year'] = @$get['year'];
+
+        //echo '<pre>';print_r($result);exit;
+        return $result;     
+    }
+    public function purchasereturn_voucher_wise_data($get){
+
+        $db = $this->db;
+        $db->setDatabase(session('DataSource')); 
+       
+        if(!empty($get['year'])){
+
+            $start = strtotime("{$get['year']}-{$get['month']}-01");
+            $end = strtotime('-1 second', strtotime('+1 month', $start));
+             
+            $start_date = date('Y-m-d',$start);
+            $end_date = date('Y-m-d',$end);
+           
+            $builder = $db->table('purchase_item pp');
+            $builder->select('ac.name as party_name,pg.return_date as date,pg.return_no as voucher_no,pg.id,pp.item_id as pp_acc,pp.discount,pp.added_amt,pp.sub_total');
+            $builder->join('purchase_return pg', 'pg.id = pp.parent_id');
+            $builder->join('account ac', 'ac.id = pp.item_id');
+            $builder->where('pp.item_id',$get['id']);
+            $builder->where(array('pp.is_delete' => '0','is_expence'=>1,'pg.is_delete' => '0','pg.is_cancle' => '0','pp.type'=>'return'));
+            $builder->where(array('DATE(pg.return_date)  >= ' => $start_date));
+            $builder->where(array('DATE(pg.return_date)  <= ' => $end_date));
+            $query = $builder->get();
+            $pg_expence['purchase_return'] = $query->getResultArray();
+            
+        }else if(!empty(@$get['from'])){
+            $start_date = @$get['from']  ? db_date($get['from']) : '';
+            $end_date = @$get['to'] ? db_date($get['to']) : '';
+
+            $builder = $db->table('purchase_item pp');
+            $builder->select('ac.name as party_name,pg.return_date as date,pg.return_no as voucher_no,pg.id,pp.item_id as pp_acc,pp.discount,pp.added_amt,pp.sub_total');
+            $builder->join('purchase_return pg', 'pg.id = pp.parent_id');
+            $builder->join('account ac', 'ac.id = pp.item_id');
+            $builder->where('pp.item_id',$get['id']);
+            $builder->where(array('pp.is_delete' => '0','is_expence'=>1,'pg.is_delete' => '0','pg.is_cancle' => '0','pp.type'=>'return'));
+            $builder->where(array('DATE(pg.return_date)  >= ' => $start_date));
+            $builder->where(array('DATE(pg.return_date)  <= ' => $end_date));
+            $query = $builder->get();
+            $pg_expence['purchase_return'] = $query->getResultArray();
+            
+        }else{
+            $pg_expence['purchase_return'] = array();
+            $start_date = '';
+            $end_date = '';
+        }   
+        // echo '<pre>';print_r($pg_income);exit;
+        $result['purchase_return'] = array();
+        $total = 0;
+        if(!empty($pg_expence['purchase_return'])){
+            foreach ($pg_expence['purchase_return'] as $row) {
+    
+                $row['pg_amount'] = (float)$row['sub_total'] + (float)$row['added_amt']; 
+                $row['taxable'] = $row['pg_amount'];
+                $result['purchase_return'][] = $row; 
+            }
+        }
+
+        $result['date']['from'] = $start_date;
+        $result['date']['to'] = $end_date;
+        $result['ac_id'] = $get['id'];
+        $result['month'] = @$get['month'];
+        $result['year'] = @$get['year'];
+
+        // echo '<pre>';print_r($result);exit;
+        return $result;     
+    }
     
 }
 ?>

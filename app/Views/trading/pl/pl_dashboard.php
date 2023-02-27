@@ -218,9 +218,22 @@
                                                 <td><b><?=number_format($net_profit,2) ?></b>
                                                 </td>
                                             </tr>
-                                            <?php } ?>
+                                            <?php } 
+                                            if(isset($pl['round_amount']) && !empty($pl['round_amount']))
+                                            {
+                                            ?>
+                                             <tr>
+                                                <td><b><?=$pl['round_name'];?></b></td>
+                                                <td></td>
+                                                <td><b><a href = "<?=url('Profitloss/get_round_off_data?'.'id='.$pl['round_id'].'&name='.$pl['round_name'].'&from='.$trading['from'].'&to='.$trading['to'])?>"><?=number_format($pl['round_amount'],2);?></a></b>
+                                                </td>
+                                            </tr>
+                                            <?php
+                                            }
+                                            ?>
                                         </table>
                                     </div>
+
                                 </div>
 
                                 <div style="width: 3%; float: left;">&nbsp;</div>

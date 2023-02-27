@@ -105,7 +105,7 @@
                                 <th>Party Name</th>
                                 <th>Vch Type</th>
                                 <th>Vch No</th>
-                                <th>Debit</th>
+                                
                                 <th>Credit</th>
                                 <th>Closing Bal.</th>
                             </tr>
@@ -133,7 +133,7 @@
                                     <td><a href="<?= url('sales/add_salesinvoice/' . $row['id']) ?>"><?= $row['party_name'] ?></a></td>
                                     <td>Sales Item</td>
                                     <td><?= $row['id'] ?></td>
-                                    <td></td>
+                                   
                                     <td><?= number_format(@$row['taxable'], 2) ?></td>
                                     <td><?= number_format($new,2) ?></td>
                                 </tr>
@@ -148,7 +148,6 @@
                                 <th><?= number_format($new , 2) ?></th>
 
 
-                                <th><?= number_format($total['sales_total'], 2) ?></th>
 
                             </tr>
                         <tfooter>

@@ -11,7 +11,7 @@ class AccountModel extends Model
     {
        
        
-        //echo '<pre>';Print_r($newString);exit;
+        //echo '<pre>';Print_r($post);exit;
         
         $db = $this->db;
 
@@ -54,11 +54,24 @@ class AccountModel extends Model
             $newString='';
         }
         
+
+       if(!empty($post['tax_type']))
+       {
+            $tax_type = $post['tax_type'];
+       }
+       elseif(!empty($post['ledger_type']))
+       {
+            $tax_type = $post['ledger_type'];
+       }
+       else
+       {
+            $tax_type  = '';
+       }
         $pdata = array(
             
             'code' => @$post['code'] ? $post['code'] : '',
             'name' => ucwords($name), 
-            'tax_type' => isset($post['tax_type']) ? $post['tax_type'] : '',
+            'tax_type' => $tax_type,
             'taxation' => isset($post['taxation']) ? $post['taxation'] : '',
             'owner' => @$post['own_name'] ? $post['own_name'] :'' , 
             'gl_group' => $post['glgrp'],

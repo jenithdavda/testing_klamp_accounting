@@ -105,7 +105,7 @@
                                 <th>Vch Type</th>
                                 <th>Vch No</th>
                                 <th>Debit</th>
-                                <th>Credit</th>
+                                
                                 <th>Closing Bal.</th>
                             </tr>
                         </thead>
@@ -133,7 +133,7 @@
                                     <td><?= $row['id'] ?></td>
                                    
                                     <td><?= number_format(@$row['taxable'], 2) ?></td>
-                                    <td></td>
+                                 
                                     <td><?= number_format($new,2) ?></td>
                                 </tr>
                             <?php
@@ -143,11 +143,11 @@
                         </tbody>
                         <tr>
                                 <th>Closing</th>
-                                <th colspan="3"></th>
+                                <th colspan="4"></th>
                                 <th><?= number_format($new , 2) ?></th>
                                 <th></th>
 
-                                <th><?= number_format($total['sales_total'], 2) ?></th>
+                                
 
                             </tr>
                         <tfooter>

@@ -473,49 +473,7 @@
                             <div class="col-md-6">
                                 <div class="row mt-3">
                                     <div class="table-responsive">
-                                        <!-- <table class="table table-bordered mg-b-0" id="selling_case">
-                                            <thead>
-                                                <tr>
-                                                    <th>
-                                                        <label
-                                                            id="brok_name"><?= @$salesinvoice['broker_name']; ?></label>
-                                                        <div class="tx-danger broker-error">
-                                                        </div>
-                                                    </th>
-                                                    <th class="wd-300">
-                                                        <div class="input-group-sm">
-                                                            <input class="form-control"
-                                                                onkeypress="return isDesimalNumberKey(event)"
-                                                                name="brokrage" id="brokrage" type="text"
-                                                                placeholder="Brokrage Amount"
-                                                                value="<?= @$salesinvoice['brokrage']; ?>">
-                                                        </div>
-                                                    </th>
-                                                </tr>
-                                                <tr>
-                                                    <th>
-                                                        <div class="input-group-sm">
-                                                            <select class="form-control" id="broker_ledger"
-                                                                name='broker_ledger'>
-                                                                <?php if (@$salesinvoice['broker_ledger']) { ?>
-                                                                <option value="<?= @$salesinvoice['broker_ledger'] ?>">
-                                                                    <?= @$salesinvoice['broker_ledger_name'] ?>
-                                                                </option>
-                                                                <?php } ?>
-                                                            </select>
-                                                        </div>
-                                                    </th>
-                                                    <th class="wd-300">
-                                                        <div class="input-group-sm">
-                                                            <input class="form-control" onchange="calculate()"
-                                                                onkeypress="return isDesimalNumberKey(event)"
-                                                                name="broker_led_amt" id="broker_led" type="text"
-                                                                value="<?= @$salesinvoice['broker_led_amt']; ?>">
-                                                        </div>
-                                                    </th>
-                                                </tr>
-                                            </thead>
-                                        </table> -->
+                                        
                                     </div>
                                 </div>
                                 <div class="row mt-3">
@@ -568,8 +526,21 @@
                                         <table class="table table-bordered mg-b-0">
                                             <thead>
                                                 <tr>
-                                                    <th>(-)Discount</th>
-                                                    <th class="wd-300">
+                                                    <!-- <th>(-)Discount</th> -->
+                                                    <td class="wd-100">
+                                                        <div class="input-group-sm">
+                                                            <select class="select2" id="discount_acc" name="discount_acc">
+                                                                <?php if (@$salesinvoice['cgst_acc']) { ?>
+                                                                    <option value="<?= @$salesinvoice['cgst_acc'] ?>">
+                                                                        <?= @$salesinvoice['cgst_acc_name'] ?>
+                                                                    </option>
+                                                                <?php } ?>
+                                                            </select>
+
+                                                        </div>
+                                                    </td>
+
+                                                    <td class="wd-300">
                                                         <div class="input-group">
                                                             <input class="form-control discount" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" name="discount" type="text" value="<?= @$salesinvoice['discount']; ?>">
                                                             <div class="input-group-prepend">
@@ -579,8 +550,11 @@
                                                                 </select>
                                                             </div>
                                                         </div>
-                                                    </th>
-                                                    <th class="discount_amount wd-90"></th>
+                                                    </td>
+                                                    <td class="discount_amount wd-90">
+                                                       
+                                                    </td>
+                                                    <input type="hidden" name="discount_amount_new" class="discount_amount_new" value="">
                                                 </tr>
 
                                                 <tr>
@@ -612,8 +586,8 @@
                                                 ?>
 
                                                 <tr>
-                                                    <th>Select Tax</th>
-                                                    <th colspan="2" class="wd-300">
+                                                    <td>Select Tax</td>
+                                                    <td colspan="2" class="wd-300">
                                                         <div class="input-group-sm">
                                                             <select class="select2" id="tax" name="taxes[]" onchange="calculate()" multiple>
                                                                 <?php foreach ($tax as $row) {
@@ -657,7 +631,7 @@
 
                                                             </select>
                                                         </div>
-                                                    </th>
+                                                    </td>
                                                 </tr>
 
                                                 <tr id="igst" style="display:<?php if (!empty($taxes)) {
@@ -665,7 +639,7 @@
                                                                                 } else {
                                                                                     echo 'none;';
                                                                                 } ?> ">
-                                                    <th>
+                                                    <td>
                                                         <div class="input-group-sm">
                                                             <select class="select2" id="igst_acc" name="igst_acc">
                                                                 <?php if (@$salesinvoice['igst_acc']) { ?>
@@ -676,14 +650,14 @@
                                                             </select>
 
                                                         </div>
-                                                    </th>
+                                                    </td>
 
-                                                    <th class="wd-300">
+                                                    <td class="wd-300">
                                                         <div class="input-group-sm">
                                                             <input class="form-control" readonly onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" name="tot_igst" type="text" value="<?= @$salesinvoice['tot_igst']; ?>">
                                                         </div>
-                                                    </th>
-                                                    <th class="igst_amount wd-90"></th>
+                                                    </td>
+                                                    <td class="igst_amount wd-90"></td>
                                                 </tr>
 
                                                 <tr id="sgst" style="display:<?php if (!empty($taxes)) {
@@ -691,7 +665,7 @@
                                                                                 } else {
                                                                                     echo 'none;';
                                                                                 } ?> ">
-                                                    <th>
+                                                    <td>
                                                         <div class="input-group-sm">
                                                             <select class="select2" id="sgst_acc" name="sgst_acc">
                                                                 <?php if (@$salesinvoice['sgst_acc']) { ?>
@@ -702,15 +676,15 @@
                                                             </select>
 
                                                         </div>
-                                                    </th>
+                                                    </td>
 
-                                                    <th class="wd-300">
+                                                    <td class="wd-300">
                                                         <div class="input-group-sm">
                                                             <input class="form-control" readonly onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" name="tot_sgst" type="text" value="<?= @$salesinvoice['tot_sgst']; ?>">
 
                                                         </div>
-                                                    </th>
-                                                    <th class="sgst_amount wd-90"></th>
+                                                    </td>
+                                                    <td class="sgst_amount wd-90"></tssssd>
                                                 </tr>
 
                                                 <tr id="cgst" style="display:<?php if (!empty($taxes)) {
@@ -718,7 +692,7 @@
                                                                                 } else {
                                                                                     echo 'none;';
                                                                                 } ?> ">
-                                                    <th>
+                                                    <td>
                                                         <div class="input-group-sm">
                                                             <select class="select2" id="cgst_acc" name="cgst_acc">
                                                                 <?php if (@$salesinvoice['cgst_acc']) { ?>
@@ -729,15 +703,15 @@
                                                             </select>
 
                                                         </div>
-                                                    </th>
+                                                    </td>
 
-                                                    <th class="wd-300">
+                                                    <td class="wd-300">
                                                         <div class="input-group-sm">
                                                             <input class="form-control" readonly onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" name="tot_cgst" type="text" value="<?= @$salesinvoice['tot_cgst']; ?>">
 
                                                         </div>
-                                                    </th>
-                                                    <th class="cgst_amount wd-90"></th>
+                                                    </td>
+                                                    <td class="cgst_amount wd-90"></td>
                                                 </tr>
 
                                                 <tr id="tds" style="display:<?php if (!empty($taxes)) {
@@ -745,14 +719,14 @@
                                                                             } else {
                                                                                 echo 'none;';
                                                                             } ?> ">
-                                                    <th>(+)TDS</th>
+                                                    <td>(+)TDS</th>
                                                     <th class="wd-300">
                                                         <div class="input-group-sm">
                                                             <input class="form-control tds_amt" readonly onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" name="tds_amt" type="text" value="<?= @$salesinvoice['tds_amt']; ?>">
 
                                                         </div>
-                                                    </th>
-                                                    <th class="tds_amount wd-90"></th>
+                                                    </td>
+                                                    <td class="tds_amount wd-90"></td>
                                                 </tr>
 
                                                 <tr id="cess" style="display:<?php if (!empty($taxes)) {
@@ -760,8 +734,8 @@
                                                                                 } else {
                                                                                     echo 'none;';
                                                                                 } ?>">
-                                                    <th>(+)Cess</th>
-                                                    <th class="wd-300">
+                                                    <td>(+)Cess</td>
+                                                    <td class="wd-300">
                                                         <div class="input-group">
                                                             <input class="form-control cess" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" name="cess" type="text" value="<?= @$salesinvoice['cess']; ?>">
                                                             <div class="input-group-prepend">
@@ -771,28 +745,25 @@
                                                                 </select>
                                                             </div>
                                                         </div>
-                                                    </th>
-                                                    <th class="cess_amount wd-90"></th>
+                                                    </td>
+                                                    <td class="cess_amount wd-90"></td>
                                                 </tr>
 
                                                 <tr>
-                                                    <th>
+                                                    <td>
                                                         <div class="input-group-sm">
-                                                            <select class="select2" id="round" name="round">
+                                                            <select class="select2" id="round_acc" name="round">
                                                                 <?php if (@$salesinvoice['round']) { ?>
                                                                     <option value="<?= @$salesinvoice['round'] ?>">
                                                                         <?= @$salesinvoice['round_name'] ?>
                                                                     </option>
-                                                                <?php } else { ?>
-                                                                    <option value="6" selected>
-                                                                        Round Off (Default)
-                                                                    </option>
+                                                            
                                                                 <?php } ?>
                                                             </select>
 
                                                         </div>
-                                                    </th>
-                                                    <th><input class="form-control input-sm" onchange="calculate()" value="<?= @$salesinvoice['round_diff'] ?>" name="round_diff" type="text"></th>
+                                                    </td>
+                                                    <td><input class="form-control input-sm" onchange="calculate()" value="<?= @$salesinvoice['round_diff'] ?>" name="round_diff" type="text"></td>
                                                     <td class="wd-90 cr_dr_round"></td>
 
 
@@ -1117,6 +1088,7 @@
             }
             discount_amount = (item_total * (discount / 100));
             $('.discount_amount').html('- ' + parseFloat(discount_amount).toFixed(2));
+            $('.discount_amount_new').val(discount_amount);
             if (discount_amount > 0) {
                 var total = 0;
                 //var divide_disc = discount_amount / disc;
@@ -1190,6 +1162,7 @@
             }
         } else {
             $('.discount_amount').html('- ' + parseFloat(discount).toFixed(2));
+            $('.discount_amount_new').val(discount);
             if (discount > 0) {
                 var total = 0;
                 var item_total = 0;
@@ -1783,6 +1756,50 @@
             placeholder: 'Type Account Name',
             ajax: {
                 url: PATH + "Master/Getdata/search_sgst_account",
+                type: "post",
+                allowClear: true,
+                dataType: 'json',
+                delay: 250,
+                data: function(params) {
+                    return {
+                        searchTerm: params.term // search term
+                    };
+                },
+                processResults: function(response) {
+                    return {
+                        results: response
+                    };
+                },
+                cache: true
+            }
+        });
+        $("#discount_acc").select2({
+            width: '100%',
+            placeholder: 'Type Account Name',
+            ajax: {
+                url: PATH + "Master/Getdata/search_discount_account",
+                type: "post",
+                allowClear: true,
+                dataType: 'json',
+                delay: 250,
+                data: function(params) {
+                    return {
+                        searchTerm: params.term // search term
+                    };
+                },
+                processResults: function(response) {
+                    return {
+                        results: response
+                    };
+                },
+                cache: true
+            }
+        });
+        $("#round_acc").select2({
+            width: '100%',
+            placeholder: 'Type Account Name',
+            ajax: {
+                url: PATH + "Master/Getdata/search_round_account",
                 type: "post",
                 allowClear: true,
                 dataType: 'json',

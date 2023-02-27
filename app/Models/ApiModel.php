@@ -9,7 +9,7 @@ class ApiModel extends Model
 {
     // colorsoul api
     public function ace_insert_edit_sales_invoice($post)
-    {
+    { 
         $gmodel = new GeneralModel();
 
         if (!@$post['pid']) {

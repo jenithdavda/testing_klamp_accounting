@@ -101,59 +101,55 @@
                         <thead>
                             <tr>
                                 <th style="width: 50px;">Date</th>
-                                <th>Custom Inv No.</th>
                                 <th>Party Name</th>
                                 <th>Vch Type</th>
                                 <th>Vch No</th>
                                 <th>Debit</th>
-                                <th>Credit</th>
+                                <!-- <th>Credit</th> -->
                                 <th>Closing Bal.</th>
                             </tr>
                         </thead>
 
                         <tbody>
                         
-                            <?php
-                           
-                            //$closing =$opening_balance;
-                            $new = 0;
-                            $debit = 0;
-                            $credit = 0;
-                            //$count = count($sales);
-                           // echo '<pre>';Print_r($sales);exit;
-                            
-                            
-                            foreach ($purchase as $row) { 
-                                //echo '<pre>';Print_r($row);exit;
-                                $new += $row['taxable'];
-                                ?>
-                                <tr>
-                                    <td style="width: 50px;"><?= user_date($row['date']) ?></td>
-                                    <td><?= @$row['custom_inv_no'] ?></td>
-                                    <td><a href="<?= url('sales/add_salesinvoice/' . $row['id']) ?>"><?= $row['party_name'] ?></a></td>
-                                    <td>Sales Item</td>
-                                    <td><?= $row['id'] ?></td>
-                                    <td></td>
-                                    <td><?= number_format(@$row['taxable'], 2) ?></td>
-                                    <td><?= number_format($new,2) ?></td>
-                                </tr>
-                            <?php
-                               // $debit += @$row['taxable'];
-                            } ?>
-
-                        </tbody>
-                        <tr>
-                                <th>Closing</th>
-                                <th colspan="5"></th>
-                                <th><?= number_format($new , 2) ?></th>
-
-
-                                <th><?= number_format($total['purchase_total'], 2) ?></th>
-
+                        <?php
+                       
+                        //$closing =$opening_balance;
+                        $new = 0;
+                        $debit = 0;
+                        $credit = 0;
+                        //$count = count($sales);
+                       // echo '<pre>';Print_r($sales);exit;
+                        
+                        
+                        foreach ($purchase as $row) { 
+                            //echo '<pre>';Print_r($row);exit;
+                            $new += $row['taxable'];
+                            ?>
+                            <tr>
+                                <td style="width: 50px;"><?= user_date($row['date']) ?></td>
+                               
+                                <td><a href="<?= url('Purchase/add_purchaseinvoice/' . $row['id']) ?>"><?= $row['party_name'] ?></a></td>
+                                <td>Purchase Item</td>
+                                <td><?= $row['id'] ?></td>
+                                <td><?= number_format(@$row['taxable'], 2) ?></td>
+                                <td><?= number_format($new,2) ?></td>
                             </tr>
-                        <tfooter>
-                            
-                        </tfooter>
+                        <?php
+                           // $debit += @$row['taxable'];
+                        } ?>
+
+                    </tbody>
+                    <tr>
+                            <th>Closing</th>
+                            <th colspan="4"></th>
+                            <th><?= number_format($new , 2) ?></th>
+
+
+                           
+
+                        </tr>
+                    <tfooter>
                     </table>
                 </div>
             </div>

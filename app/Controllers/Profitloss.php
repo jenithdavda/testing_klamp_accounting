@@ -34,6 +34,10 @@ class Profitloss extends BaseController{
         
         $pl_inc_id = $this->gmodel->get_data_table('gl_group',array('name'=>'P & L Incomes','is_delete'=>0),'id,name');
         $gl_opening_id = $this->gmodel->get_data_table('gl_group',array('name'=>'Opening Stock'),'id,name');
+
+        $round_id = $this->gmodel->get_data_table('gl_group',array('name'=>'Round off'),'id,name');
+
+        
        
         $init_total =0;
 
@@ -77,6 +81,8 @@ class Profitloss extends BaseController{
             $Opening_bal = Opening_bal('Opening Stock');
             $manualy_closing_bal = $this->tmodel->get_manualy_stock($post['from'],$post['to']);
             $closing_data = $this->tmodel->get_closing_detail($post['from'],$post['to']);
+
+            $round_data = Round_off_data($round_id['id'],$post['from'],$post['to']);
         
         }else if($company_from != 0000-00-00 && $company_to != 0000-00-00){
             $from =date_create($company_from) ;                                         
@@ -117,6 +123,8 @@ class Profitloss extends BaseController{
             $Opening_bal = Opening_bal('Opening Stock');
             $manualy_closing_bal = $this->tmodel->get_manualy_stock($post['from'],$post['to']);
             $closing_data = $this->tmodel->get_closing_detail($post['from'],$post['to']);
+
+            $round_data = Round_off_data($round_id['id'],$post['from'],$post['to']);
         }
         else{
 
@@ -152,6 +160,8 @@ class Profitloss extends BaseController{
             $Opening_bal = Opening_bal('Opening Stock');
             $manualy_closing_bal = $this->tmodel->get_manualy_stock();
             $closing_data = $this->tmodel->get_closing_detail();
+
+            $round_data = Round_off_data($round_id['id']);
         }
         $opening_stock[$gl_opening_id['id']] = opening_stock_data($gl_opening_id['id']);
         $opening_stock[$gl_opening_id['id']]['name'] = $gl_opening_id['name'];
@@ -177,6 +187,10 @@ class Profitloss extends BaseController{
         
         $data['pl']['exp_total'] = @$exp_pl_total;
         $data['pl']['inc_total'] = @$inc_pl_total;
+
+        $data['pl']['round_amount'] = @$round_data;
+        $data['pl']['round_id'] = @$round_id['id'];
+        $data['pl']['round_name'] = @$round_id['name'];
         
         $data['trading']['opening_bal'] = $Opening_bal;
         $data['trading']['closing_bal'] = @$closing_data['closing_bal']; 
@@ -345,7 +359,65 @@ class Profitloss extends BaseController{
         }
         $get = $this->request->getGet();
         
-        $data['purchase_invoice'] = get_pl_sales_invoice_monthly_data($get['from'],$get['to'],$get['id']);
+        $data = get_pl_sales_invoice_monthly_data($get['from'],$get['to'],$get['id']);
+        $gmodel = new GeneralModel();
+        $acc = $gmodel->get_data_table('account',array("id"=>$get['id']),'name');
+        $data['title'] = "Sales Invoice Monthly Account Wise";
+        $data['ac_name'] =$acc['name'];
+        $data['ac_id'] =@$get['id'];
+        $data['type'] =@$get['type'];
+        $data['from'] =@$get['from'];
+        $data['to'] =@$get['to'];
+      
+        return view('trading/pl/sales_invoice_monthlyAcc',$data);
+    }
+    public function sales_invoices_voucher_wise(){
+        if(!session('cid')){
+            return redirect()->to(url('company'));
+        }
+        $get = $this->request->getGet();
+        $data = $this->model->salesinvoice_voucher_wise_data($get);        
+        $data['title'] = "Sales Invoice Voucher Wise";
+        $data['type']=@$get['type'];
+        $data['id']=@$get['id'];
+        return view('trading/pl/salesinvoiceItem_voucher',$data);
+    }
+    public function pl_sales_return_monthly_AcWise(){
+        if(!session('cid')){
+            return redirect()->to(url('company'));
+        }
+        $get = $this->request->getGet();
+        
+        $data = get_pl_sales_return_monthly_data($get['from'],$get['to'],$get['id']);
+        $gmodel = new GeneralModel();
+        $acc = $gmodel->get_data_table('account',array("id"=>$get['id']),'name');
+        $data['title'] = "Sales Return Monthly Account Wise";
+        $data['ac_name'] =$acc['name'];
+        $data['ac_id'] =@$get['id'];
+        $data['type'] =@$get['type'];
+        $data['from'] =@$get['from'];
+        $data['to'] =@$get['to'];
+      
+        return view('trading/pl/sales_return_monthlyAcc',$data);
+    }
+    public function sales_return_voucher_wise(){
+        if(!session('cid')){
+            return redirect()->to(url('company'));
+        }
+        $get = $this->request->getGet();
+        $data = $this->model->salesreturn_voucher_wise_data($get);        
+        $data['title'] = "Sales Return Voucher Wise";
+        $data['type']=@$get['type'];
+        $data['id']=@$get['id'];
+        return view('trading/pl/salesreturnItem_voucher',$data);
+    }
+    public function pl_purchase_invoice_monthly_AcWise(){
+        if(!session('cid')){
+            return redirect()->to(url('company'));
+        }
+        $get = $this->request->getGet();
+        
+        $data = get_pl_purchase_invoice_monthly_data($get['from'],$get['to'],$get['id']);
         $gmodel = new GeneralModel();
         $acc = $gmodel->get_data_table('account',array("id"=>$get['id']),'name');
         $data['title'] = "Purchase Invoice Monthly Account Wise";
@@ -354,8 +426,63 @@ class Profitloss extends BaseController{
         $data['type'] =@$get['type'];
         $data['from'] =@$get['from'];
         $data['to'] =@$get['to'];
-       
-        return view('trading/expence/purchase_invoice_monthlyAcc',$data);
+      
+        return view('trading/pl/purchase_invoice_monthlyAcc',$data);
+    }
+    public function purchase_invoice_voucher_wise(){
+        if(!session('cid')){
+            return redirect()->to(url('company'));
+        }
+        $get = $this->request->getGet();
+        $data = $this->model->purchaseinvoice_voucher_wise_data($get);        
+        $data['title'] = "Purchase Invoice Voucher Wise";
+        $data['type']=@$get['type'];
+        $data['id']=@$get['id'];
+        return view('trading/pl/purchaseinvoiceItem_voucher',$data);
+    }
+    public function pl_purchase_return_monthly_AcWise(){
+        if(!session('cid')){
+            return redirect()->to(url('company'));
+        }
+        $get = $this->request->getGet();
+        
+        $data = get_pl_purchase_return_monthly_data($get['from'],$get['to'],$get['id']);
+        $gmodel = new GeneralModel();
+        $acc = $gmodel->get_data_table('account',array("id"=>$get['id']),'name');
+        $data['title'] = "Purchase Return Monthly Account Wise";
+        $data['ac_name'] =$acc['name'];
+        $data['ac_id'] =@$get['id'];
+        $data['type'] =@$get['type'];
+        $data['from'] =@$get['from'];
+        $data['to'] =@$get['to'];
+      
+        return view('trading/pl/purchase_return_monthlyAcc',$data);
+    }
+    public function purchase_return_voucher_wise(){
+        if(!session('cid')){
+            return redirect()->to(url('company'));
+        }
+        $get = $this->request->getGet();
+        $data = $this->model->purchasereturn_voucher_wise_data($get);        
+        $data['title'] = "Purchase Return Voucher Wise";
+        $data['type']=@$get['type'];
+        $data['id']=@$get['id'];
+        return view('trading/pl/purchasereturnItem_voucher',$data);
+    }
+    public function get_round_off_data()
+    {
+        if(!session('cid')){
+            return redirect()->to(url('company'));
+        }
+        $get = $this->request->getGet();
+        
+        $data= get_round_off_voucher_data($get['from'],$get['to'],$get['id']);
+    
+        $gmodel = new GeneralModel();
+        $acc = $gmodel->get_data_table('account',array("id"=>$get['id']),'name');
+        $data['title'] = "Round Off Data";
+        $data['ac_name'] =$acc['name'];
+        return view('trading/expence/roundoff_voucher',$data);
     }
     
     

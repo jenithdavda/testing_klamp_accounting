@@ -47,9 +47,33 @@
                                         </select>
                                     </div>
                                 </div>
+                                <?php
+                                if (!empty($account_view)) {
+                                    if (@$account_view['gl_grp'] == 'P & L Expenses' || @$account_view['gl_grp'] == 'P & L Incomes'|| @$account_view['gl_grp'] == 'Trading Expenses' || @$account_view['gl_grp'] == 'Trading Income' ) {
+                                        $ledger_type_display = 'block;';
+                                    } else {
+                                        $ledger_type_display = 'none;';
+                                    }
+                                } else {
+                                    $ledger_type_display = 'none;';
+                                }
+                                ?>
+                                <div class="col-lg-4 form-group" id="ledger_type" style="display:<?= @$ledger_type_display;?>">
+
+                                    <label class="form-label"><b> Type of Ledger:</b></label>
+                                    <select class="form-control select2" name="ledger_type" id="ledger_type_sel">
+                                        <option value="">
+                                            None</option>
+                                        <option <?= (@$account_view['tax_type'] == "rounding_invoices" ? 'selected' : '') ?> value="rounding_invoices">
+                                            Rounding Invoices</option>
+                                        <option <?= (@$account_view['tax_type'] == "discount" ? 'selected' : '') ?> value="discount">
+                                            Discount</option>
+                                    </select>
+
+                                </div>
                                 <div class="col-lg-4 form-group" id="tax_type" style="display:<?= @$account_view['gl_grp'] == 'Duties and taxes' ? 'block;' : 'none;' ?>">
 
-                                    <label class="form-label"><b>Tax Type:</b></label>
+                                    <label class="form-label"><b>Type of Duties and Taxes:</b></label>
                                     <select class="form-control select2" name="tax_type" id="tax_type" onchange="show_texes_list(this.value)">
                                         <option value="">
                                             None</option>
@@ -785,14 +809,25 @@
                     //HideName.style.display = "none";
                     //Name.style.display = "block";
                     $("#tax_type").css("display", "block");
+                    $("#ledger_type").css("display", "none");
+                    
                     //$("#taxation_show").css("display", "none");
                     //$('#name').attr('disabled');
                 } else {
                     //Name.style.display = "none";
                     //HideName.style.display = "block";
                     $("#tax_type").css("display", "none");
+                    $("#ledger_type").css("display", "none");
                     //$("#taxation_show").css("display", "none");
                     //$('#taxes_name').attr('disabled');
+                }
+                if (text == 'P & L Incomes' || text == 'P & L Expenses' || text == 'Trading Expenses' || text == 'Trading Income') {
+
+                    $("#ledger_type").css("display", "block");
+                }
+                else
+                {
+                    $("#ledger_type").css("display", "none");
                 }
             },
             error: function(xhr) {
@@ -860,7 +895,7 @@
     });
 
     $(document).ready(function() {
-
+        //$("#ledger_type").css("display", "none");
 
         $('#taxability').on('select2:select', function(e) {
             var data = e.params.data;
@@ -1094,6 +1129,7 @@
                 // Name.style.display = "block";
                 $("#tax_type").css("display", "block");
                 $("#taxation_show").css("display", "none");
+                $("#ledger_type").css("display", "none");
                 //$('#name_show').css("display", "none");
                 //$('#name').attr('disabled');
             } else {
@@ -1101,8 +1137,17 @@
                 // HideName.style.display = "block";
                 $("#tax_type").css("display", "none");
                 $("#taxation_show").css("display", "none");
+                $("#ledger_type").css("display", "none");
                 //$('#name_show').css("display", "block");
                 //$('#taxes_name').attr('disabled');
+            }
+            if (text == 'P & L Incomes' || text == 'P & L Expenses' || text == 'Trading Expenses' || text == 'Trading Income') {
+
+                $("#ledger_type").css("display", "block");
+            }
+            else
+            {
+                $("#ledger_type").css("display", "none");
             }
 
 

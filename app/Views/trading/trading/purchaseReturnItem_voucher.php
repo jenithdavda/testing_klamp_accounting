@@ -99,7 +99,7 @@
                                 <th>Party Name</th>
                                 <th>Vch Type</th>
                                 <th>Vch No</th>
-                                <th>Debit</th>
+                               
                                 <th>Credit</th>
                                 <th>Closing Bal.</th>
                             </tr>
@@ -120,10 +120,10 @@
                                 <tr>
                                     <td style="width: 50px;"><?= user_date($row['date']) ?></td>
                                     
-                                    <td><a href="<?= url('sales/add_purchasereturn/' . $row['id']) ?>"><?= $row['party_name'] ?></a></td>
-                                    <td>Sales Item</td>
+                                    <td><a href="<?= url('Purchase/add_purchasereturn/' . $row['id']) ?>"><?= $row['party_name'] ?></a></td>
+                                    <td>Purchase Return Item</td>
                                     <td><?= $row['id'] ?></td>
-                                    <td></td>
+                                    
                                     <td><?= number_format(@$row['taxable'], 2) ?></td>
                                     <td><?= number_format($new,2) ?></td>
                                 </tr>
@@ -136,9 +136,6 @@
                                 <th>Closing</th>
                                 <th colspan="4"></th>
                                 <th><?= number_format($new , 2) ?></th>
-
-
-                                <th><?= number_format($total['purchase_total'], 2) ?></th>
 
                             </tr>
                         <tfooter>
