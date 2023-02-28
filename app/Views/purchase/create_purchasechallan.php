@@ -336,7 +336,8 @@
                                                                     <input name="taxability[]" value="<?= @$row['taxability'] ?>" type="hidden">
                                                                     <input name="expence[]" value="<?= $row['is_expence'] ?>" type="hidden">
                                                                 </td>
-                                                                <td><input class="form-control input-sm" value="<?= $row['hsn'] ?>" readonly name="hsn[]" onchange="calculate()" type="text"></td>
+                                                                <td><input class="form-control input-sm" value="<?= $row['hsn'] ?>" readonly name="hsn[]" onchange="calculate()" type="text">
+                                                                </td>
                                                                 <td><select name="uom[]" onchange="calculate()">
                                                                         <?php
                                                                         foreach ($uom as $uom_row) {
@@ -368,19 +369,18 @@
                                                             <?php
                                                             if ($row['taxability'] == "N/A") {
                                                             ?>
-                                                                <td><input class="form-control input-sm" value="0" name="igst[]" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" onkeyup="calc_gst_per(this)" type="text" readonly>
-                                                                    <input name="igst_amt[]" value="0" type="hidden">
+                                                                <td><input class="form-control input-sm" value="<?= $row['igst'] ?>" name="igst[]" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" onkeyup="calc_gst_per(this)" type="text" readonly>
+                                                                    <input name="igst_amt[]" value="<?= $row['igst_amt'] ?>" type="hidden">
                                                                     <b class="igst_amt"></b>
-
                                                                 </td>
 
-                                                                <td><input class="form-control input-sm" value="0" name="cgst[]" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" type="text" readonly>
-                                                                    <input name="cgst_amt[]" value="0" type="hidden">
+                                                                <td><input class="form-control input-sm" value="<?= $row['cgst'] ?>" name="cgst[]" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" type="text" readonly>
+                                                                    <input name="cgst_amt[]" value="<?= $row['cgst_amt'] ?>" type="hidden">
                                                                     <b class="cgst_amt"></b>
                                                                 </td>
 
-                                                                <td><input class="form-control input-sm" value="0" name="sgst[]" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" type="text" readonly>
-                                                                    <input name="sgst_amt[]" value="0" type="hidden">
+                                                                <td><input class="form-control input-sm" value="<?= $row['sgst'] ?>" name="sgst[]" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" type="text" readonly>
+                                                                    <input name="sgst_amt[]" value="<?= $row['sgst_amt'] ?>" type="hidden">
                                                                     <b class="sgst_amt"></b>
                                                                 </td>
                                                             <?php
@@ -883,7 +883,9 @@
                 $('input[name="subtotal[]"]').eq(i).closest('.item_row').find('.uom_name').html('/ ' + uom_name);
                 $('input[name="subtotal[]"]').eq(i).closest('.item_row').find('.itm_disc_amt').html(parseFloat(disc_amt
                     .toFixed(2)));
-                $('input[name="subtotal[]"]').eq(i).closest('.item_row').find(".hidden_itm_disc_amt").val(disc_amt.toFixed(2));  }
+                $('input[name="subtotal[]"]').eq(i).closest('.item_row').find(".hidden_itm_disc_amt").val(disc_amt.toFixed(
+                    2));
+            }
             if (expence[i] == 1) {
 
                 if (price[i] == '' || price[i] == 'undefined' || isNaN(price[i])) {
@@ -1007,7 +1009,7 @@
                         }
                         //update item column 17-01-2023
                         var sub = qty[i] * price[i];
-                       // var disc_amt = sub * item_disc[i] / 100;
+                        // var disc_amt = sub * item_disc[i] / 100;
                         var item_per = (sub * 100) / item_total;
                         var divide_disc = (item_per / 100) * discount_amount;
                         // append discount amount here ......
@@ -1042,7 +1044,7 @@
                             igst[i] = 0;
                         }
 
-                      
+
                         var abc = price[i];
                         igst_amt += abc * igst[i] / 100;
                         item_igst_amt = final_sub * igst[i] / 100;
@@ -1094,10 +1096,10 @@
                         var item_per = (sub * 100) / item_total;
                         var divide_disc = (item_per / 100) * discount;
 
-                       // var indexx = $(".hidden_discount").eq(i).val(divide_disc.toFixed(2));
+                        // var indexx = $(".hidden_discount").eq(i).val(divide_disc.toFixed(2));
                         $(".item_per").eq(i).val(item_per.toFixed(2));
                         $(".divide_disc_amt").eq(i).val(divide_disc.toFixed(2));
-                      
+
                         var abc = sub - divide_disc;
                         igst_amt += abc * igst[i] / 100;
                         item_igst_amt = abc * igst[i] / 100;
@@ -1125,7 +1127,7 @@
                         var sub = price[i];
                         var final_sub = price[i];
 
-                        var abc =price[i];
+                        var abc = price[i];
                         igst_amt += abc * igst[i] / 100;
 
                         item_igst_amt = final_sub * igst[i] / 100;
@@ -1377,9 +1379,12 @@
                     '" name="price[]" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" value="0" required="" type="text"></td>';
 
                 if (suggestion.price.taxability == 'N/A') {
-                    tds += '<td><input class="form-control input-sm" value="0" name="igst[]" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" onkeyup="calc_gst_per(this)" type="text" readonly><input type="hidden" name="igst_amt[]" value="0"><b class="igst_amt"></b></td>';
-                    tds += '<td><input class="form-control input-sm" value="0" name="cgst[]" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" onkeyup="calc_gst_per(this)" type="text" readonly><input type="hidden" name="cgst_amt[]" value="0"><b class="cgst_amt"></b></td>';
-                    tds += '<td><input class="form-control input-sm" value="0" name="sgst[]" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" onkeyup="calc_gst_per(this)" type="text" readonly><input type="hidden" name="sgst_amt[]" value="0"><b class="sgst_amt"></b></td>';
+                    tds +=
+                        '<td><input class="form-control input-sm" value="0" name="igst[]" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" onkeyup="calc_gst_per(this)" type="text" readonly><input type="hidden" name="igst_amt[]" value="0"><b class="igst_amt"></b></td>';
+                    tds +=
+                        '<td><input class="form-control input-sm" value="0" name="cgst[]" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" onkeyup="calc_gst_per(this)" type="text" readonly><input type="hidden" name="cgst_amt[]" value="0"><b class="cgst_amt"></b></td>';
+                    tds +=
+                        '<td><input class="form-control input-sm" value="0" name="sgst[]" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" onkeyup="calc_gst_per(this)" type="text" readonly><input type="hidden" name="sgst_amt[]" value="0"><b class="sgst_amt"></b></td>';
 
                 } else {
                     var igst_amt = '<input name="igst_amt[]" value="" type="hidden">';
@@ -1472,9 +1477,12 @@
                     '<td><input class="form-control input-sm" value="0" name="price[]" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" value="0" required="" type="text"></td>';
 
                 if (suggestion.paticular.taxability == 'N/A') {
-                    tds += '<td><input class="form-control input-sm" value="0" name="igst[]" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" onkeyup="calc_gst_per(this)" type="text" readonly><input type="hidden" name="igst_amt[]" value="0"><b class="igst_amt"></b></td>';
-                    tds += '<td><input class="form-control input-sm" value="0" name="cgst[]" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" onkeyup="calc_gst_per(this)" type="text" readonly><input type="hidden" name="cgst_amt[]" value="0"><b class="cgst_amt"></b></td>';
-                    tds += '<td><input class="form-control input-sm" value="0" name="sgst[]" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" onkeyup="calc_gst_per(this)" type="text" readonly><input type="hidden" name="sgst_amt[]" value="0"><b class="sgst_amt"></b></td>';
+                    tds +=
+                        '<td><input class="form-control input-sm" value="0" name="igst[]" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" onkeyup="calc_gst_per(this)" type="text" readonly><input type="hidden" name="igst_amt[]" value="0"><b class="igst_amt"></b></td>';
+                    tds +=
+                        '<td><input class="form-control input-sm" value="0" name="cgst[]" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" onkeyup="calc_gst_per(this)" type="text" readonly><input type="hidden" name="cgst_amt[]" value="0"><b class="cgst_amt"></b></td>';
+                    tds +=
+                        '<td><input class="form-control input-sm" value="0" name="sgst[]" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" onkeyup="calc_gst_per(this)" type="text" readonly><input type="hidden" name="sgst_amt[]" value="0"><b class="sgst_amt"></b></td>';
 
                 } else {
                     var igst_amt = '<input name="igst_amt[]" value="" type="hidden">';
@@ -1497,7 +1505,8 @@
                         sgst_amt + '<b class="sgst_amt"></b></td>';
 
                 }
-                tds += '<td><input type="hidden" name="item_discount_hidden[]" class="hidden_itm_disc_amt"><input type="hidden" name="item_added_amt_hidden[]" class="hidden_added_amt"></td>';
+                tds +=
+                    '<td><input type="hidden" name="item_discount_hidden[]" class="hidden_itm_disc_amt"><input type="hidden" name="item_added_amt_hidden[]" class="hidden_added_amt"></td>';
                 tds +=
                     '<td><input class="form-control input-sm" name="subtotal[]" onchange="calculate()" value="0" required="" type="text" readonly></td>';
 
@@ -1996,7 +2005,8 @@
             tds += '<td><input class="form-control input-sm" value="' + suggestion
                 .hsn +
                 '" name="hsn[]" onchange="calculate()"  type="text" readonly></td>';
-            tds += '<td><select name="uom[]" onchange="calculate()"> <option value="' + JSON.stringify(data.uom[0]) + '">' + suggestion.uom_name + '</option>' +
+            tds += '<td><select name="uom[]" onchange="calculate()"> <option value="' + JSON.stringify(data.uom[0]) + '">' +
+                suggestion.uom_name + '</option>' +
                 '</select></td>';
             tds +=
                 '<td><input class="form-control input-sm" value="0" name="qty[]" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" type="text"></td>';
@@ -2004,9 +2014,12 @@
                 .sales_price +
                 '" name="price[]" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" type="text"></td>';
             if (suggestion.taxability == 'N/A') {
-                tds += '<td><input class="form-control input-sm" value="0" name="igst[]" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" onkeyup="calc_gst_per(this)" type="text" readonly><input type="hidden" name="igst_amt[]" value="0"><b class="igst_amt"></b></td>';
-                tds += '<td><input class="form-control input-sm" value="0" name="cgst[]" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" onkeyup="calc_gst_per(this)" type="text" readonly><input type="hidden" name="cgst_amt[]" value="0"><b class="cgst_amt"></b></td>';
-                tds += '<td><input class="form-control input-sm" value="0" name="sgst[]" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" onkeyup="calc_gst_per(this)" type="text" readonly><input type="hidden" name="sgst_amt[]" value="0"><b class="sgst_amt"></b></td>';
+                tds +=
+                    '<td><input class="form-control input-sm" value="0" name="igst[]" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" onkeyup="calc_gst_per(this)" type="text" readonly><input type="hidden" name="igst_amt[]" value="0"><b class="igst_amt"></b></td>';
+                tds +=
+                    '<td><input class="form-control input-sm" value="0" name="cgst[]" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" onkeyup="calc_gst_per(this)" type="text" readonly><input type="hidden" name="cgst_amt[]" value="0"><b class="cgst_amt"></b></td>';
+                tds +=
+                    '<td><input class="form-control input-sm" value="0" name="sgst[]" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" onkeyup="calc_gst_per(this)" type="text" readonly><input type="hidden" name="sgst_amt[]" value="0"><b class="sgst_amt"></b></td>';
 
             } else {
                 var igst_amt = '<input name="igst_amt[]" value="" type="hidden">';
@@ -2030,12 +2043,12 @@
 
             }
             tds +=
-                    '<td><input class="form-control input-sm" name="item_disc[]" onchange="calculate()" value="0" type="text"><b class="itm_disc_amt"></b><input type="hidden" name="item_discount_hidden[]" class="hidden_itm_disc_amt"><input type="hidden" name="item_per[]" class="item_per"><input type="hidden" name="divide_disc_amt[]" class="divide_disc_amt"><input type="hidden" name="item_added_amt_hidden[]" class="hidden_added_amt"></td>';
-                tds +=
-                    '<td><input class="form-control input-sm" name="subtotal[]" onchange="calculate()" value="0" type="text" readonly></td>';
-                tds +=
-                    '<td><input class="form-control input-sm" name="remark[]" placeholder="Remark" type="text"></td>';
-                tds += '</tr>';
+                '<td><input class="form-control input-sm" name="item_disc[]" onchange="calculate()" value="0" type="text"><b class="itm_disc_amt"></b><input type="hidden" name="item_discount_hidden[]" class="hidden_itm_disc_amt"><input type="hidden" name="item_per[]" class="item_per"><input type="hidden" name="divide_disc_amt[]" class="divide_disc_amt"><input type="hidden" name="item_added_amt_hidden[]" class="hidden_added_amt"></td>';
+            tds +=
+                '<td><input class="form-control input-sm" name="subtotal[]" onchange="calculate()" value="0" type="text" readonly></td>';
+            tds +=
+                '<td><input class="form-control input-sm" name="remark[]" placeholder="Remark" type="text"></td>';
+            tds += '</tr>';
 
 
 
@@ -2079,9 +2092,12 @@
                 '<td><input class="form-control input-sm" value="" name="price[]" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" required="" type="text"></td>';
 
             if (suggestion.taxability == 'N/A') {
-                tds += '<td><input class="form-control input-sm" value="0" name="igst[]" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" onkeyup="calc_gst_per(this)" type="text" readonly><input type="hidden" name="igst_amt[]" value="0"><b class="igst_amt"></b></td>';
-                tds += '<td><input class="form-control input-sm" value="0" name="cgst[]" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" onkeyup="calc_gst_per(this)" type="text" readonly><input type="hidden" name="cgst_amt[]" value="0"><b class="cgst_amt"></b></td>';
-                tds += '<td><input class="form-control input-sm" value="0" name="sgst[]" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" onkeyup="calc_gst_per(this)" type="text" readonly><input type="hidden" name="sgst_amt[]" value="0"><b class="sgst_amt"></b></td>';
+                tds +=
+                    '<td><input class="form-control input-sm" value="0" name="igst[]" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" onkeyup="calc_gst_per(this)" type="text" readonly><input type="hidden" name="igst_amt[]" value="0"><b class="igst_amt"></b></td>';
+                tds +=
+                    '<td><input class="form-control input-sm" value="0" name="cgst[]" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" onkeyup="calc_gst_per(this)" type="text" readonly><input type="hidden" name="cgst_amt[]" value="0"><b class="cgst_amt"></b></td>';
+                tds +=
+                    '<td><input class="form-control input-sm" value="0" name="sgst[]" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" onkeyup="calc_gst_per(this)" type="text" readonly><input type="hidden" name="sgst_amt[]" value="0"><b class="sgst_amt"></b></td>';
 
             } else {
                 var igst_amt = '<input name="igst_amt[]" value="" type="hidden">';
@@ -2104,13 +2120,14 @@
                     sgst_amt + '<b class="sgst_amt"></b></td>';
 
             }
-            tds += '<td><input type="hidden" name="item_discount_hidden[]" class="hidden_itm_disc_amt"><input type="hidden" name="item_added_amt_hidden[]" class="hidden_added_amt"></td>';
-                tds +=
-                    '<td><input class="form-control input-sm" name="subtotal[]" onchange="calculate()" value="0" required="" type="text" readonly></td>';
+            tds +=
+                '<td><input type="hidden" name="item_discount_hidden[]" class="hidden_itm_disc_amt"><input type="hidden" name="item_added_amt_hidden[]" class="hidden_added_amt"></td>';
+            tds +=
+                '<td><input class="form-control input-sm" name="subtotal[]" onchange="calculate()" value="0" required="" type="text" readonly></td>';
 
-                tds +=
-                    '<td><input class="form-control input-sm" name="remark[]" placeholder="Remark" type="text"></td>';
-                tds += '</tr>';
+            tds +=
+                '<td><input class="form-control input-sm" name="remark[]" placeholder="Remark" type="text"></td>';
+            tds += '</tr>';
 
             $('.tbody').append(tds);
             $('#code_new').val('');

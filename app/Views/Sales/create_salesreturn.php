@@ -394,18 +394,18 @@
                                                     <?php
                                                     if ($row['taxability'] == "N/A") {
                                                     ?>
-                                                        <td><input class="form-control input-sm" value="0" name="igst[]" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" onkeyup="calc_gst_per(this)" type="text" readonly>
-                                                            <input name="igst_amt[]" value="0" type="hidden">
+                                                         <td><input class="form-control input-sm" value="<?= $row['igst'] ?>" name="igst[]" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" onkeyup="calc_gst_per(this)" type="text" readonly>
+                                                            <input name="igst_amt[]" value="<?= $row['igst_amt'] ?>" type="hidden">
                                                             <b class="igst_amt"></b>
                                                         </td>
 
-                                                        <td><input class="form-control input-sm" value="0" name="cgst[]" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" type="text" readonly>
-                                                            <input name="cgst_amt[]" value="0" type="hidden">
+                                                        <td><input class="form-control input-sm" value="<?= $row['cgst'] ?>" name="cgst[]" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" type="text" readonly>
+                                                            <input name="cgst_amt[]" value="<?= $row['cgst_amt'] ?>" type="hidden">
                                                             <b class="cgst_amt"></b>
                                                         </td>
 
-                                                        <td><input class="form-control input-sm" value="0" name="sgst[]" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" type="text" readonly>
-                                                            <input name="sgst_amt[]" value="0" type="hidden">
+                                                        <td><input class="form-control input-sm" value="<?= $row['sgst'] ?>" name="sgst[]" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" type="text" readonly>
+                                                            <input name="sgst_amt[]" value="<?= $row['sgst_amt'] ?>" type="hidden">
                                                             <b class="sgst_amt"></b>
                                                         </td>
                                                     <?php

@@ -387,18 +387,18 @@
                                                     <?php
                                                     if ($row['taxability'] == "N/A") {
                                                     ?>
-                                                        <td><input class="form-control input-sm" value="0" name="igst[]" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" onkeyup="calc_gst_per(this)" type="text" readonly>
-                                                            <input name="igst_amt[]" value="0" type="hidden">
+                                                         <td><input class="form-control input-sm" value="<?= $row['igst'] ?>" name="igst[]" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" onkeyup="calc_gst_per(this)" type="text" readonly>
+                                                            <input name="igst_amt[]" value="<?= $row['igst_amt'] ?>" type="hidden">
                                                             <b class="igst_amt"></b>
                                                         </td>
 
-                                                        <td><input class="form-control input-sm" value="0" name="cgst[]" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" type="text" readonly>
-                                                            <input name="cgst_amt[]" value="0" type="hidden">
+                                                        <td><input class="form-control input-sm" value="<?= $row['cgst'] ?>" name="cgst[]" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" type="text" readonly>
+                                                            <input name="cgst_amt[]" value="<?= $row['cgst_amt'] ?>" type="hidden">
                                                             <b class="cgst_amt"></b>
                                                         </td>
 
-                                                        <td><input class="form-control input-sm" value="0" name="sgst[]" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" type="text" readonly>
-                                                            <input name="sgst_amt[]" value="0" type="hidden">
+                                                        <td><input class="form-control input-sm" value="<?= $row['sgst'] ?>" name="sgst[]" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" type="text" readonly>
+                                                            <input name="sgst_amt[]" value="<?= $row['sgst_amt'] ?>" type="hidden">
                                                             <b class="sgst_amt"></b>
                                                         </td>
                                                     <?php
@@ -530,9 +530,9 @@
                                                     <td class="wd-100">
                                                         <div class="input-group-sm">
                                                             <select class="select2" id="discount_acc" name="discount_acc">
-                                                                <?php if (@$salesinvoice['cgst_acc']) { ?>
-                                                                    <option value="<?= @$salesinvoice['cgst_acc'] ?>">
-                                                                        <?= @$salesinvoice['cgst_acc_name'] ?>
+                                                                <?php if (@$salesinvoice['discount_acc']) { ?>
+                                                                    <option value="<?= @$salesinvoice['discount_acc'] ?>">
+                                                                        <?= @$salesinvoice['discount_acc_name'] ?>
                                                                     </option>
                                                                 <?php } ?>
                                                             </select>
@@ -557,7 +557,7 @@
                                                     <input type="hidden" name="discount_amount_new" class="discount_amount_new" value="">
                                                 </tr>
 
-                                                <tr>
+                                                <!-- <tr>
                                                     <th>(+)Add Amount</th>
                                                     <th class="wd-300">
                                                         <div class="input-group">
@@ -571,7 +571,7 @@
                                                         </div>
                                                     </th>
                                                     <th class="amty_amount wd-90"></th>
-                                                </tr>
+                                                </tr> -->
 
                                                 <tr>
                                                     <td>Taxable Amount</td>
@@ -753,9 +753,9 @@
                                                     <td>
                                                         <div class="input-group-sm">
                                                             <select class="select2" id="round_acc" name="round">
-                                                                <?php if (@$salesinvoice['round']) { ?>
-                                                                    <option value="<?= @$salesinvoice['round'] ?>">
-                                                                        <?= @$salesinvoice['round_name'] ?>
+                                                                <?php if (@$salesinvoice['round_acc']) { ?>
+                                                                    <option value="<?= @$salesinvoice['round_acc'] ?>">
+                                                                        <?= @$salesinvoice['round_acc_name'] ?>
                                                                     </option>
                                                             
                                                                 <?php } ?>

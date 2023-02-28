@@ -237,6 +237,18 @@ class PurchaseApendColumn extends BaseController{
         $msg = $this->model->update_divide_discount_purchase_return();
         return $this->response->setJSON($msg);
     }
+    public function update_total_purchase_item()
+    {
+        $msg = $this->model->update_total_purchase_item();
+        return $this->response->setJSON($msg);
+    }
+    
+    public function check_hsn_data()
+    {
+        $msg = $this->model->update_hsn_data_item();
+        return $this->response->setJSON($msg);
+    }
+   
    
 
     

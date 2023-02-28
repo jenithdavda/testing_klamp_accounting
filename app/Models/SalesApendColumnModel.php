@@ -2278,4 +2278,31 @@ class SalesApendColumnModel extends Model
         }
         return $msg;
     }
+
+    public function update_total_sales_item()
+    {
+        $db = $this->db;
+        $db->setDatabase(session('DataSource'));
+        $builder = $db->table('sales_item');
+        $builder->select('*');
+        $builder->where(array('is_delete' => 0,'total'=>'0.00'));
+        //$builder->limit(1000);
+        $builder->orderBy('id', 'DESC');
+        $result = $builder->get();
+        $result_array = $result->getResultArray();
+        $gmodel = new GeneralModel();
+        foreach($result_array as $row)
+        {
+            if($row['is_expence'] == 0)
+            {
+                $total = $row['qty'] * $row['rate'];
+            }
+            else
+            {
+                $total = $row['rate'];
+            }
+            $update_total_item = $gmodel->update_data_table('sales_item', array('id' => $row['id']), array('total' => $total));
+        }
+        return $update_total_item;
+    }
 }

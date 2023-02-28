@@ -254,6 +254,14 @@ class SalesApendColumn extends BaseController{
     }
    
 
+    public function update_total_sales_item()
+    {
+        $msg = $this->model->update_total_sales_item();
+        return $this->response->setJSON($msg);
+    }
+   
+   
+
    
 
 

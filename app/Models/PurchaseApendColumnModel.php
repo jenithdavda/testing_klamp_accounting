@@ -2231,4 +2231,90 @@ class PurchaseApendColumnModel extends Model
         }
         return $msg;
     }
+    public function update_total_purchase_item()
+    {
+        $db = $this->db;
+        $db->setDatabase(session('DataSource'));
+        $builder = $db->table('purchase_item');
+        $builder->select('*');
+        $builder->where(array('is_delete' => 0,'total<='=>'0'));
+        //$builder->limit(1000);
+        $builder->orderBy('id', 'DESC');
+        $result = $builder->get();
+        $result_array = $result->getResultArray();
+        $gmodel = new GeneralModel();
+        foreach($result_array as $row)
+        {
+            if($row['is_expence'] == 0)
+            {
+                $total = $row['qty'] * $row['rate'];
+            }
+            else
+            {
+                $total = $row['rate'];
+            }
+            $update_total_item = $gmodel->update_data_table('purchase_item', array('id' => $row['id']), array('total' => $total));
+        }
+        return $update_total_item;
+    }
+    public function update_hsn_data_item()
+    {
+        $db = $this->db;
+        $db->setDatabase(session('DataSource'));
+        $builder = $db->table('item_new');
+        $builder->select('*');
+        $builder->where(array('is_delete' => 0,'is_update_item'=>0));
+        $result = $builder->get();
+        $result_array = $result->getResultArray();
+        $gmodel = new GeneralModel();
+        foreach($result_array as $row)
+        {
+            $db->setDatabase(session('DataSource'));
+            $builder = $db->table('item');
+            $builder->select('*');
+            $builder->where(array('is_delete' => 0,'hsn'=>$row['hsn'],'name'=>$row['name']));
+            $result = $builder->get();
+            $result_array1 = $result->getRowArray();
+            if(empty($result_array1))
+            {
+                $pdata = array(
+                'code' => @$row['code'] ? $row['code'] : '' ,
+                'type' => $row['type'],
+                'item_mode' =>$row['item_mode'],
+                'item_grp' => @$row['item_grp'],
+                'name' => $row['name'],
+                'sku' => $row['sku'],
+                'status' =>@$row['status'] ? $row['status']:'',
+                'default_cut' => $row['default_cut'],
+                'uom' => @$row['uom'] ? $row['uom']:'',
+                'purchase_cost' => @$row['purchase_cost'] ? $row['purchase_cost']:'',
+                'purchase_min_qty' => @$row['purchase_min_qty'] ? $row['purchase_min_qty']:'',
+                'purchase_max_qty' => @$row['purchase_min_qty'] ? $row['purchase_min_qty']:'',
+                'sales_price' => @$row['sales_price'] ? $row['sales_price']:'',
+                'brokrage' => @$row['brokrage'] ? $row['brokrage']:'',
+                'sale_min_qty' => @$row['sale_min_qty'] ? $row['sale_min_qty']:'',
+                'sale_max_qty' => @$row['sale_max_qty'] ? $row['sale_max_qty']:'',
+                'opening_stock' => @$row['opening_stock'] ? $row['opening_stock']:'',
+                'opening_rate' => @$row['opening_rate'] ?$row['opening_rate']:'',
+                'opening_total' => @$row['opening_total'] ? $row['opening_total']:'',
+                'opening_uom' => @$row['opening_uom'] ? $row['opening_uom']:'',
+                'hsn' => @$row['hsn'] ? trim($row['hsn']):'',
+                'taxability' => @$row['taxability'] ? $row['taxability']:'',
+                'rev_charge' => @$row['rev_charge'] ? $row['rev_charge']:'',
+                'ineligible' => @$row['ineligible'] ? $row['ineligible']:'',
+                'non_gst' => @$row['non_gst'] ? $row['non_gst']:'',
+                'igst' => @$row['igst'] ? $row['igst']:'',
+                'cgst' => @$row['cgst'] ? $row['cgst']:'',
+                'sgst' => @$row['sgst'] ? $row['sgst']:'',
+                );
+                $pdata['created_at'] = date('Y-m-d H:i:s');
+                $pdata['created_by'] = session('uid');
+                $builder = $db->table('item');
+                $result = $builder->Insert($pdata);
+            }
+            $update_total_item = $gmodel->update_data_table('item_new', array('id' => $row['id']), array('is_update_item' => 1));
+
+        }
+        return $update_total_item;
+    }
 }
