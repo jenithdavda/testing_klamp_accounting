@@ -411,7 +411,7 @@ class ProfitlossModel extends Model
             $end_date = date('Y-m-d',$end);
            
             $builder = $db->table('sales_ACparticu pp');
-            $builder->select('ac.name as party_name,pg.invoice_date as date,pg.invoice_no as voucher_no,pg.id,pg.v_type as pg_type,pp.account as pp_acc,pp.amount as pg_amount,pp.discount,pp.added_amt,pp.sub_total');
+            $builder->select('ac.name as party_name,pg.invoice_date as date,pg.invoice_no as voucher_no,pg.id,pg.v_type as pg_type,pp.account as pp_acc,pp.amount as taxable');
             $builder->join('sales_ACinvoice pg', 'pg.id = pp.parent_id');
             $builder->join('account ac', 'ac.id = pp.account');
             $builder->where('pp.account',$get['id']);
@@ -420,15 +420,13 @@ class ProfitlossModel extends Model
             $builder->where(array('DATE(pg.invoice_date)  <= ' => $end_date));
             $query = $builder->get();
             $pg_income['sales'] = $query->getResultArray();
-            // echo $db->getLastQuery();exit;
-
-
+          
         }else if(!empty(@$get['from'])){
             $start_date = @$get['from']  ? db_date($get['from']) : '';
             $end_date = @$get['to'] ? db_date($get['to']) : '';
 
             $builder = $db->table('sales_ACparticu pp');
-            $builder->select('ac.name as party_name,pg.invoice_date as date,pg.invoice_no as voucher_no,pg.id,pg.v_type as pg_type,pp.account as pp_acc,pp.amount as pg_amount,pp.discount,pp.added_amt,pp.sub_total');
+            $builder->select('ac.name as party_name,pg.invoice_date as date,pg.invoice_no as voucher_no,pg.id,pg.v_type as pg_type,pp.account as pp_acc,pp.amount as taxable');
             $builder->join('sales_ACinvoice pg', 'pg.id = pp.parent_id');
             $builder->join('account ac', 'ac.id = pp.account');
             $builder->where('pp.account',$get['id']);
@@ -443,18 +441,9 @@ class ProfitlossModel extends Model
             $start_date = '';
             $end_date = '';
         }   
-        // echo '<pre>';print_r($pg_income);exit;
-        $result['sales'] = array();
-        $total = 0;
-        if(!empty($pg_income['sales'])){
-            foreach ($pg_income['sales'] as $row) {
-    
-                $row['pg_amount'] = (float)$row['sub_total'] + (float)$row['added_amt']; 
-                $row['taxable'] = $row['pg_amount'];
-                $result['sales'][] = $row; 
-            }
-        }
-
+      
+        $result = $pg_income;
+       
         $result['date']['from'] = $start_date;
         $result['date']['to'] = $end_date;
         $result['ac_id'] = $get['id'];
@@ -478,7 +467,7 @@ class ProfitlossModel extends Model
             $end_date = date('Y-m-d',$end);
            
             $builder = $db->table('sales_item pp');
-            $builder->select('ac.name as party_name,pg.custom_inv_no,pg.invoice_date as date,pg.invoice_no as voucher_no,pg.id,pp.item_id as pp_acc,pp.discount,pp.added_amt,pp.sub_total');
+            $builder->select('ac.name as party_name,pg.custom_inv_no,pg.invoice_date as date,pg.invoice_no as voucher_no,pg.id,pp.item_id as pp_acc,pp.total as taxable');
             $builder->join('sales_invoice pg', 'pg.id = pp.parent_id');
             $builder->join('account ac', 'ac.id = pp.item_id');
             $builder->where('pp.item_id',$get['id']);
@@ -487,15 +476,13 @@ class ProfitlossModel extends Model
             $builder->where(array('DATE(pg.invoice_date)  <= ' => $end_date));
             $query = $builder->get();
             $pg_expence['sales'] = $query->getResultArray();
-            // echo $db->getLastQuery();exit;
-
-
+          
         }else if(!empty(@$get['from'])){
             $start_date = @$get['from']  ? db_date($get['from']) : '';
             $end_date = @$get['to'] ? db_date($get['to']) : '';
 
             $builder = $db->table('sales_item pp');
-            $builder->select('ac.name as party_name,pg.custom_inv_no,pg.invoice_date as date,pg.invoice_no as voucher_no,pg.id,pp.item_id as pp_acc,pp.discount,pp.added_amt,pp.sub_total');
+            $builder->select('ac.name as party_name,pg.custom_inv_no,pg.invoice_date as date,pg.invoice_no as voucher_no,pg.id,pp.item_id as pp_acc,pp.total as taxable');
             $builder->join('sales_invoice pg', 'pg.id = pp.parent_id');
             $builder->join('account ac', 'ac.id = pp.item_id');
             $builder->where('pp.item_id',$get['id']);
@@ -510,18 +497,7 @@ class ProfitlossModel extends Model
             $start_date = '';
             $end_date = '';
         }   
-        // echo '<pre>';print_r($pg_income);exit;
-        $result['sales'] = array();
-        $total = 0;
-        if(!empty($pg_expence['sales'])){
-            foreach ($pg_expence['sales'] as $row) {
-    
-                $row['pg_amount'] = (float)$row['sub_total'] + (float)$row['added_amt']; 
-                $row['taxable'] = $row['pg_amount'];
-                $result['sales'][] = $row; 
-            }
-        }
-
+        $result = $pg_expence;
         $result['date']['from'] = $start_date;
         $result['date']['to'] = $end_date;
         $result['ac_id'] = $get['id'];
@@ -545,11 +521,11 @@ class ProfitlossModel extends Model
             $end_date = date('Y-m-d',$end);
            
             $builder = $db->table('sales_item pp');
-            $builder->select('ac.name as party_name,pg.supp_inv,pg.return_date as date,pg.return_no as voucher_no,pg.id,pp.item_id as pp_acc,pp.discount,pp.added_amt,pp.sub_total');
+            $builder->select('ac.name as party_name,pg.supp_inv,pg.return_date as date,pg.return_no as voucher_no,pg.id,pp.item_id as pp_acc,pp.total as taxable');
             $builder->join('sales_return pg', 'pg.id = pp.parent_id');
             $builder->join('account ac', 'ac.id = pp.item_id');
             $builder->where('pp.item_id',$get['id']);
-            $builder->where(array('pp.is_delete' => '0','is_expence'=>1,'pg.is_delete' => '0','pg.is_cancle' => '0','pp.type'=>'return'));
+            $builder->where(array('pp.is_delete' => '0','is_expence'=>1,'pg.is_delete' => '0','pg.is_cancle' => '0','pp.type'=>'return','pp.is_delete' => '0'));
             $builder->where(array('DATE(pg.return_date)  >= ' => $start_date));
             $builder->where(array('DATE(pg.return_date)  <= ' => $end_date));
             $query = $builder->get();
@@ -560,11 +536,11 @@ class ProfitlossModel extends Model
             $end_date = @$get['to'] ? db_date($get['to']) : '';
 
             $builder = $db->table('sales_item pp');
-            $builder->select('ac.name as party_name,pg.supp_inv,pg.return_date as date,pg.return_no as voucher_no,pg.id,pp.item_id as pp_acc,pp.discount,pp.added_amt,pp.sub_total');
+            $builder->select('ac.name as party_name,pg.supp_inv,pg.return_date as date,pg.return_no as voucher_no,pg.id,pp.item_id as pp_acc,pp.total as taxable');
             $builder->join('sales_return pg', 'pg.id = pp.parent_id');
             $builder->join('account ac', 'ac.id = pp.item_id');
             $builder->where('pp.item_id',$get['id']);
-            $builder->where(array('pp.is_delete' => '0','is_expence'=>1,'pg.is_delete' => '0','pg.is_cancle' => '0','pp.type'=>'return'));
+            $builder->where(array('pp.is_delete' => '0','is_expence'=>1,'pg.is_delete' => '0','pg.is_cancle' => '0','pp.type'=>'return','pp.is_delete' => '0'));
             $builder->where(array('DATE(pg.return_date)  >= ' => $start_date));
             $builder->where(array('DATE(pg.return_date)  <= ' => $end_date));
             $query = $builder->get();
@@ -575,25 +551,14 @@ class ProfitlossModel extends Model
             $start_date = '';
             $end_date = '';
         }   
-        // echo '<pre>';print_r($pg_income);exit;
-        $result['sales_return'] = array();
-        $total = 0;
-        if(!empty($pg_expence['sales_return'])){
-            foreach ($pg_expence['sales_return'] as $row) {
+        $result = $pg_expence;
     
-                $row['pg_amount'] = (float)$row['sub_total'] + (float)$row['added_amt']; 
-                $row['taxable'] = $row['pg_amount'];
-                $result['sales_return'][] = $row; 
-            }
-        }
-
         $result['date']['from'] = $start_date;
         $result['date']['to'] = $end_date;
         $result['ac_id'] = $get['id'];
         $result['month'] = @$get['month'];
         $result['year'] = @$get['year'];
 
-        // echo '<pre>';print_r($result);exit;
         return $result;     
     }
     public function purchaseinvoice_voucher_wise_data($get){
@@ -610,11 +575,11 @@ class ProfitlossModel extends Model
             $end_date = date('Y-m-d',$end);
            
             $builder = $db->table('purchase_item pp');
-            $builder->select('ac.name as party_name,pg.invoice_date as date,pg.invoice_no as voucher_no,pg.id,pp.item_id as pp_acc,pp.discount,pp.added_amt,pp.sub_total');
+            $builder->select('ac.name as party_name,pg.invoice_date as date,pg.invoice_no as voucher_no,pg.id,pp.item_id as pp_acc,pp.total as taxable');
             $builder->join('purchase_invoice pg', 'pg.id = pp.parent_id');
             $builder->join('account ac', 'ac.id = pp.item_id');
             $builder->where('pp.item_id',$get['id']);
-            $builder->where(array('pp.is_delete' => '0','is_expence'=>1,'pg.is_delete' => '0','pg.is_cancle' => '0','pp.type'=>'invoice'));
+            $builder->where(array('pp.is_delete' => '0','is_expence'=>1,'pg.is_delete' => '0','pg.is_cancle' => '0','pp.type'=>'invoice','pp.is_delete' => '0'));
             $builder->where(array('DATE(pg.invoice_date)  >= ' => $start_date));
             $builder->where(array('DATE(pg.invoice_date)  <= ' => $end_date));
             $query = $builder->get();
@@ -627,11 +592,11 @@ class ProfitlossModel extends Model
             $end_date = @$get['to'] ? db_date($get['to']) : '';
 
             $builder = $db->table('purchase_item pp');
-            $builder->select('ac.name as party_name,pg.invoice_date as date,pg.invoice_no as voucher_no,pg.id,pp.item_id as pp_acc,pp.discount,pp.added_amt,pp.sub_total');
+            $builder->select('ac.name as party_name,pg.invoice_date as date,pg.invoice_no as voucher_no,pg.id,pp.item_id as pp_acc,pp.total as taxable');
             $builder->join('purchase_invoice pg', 'pg.id = pp.parent_id');
             $builder->join('account ac', 'ac.id = pp.item_id');
             $builder->where('pp.item_id',$get['id']);
-            $builder->where(array('pp.is_delete' => '0','is_expence'=>1,'pg.is_delete' => '0','pg.is_cancle' => '0','pp.type'=>'invoice'));
+            $builder->where(array('pp.is_delete' => '0','is_expence'=>1,'pg.is_delete' => '0','pg.is_cancle' => '0','pp.type'=>'invoice','pp.is_delete' => '0'));
             $builder->where(array('DATE(pg.invoice_date)  >= ' => $start_date));
             $builder->where(array('DATE(pg.invoice_date)  <= ' => $end_date));
             $query = $builder->get();
@@ -642,25 +607,14 @@ class ProfitlossModel extends Model
             $start_date = '';
             $end_date = '';
         }   
-        //echo '<pre>';print_r($pg_expence);exit;
-        $result['purchase'] = array();
-        $total = 0;
-        if(!empty($pg_expence['purchase'])){
-            foreach ($pg_expence['purchase'] as $row) {
-    
-                $row['pg_amount'] = (float)$row['sub_total'] + (float)$row['added_amt']; 
-                $row['taxable'] = $row['pg_amount'];
-                $result['purchase'][] = $row; 
-            }
-        }
-
+        $result = $pg_expence;
+     
         $result['date']['from'] = $start_date;
         $result['date']['to'] = $end_date;
         $result['ac_id'] = $get['id'];
         $result['month'] = @$get['month'];
         $result['year'] = @$get['year'];
 
-        //echo '<pre>';print_r($result);exit;
         return $result;     
     }
     public function purchasereturn_voucher_wise_data($get){
@@ -677,11 +631,11 @@ class ProfitlossModel extends Model
             $end_date = date('Y-m-d',$end);
            
             $builder = $db->table('purchase_item pp');
-            $builder->select('ac.name as party_name,pg.return_date as date,pg.return_no as voucher_no,pg.id,pp.item_id as pp_acc,pp.discount,pp.added_amt,pp.sub_total');
+            $builder->select('ac.name as party_name,pg.return_date as date,pg.return_no as voucher_no,pg.id,pp.item_id as pp_acc,pp.total as taxable');
             $builder->join('purchase_return pg', 'pg.id = pp.parent_id');
             $builder->join('account ac', 'ac.id = pp.item_id');
             $builder->where('pp.item_id',$get['id']);
-            $builder->where(array('pp.is_delete' => '0','is_expence'=>1,'pg.is_delete' => '0','pg.is_cancle' => '0','pp.type'=>'return'));
+            $builder->where(array('pp.is_delete' => '0','is_expence'=>1,'pg.is_delete' => '0','pg.is_cancle' => '0','pp.type'=>'return','pp.is_delete' => '0'));
             $builder->where(array('DATE(pg.return_date)  >= ' => $start_date));
             $builder->where(array('DATE(pg.return_date)  <= ' => $end_date));
             $query = $builder->get();
@@ -692,11 +646,11 @@ class ProfitlossModel extends Model
             $end_date = @$get['to'] ? db_date($get['to']) : '';
 
             $builder = $db->table('purchase_item pp');
-            $builder->select('ac.name as party_name,pg.return_date as date,pg.return_no as voucher_no,pg.id,pp.item_id as pp_acc,pp.discount,pp.added_amt,pp.sub_total');
+            $builder->select('ac.name as party_name,pg.return_date as date,pg.return_no as voucher_no,pg.id,pp.item_id as pp_acc,,pp.total as taxable');
             $builder->join('purchase_return pg', 'pg.id = pp.parent_id');
             $builder->join('account ac', 'ac.id = pp.item_id');
             $builder->where('pp.item_id',$get['id']);
-            $builder->where(array('pp.is_delete' => '0','is_expence'=>1,'pg.is_delete' => '0','pg.is_cancle' => '0','pp.type'=>'return'));
+            $builder->where(array('pp.is_delete' => '0','is_expence'=>1,'pg.is_delete' => '0','pg.is_cancle' => '0','pp.type'=>'return','pp.is_delete' => '0'));
             $builder->where(array('DATE(pg.return_date)  >= ' => $start_date));
             $builder->where(array('DATE(pg.return_date)  <= ' => $end_date));
             $query = $builder->get();
@@ -707,25 +661,13 @@ class ProfitlossModel extends Model
             $start_date = '';
             $end_date = '';
         }   
-        // echo '<pre>';print_r($pg_income);exit;
-        $result['purchase_return'] = array();
-        $total = 0;
-        if(!empty($pg_expence['purchase_return'])){
-            foreach ($pg_expence['purchase_return'] as $row) {
-    
-                $row['pg_amount'] = (float)$row['sub_total'] + (float)$row['added_amt']; 
-                $row['taxable'] = $row['pg_amount'];
-                $result['purchase_return'][] = $row; 
-            }
-        }
-
+        $result = $pg_expence;
         $result['date']['from'] = $start_date;
         $result['date']['to'] = $end_date;
         $result['ac_id'] = $get['id'];
         $result['month'] = @$get['month'];
         $result['year'] = @$get['year'];
 
-        // echo '<pre>';print_r($result);exit;
         return $result;     
     }
     

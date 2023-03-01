@@ -535,9 +535,22 @@
                                     <div class="table-responsive">
                                         <table class="table table-bordered mg-b-0">
                                             <thead>
-                                                <tr>
-                                                    <th>(-)Discount</th>
-                                                    <th class="wd-300">
+                                            <tr>
+                                                    <!-- <th>(-)Discount</th> -->
+                                                    <td class="wd-100">
+                                                        <div class="input-group-sm">
+                                                            <select class="select2" id="discount_acc" name="discount_acc">
+                                                                <?php if (@$p_return['discount_acc']) { ?>
+                                                                    <option value="<?= @$p_return['discount_acc'] ?>">
+                                                                        <?= @$p_return['discount_acc_name'] ?>
+                                                                    </option>
+                                                                <?php } ?>
+                                                            </select>
+
+                                                        </div>
+                                                    </td>
+
+                                                    <td class="wd-300">
                                                         <div class="input-group">
                                                             <input class="form-control discount" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" name="discount" type="text" value="<?= @$p_return['discount']; ?>">
                                                             <div class="input-group-prepend">
@@ -547,25 +560,13 @@
                                                                 </select>
                                                             </div>
                                                         </div>
-                                                    </th>
-                                                    <th class="discount_amount wd-90"></th>
+                                                    </td>
+                                                    <td class="discount_amount wd-90">
+                                                       
+                                                    </td>
+                                                    <input type="hidden" name="discount_amount_new" class="discount_amount_new" value="">
                                                 </tr>
-
-                                                <tr>
-                                                    <th>(+)Add Amount</th>
-                                                    <th class="wd-300">
-                                                        <div class="input-group">
-                                                            <input class="form-control amty" onchange="calculate()" onkeypress="return isDesimalNumberKey(event)" name="amty" type="text" value="<?= @$p_return['amty']; ?>">
-                                                            <div class="input-group-prepend">
-                                                                <select class="select2 amty_type" name="amty_type" onchange="calculate()">
-                                                                    <option <?= (@$p_return['amty_type'] == 'Fixed' ? 'selected' : '') ?> value="Fixed">Fixed Amount</option>
-                                                                    <option <?= (@$p_return['amty_type'] == '%' ? 'selected' : '') ?> value="%">Per(%) Amount</option>
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                    </th>
-                                                    <th class="amty_amount wd-90"></th>
-                                                </tr>
+                                               
                                                 <tr>
                                                     <td>Taxable Amount</td>
                                                     <td colspan="2"><input name="taxable" value="<?= @$p_return['taxable'] ?>" class="form-control input-sm" type="text" readonly>
@@ -721,24 +722,23 @@
                                                 </tr>
 
                                                 <tr>
-                                                    <th>
+                                                    <td>
                                                         <div class="input-group-sm">
-                                                            <select class="select2" id="round" name="round">
-                                                                <?php if (@$p_return['round']) { ?>
-                                                                    <option value="<?= @$p_return['round'] ?>">
-                                                                        <?= @$p_return['round_name'] ?>
+                                                            <select class="select2" id="round_acc" name="round">
+                                                                <?php if (@$p_return['round_acc']) { ?>
+                                                                    <option value="<?= @$p_return['round_acc'] ?>">
+                                                                        <?= @$p_return['round_acc_name'] ?>
                                                                     </option>
-                                                                <?php } else { ?>
-                                                                    <option value="6" selected>
-                                                                        Round Off (Default)
-                                                                    </option>
+                                                            
                                                                 <?php } ?>
                                                             </select>
 
                                                         </div>
-                                                    </th>
-                                                    <th><input class="form-control input-sm" onchange="calculate()" value="<?= @$p_return['round_diff'] ?>" name="round_diff" type="text"></th>
+                                                    </td>
+                                                    <td><input class="form-control input-sm" onchange="calculate()" value="<?= @$p_return['round_diff'] ?>" name="round_diff" type="text"></td>
                                                     <td class="wd-90 cr_dr_round"></td>
+
+
                                                 </tr>
 
                                                 <tr>
@@ -1036,6 +1036,7 @@
             }
             discount_amount = (item_total * (discount / 100));
             $('.discount_amount').html('- ' + parseFloat(discount_amount).toFixed(2));
+            $('.discount_amount_new').val(discount_amount);
             if (discount_amount > 0) {
                 var total = 0;
                 //var divide_disc = discount_amount / disc;
@@ -1109,6 +1110,7 @@
             }
         } else {
             $('.discount_amount').html('- ' + parseFloat(discount).toFixed(2));
+            $('.discount_amount_new').val(discount);
             if (discount > 0) {
                 var total = 0;
                 var item_total = 0;
@@ -1722,6 +1724,50 @@
             placeholder: 'Type Account Name',
             ajax: {
                 url: PATH + "Master/Getdata/search_sgst_account",
+                type: "post",
+                allowClear: true,
+                dataType: 'json',
+                delay: 250,
+                data: function(params) {
+                    return {
+                        searchTerm: params.term // search term
+                    };
+                },
+                processResults: function(response) {
+                    return {
+                        results: response
+                    };
+                },
+                cache: true
+            }
+        });
+        $("#discount_acc").select2({
+            width: '100%',
+            placeholder: 'Type Account Name',
+            ajax: {
+                url: PATH + "Master/Getdata/search_discount_account",
+                type: "post",
+                allowClear: true,
+                dataType: 'json',
+                delay: 250,
+                data: function(params) {
+                    return {
+                        searchTerm: params.term // search term
+                    };
+                },
+                processResults: function(response) {
+                    return {
+                        results: response
+                    };
+                },
+                cache: true
+            }
+        });
+        $("#round_acc").select2({
+            width: '100%',
+            placeholder: 'Type Account Name',
+            ajax: {
+                url: PATH + "Master/Getdata/search_round_account",
                 type: "post",
                 allowClear: true,
                 dataType: 'json',

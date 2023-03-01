@@ -922,15 +922,15 @@ function trading_expense_data($id, $start_date = '', $end_date = '')
     }
 
     $builder = $db->table('gl_group gl');
-    $builder->select('gl.id as gl_id,gl.name,gl.parent,pg.v_type as pg_type,pp.account as pp_acc,ac.name as account_name,ac.id as account_id,pp.amount as pg_amount,pg.disc_type,pg.discount,pg.amty,pg.amty_type');
+    $builder->select('gl.id as gl_id,gl.name,gl.parent,pg.v_type as pg_type,pp.account as pp_acc,ac.name as account_name,ac.id as account_id,pp.total as pg_amount');
     $builder->join('account ac', 'gl.id =ac.gl_group');
     $builder->join('purchase_particu pp', 'pp.account = ac.id');
     $builder->join('purchase_general pg', 'pg.id = pp.parent_id');
     $builder->where('(pg.v_type="general" OR pg.v_type = "return")');
     $builder->where(array('gl.id' => $id));
     $builder->where(array('ac.is_delete' => '0'));
-    $builder->where(array('pg.is_delete' => '0'));
-    $builder->where(array('pg.is_cancle' => '0'));
+    $builder->where(array('pg.is_delete' => '0','pg.is_cancle' => '0'));
+    $builder->where(array('pp.is_delete' => '0'));
     $builder->where(array('DATE(pg.doc_date)  >= ' => $start_date));
     $builder->where(array('DATE(pg.doc_date)  <= ' => $end_date));
     $query = $builder->get();

@@ -508,10 +508,6 @@ class GeneralModel extends Model
             $getdata['s_return']['sgst_acc_name']=@$sgst_acc['name'];
             $getdata['s_return']['cgst_acc_name']=@$cgst_acc['name'];
 
-           
-            
-            
-
             if(!empty($getinvoice)){
                 $getdata['s_return']['invoice_name']='('.@$getinvoice['id'].') -'.@$row['account_name'].' - '.@$getinvoice['invoice_date'].'- ₹'.@$getinvoice['net_amount'];
             }else{
@@ -522,7 +518,7 @@ class GeneralModel extends Model
         $item_builder =$db->table('sales_item st');
         $item_builder->select('st.*,st.uom as uom');
         //$item_builder->join('item i','i.id = st.item_id');
-        $item_builder->where(array('st.parent_id' => $row['id'],'st.type' => 'return' , 'st.is_delete' => 0 ));
+        $item_builder->where(array('st.parent_id' => $id,'st.type' => 'return','st.expence_type'=>'','st.is_delete' => 0 ));
         $query= $item_builder->get();
         $getdata1 = $query->getResultArray();
         //echo '<pre>';print_r($getdata1);exit;
@@ -558,6 +554,27 @@ class GeneralModel extends Model
             }
             $getdata['item'][] = $row;
         }
+        $item_builder = $db->table('sales_item st');
+        $item_builder->select('st.*,ac.name as acc_name');
+        $item_builder->join('account ac','ac.id = st.item_id');
+        $item_builder->where(array('st.parent_id' => $id, 'st.type' => 'return','st.expence_type'=>'rounding_invoices','st.is_expence'=>1, 'st.is_delete' => 0));
+        $query = $item_builder->get();
+        $getrounding = $query->getRowArray();
+        //echo '<pre>';Print_r($getrounding);exit;
+        
+
+        $getdata['s_return']['round_acc'] = @$getrounding['item_id'];
+        $getdata['s_return']['round_acc_name'] = @$getrounding['acc_name'];
+
+        $item_builder = $db->table('sales_item st');
+        $item_builder->select('st.*,ac.name as acc_name');
+        $item_builder->join('account ac','ac.id = st.item_id');
+        $item_builder->where(array('st.parent_id' => $id, 'st.type' => 'return','st.expence_type'=>'discount','st.is_expence'=>1, 'st.is_delete' => 0));
+        $query = $item_builder->get();
+        $getdiscount = $query->getRowArray();
+
+        $getdata['s_return']['discount_acc'] = @$getdiscount['item_id'];
+        $getdata['s_return']['discount_acc_name'] = @$getdiscount['acc_name'];
         return $getdata;
     }
 

@@ -20,10 +20,7 @@ class Trading extends BaseController{
         if (!session('cid')) {
             return redirect()->to(url('company'));
         }
-
-        
         $post= $this->request->getPost();
-
         $gmodel = new GeneralModel;
         $exp = array();
         $gl_id = $gmodel->get_data_table('gl_group',array('name'=>'Trading Expenses'),'id,name');
@@ -55,11 +52,6 @@ class Trading extends BaseController{
             $init_total = 0;
 
             $Opening_bal = Opening_bal('Opening Stock');
-
-            // $opening_stock[$gl_opening_id['id']] = opening_stock_data($gl_opening_id['id'],$post['from'],$post['to']);
-            // $opening_stock[$gl_opening_id['id']]['name'] = $gl_opening_id['name'];
-            // $opening_stock[$gl_opening_id['id']]['sub_categories'] = get_opening_stock_sub_grp_data($gl_opening_id['id'],$post['from'],$post['to']);
-            
             $manualy_closing_bal = $this->model->get_manualy_stock($post['from'],$post['to']);
             $closing_data = $this->model->get_closing_detail($post['from'],$post['to']);
          
@@ -73,7 +65,6 @@ class Trading extends BaseController{
 
             $sale_pur = sale_purchase_vouhcer($post['from'],$post['to']);
            
-            
             $exp[$gl_id['id']] = trading_expense_data($gl_id['id'],$post['from'],$post['to']);
             $exp[$gl_id['id']]['name'] = $gl_id['name'];
             $exp[$gl_id['id']]['sub_categories'] = get_expense_sub_grp_data($gl_id['id'],$post['from'],$post['to']);
@@ -85,11 +76,6 @@ class Trading extends BaseController{
             $init_total = 0;
 
             $Opening_bal = Opening_bal('Opening Stock');
-
-            // $opening_stock[$gl_opening_id['id']] = opening_stock_data($gl_opening_id['id'],$post['from'],$post['to']);
-            // $opening_stock[$gl_opening_id['id']]['name'] = $gl_opening_id['name'];
-            // $opening_stock[$gl_opening_id['id']]['sub_categories'] = get_opening_stock_sub_grp_data($gl_opening_id['id'],$post['from'],$post['to']);
-            
             $manualy_closing_bal = $this->model->get_manualy_stock($post['from'],$post['to']);
             $closing_data = $this->model->get_closing_detail($post['from'],$post['to']);
 
@@ -113,8 +99,6 @@ class Trading extends BaseController{
         $opening_stock[$gl_opening_id['id']] = opening_stock_data($gl_opening_id['id']);
         $opening_stock[$gl_opening_id['id']]['name'] = $gl_opening_id['name'];
         $opening_stock[$gl_opening_id['id']]['sub_categories'] = get_opening_stock_sub_grp_data($gl_opening_id['id']);
-        
-       // echo '<pre>';Print_r($opening_stock);exit;
         
         $exp_total = subGrp_total($exp,$init_total);
         $inc_total = subGrp_total($inc,$init_total);
@@ -141,7 +125,6 @@ class Trading extends BaseController{
         $data['end_date'] = $post['to']?$post['to']:$company_to;
 
         $data['title'] =  "Trading Dashboard";
-        //echo '<pre>';Print_r($data);exit;
         return view('trading/trading/dashboard',$data);
     }
     ///////////////////////********************start Account ***********//////////////////////

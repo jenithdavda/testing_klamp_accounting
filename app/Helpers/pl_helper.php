@@ -272,6 +272,8 @@ function pl_expense_data($id, $start_date = '', $end_date = '')
         $tot_pl_expense[$row['account_name']]['purchase_return_exp'] = $total;
         $tot_pl_expense[$row['account_name']]['account_id'] = $row['pp_acc'];
     }
+    //echo '<pre>';Print_r($tot_pl_expense);exit;
+    
 
 
     
@@ -827,23 +829,22 @@ function pl_get_generalSales_monthly_AcWise($start_date, $end_date, $id)
         $db->setDatabase(session('DataSource'));
     }
     $builder = $db->table('sales_ACinvoice pg');
-    $builder->select('MONTH(pg.invoice_date) as month,YEAR(pg.invoice_date) as year,pg.v_type as pg_type,pp.amount as pg_amount,pp.sub_total,pp.added_amt');
+    $builder->select('MONTH(pg.invoice_date) as month,YEAR(pg.invoice_date) as year,pg.v_type as pg_type,pp.amount as pg_amount');
     $builder->join('sales_ACparticu pp', 'pg.id = pp.parent_id');
     $builder->where(array('pp.account' => $id));
     $builder->where(array('pg.is_delete' => '0','pg.is_cancle' => '0'));
+    $builder->where(array('pp.is_delete' => '0'));
     $builder->where(array('DATE(pg.invoice_date)  >= ' => db_date($start_date)));
     $builder->where(array('DATE(pg.invoice_date)  <= ' => db_date($end_date)));
     $query = $builder->get();
     $pg_income = $query->getResultArray();
     $arr = array();
-    // echo '<pre>';print_r($pg_income);
+  
     $tot_income = array();
     foreach ($pg_income as $row) {
 
         $after_disc = 0;
-
-       
-            $row['pg_amount'] = (float) $row['sub_total'] + (float) $row['added_amt'];
+        $row['pg_amount'] = (float) $row['pg_amount'];
       
         $total = ((@$tot_income['generalSale'][$row['month']][$row['pg_type']]) ? $tot_income['generalSale'][$row['month']][$row['pg_type']] : 0) + $row['pg_amount'];
         $tot_income['generalSale'][$row['month']][$row['pg_type']] = $total;
@@ -858,8 +859,69 @@ function pl_get_generalSales_monthly_AcWise($start_date, $end_date, $id)
     $result = @$tot_income;
     $result['from'] = $start_date;
     $result['to'] = $end_date;
-    // echo '<pre>';print_r($result);exit;
+   
+    return $result;
+}
+function pl_get_generalPurchase_monthly_AcWise($start_date, $end_date, $id)
+{
 
+    if ($start_date == '') {
+        if (date('m') < '03') {
+            $year = date('Y') - 1;
+            $start_date = $year . '-04-01';
+        } else {
+            $year = date('Y');
+            $start_date = $year . '-04-01';
+        }
+    }
+
+    if ($end_date == '') {
+
+        if (date('m') < '03') {
+            $year = date('Y');
+        } else {
+            $year = date('Y') + 1;
+        }
+        $end_date = $year . '-03-31';
+    }
+
+    $db = \Config\Database::connect();
+
+    if (session('DataSource')) {
+        $db->setDatabase(session('DataSource'));
+    }
+    $builder = $db->table('purchase_general pg');
+    $builder->select('MONTH(pg.doc_date) as month,YEAR(pg.doc_date) as year,pg.v_type as pg_type,pp.amount as pg_amount');
+    $builder->join('purchase_particu pp', 'pg.id = pp.parent_id');
+    $builder->where(array('pp.account' => $id));
+    $builder->where(array('pg.is_delete' => '0','pg.is_cancle' => '0'));
+    $builder->where(array('pp.is_delete' => '0'));
+    $builder->where(array('DATE(pg.doc_date)  >= ' => db_date($start_date)));
+    $builder->where(array('DATE(pg.doc_date)  <= ' => db_date($end_date)));
+    $query = $builder->get();
+    $pg_income = $query->getResultArray();
+    $arr = array();
+  
+    $tot_income = array();
+    foreach ($pg_income as $row) {
+
+        $after_disc = 0;
+        $row['pg_amount'] = (float) $row['pg_amount'];
+      
+        $total = ((@$tot_income['generalPurchase'][$row['month']][$row['pg_type']]) ? $tot_income['generalPurchase'][$row['month']][$row['pg_type']] : 0) + $row['pg_amount'];
+        $tot_income['generalPurchase'][$row['month']][$row['pg_type']] = $total;
+
+        $tot_income['generalPurchase'][$row['month']]['total'] = (float)@$tot_income['generalPurchase'][$row['month']]['return'] - (float) @$tot_income['generalSale'][$row['month']]['general'];
+        $tot_income['generalPurchase'][$row['month']]['year'] = $row['year'];
+        $tot_income['generalPurchase'][$row['month']]['month'] = $row['month'];
+
+    }
+
+    $result = array();
+    $result = @$tot_income;
+    $result['from'] = $start_date;
+    $result['to'] = $end_date;
+   
     return $result;
 }
 function get_pl_sales_invoice_monthly_data($start_date, $end_date, $id)
@@ -891,22 +953,20 @@ function get_pl_sales_invoice_monthly_data($start_date, $end_date, $id)
         $db->setDatabase(session('DataSource'));
     }
     $builder = $db->table('sales_invoice pg');
-    $builder->select('MONTH(pg.invoice_date) as month,YEAR(pg.invoice_date) as year,pp.sub_total,pp.added_amt');
+    $builder->select('MONTH(pg.invoice_date) as month,YEAR(pg.invoice_date) as year,pp.total');
     $builder->join('sales_item pp', 'pg.id = pp.parent_id');
-    $builder->where(array('pp.item_id' => $id,'pp.is_expence'=>1,'pp.type'=>'invoice'));
+    $builder->where(array('pp.item_id' => $id,'pp.is_expence'=>1,'pp.type'=>'invoice','pg.is_delete' => '0'));
     $builder->where(array('pg.is_delete' => '0','pg.is_cancle' => '0'));
     $builder->where(array('DATE(pg.invoice_date)  >= ' => db_date($start_date)));
     $builder->where(array('DATE(pg.invoice_date)  <= ' => db_date($end_date)));
     $query = $builder->get();
     $pg_income = $query->getResultArray();
-    //echo '<pre>';Print_r($pg_income);exit;
-    
-  
+   
     $arr = array();
     $tot_income = array();
     foreach ($pg_income as $row) {
         $after_disc = 0;
-        $row['pg_amount'] = (float) $row['sub_total'] + (float) $row['added_amt'];
+        $row['pg_amount'] = (float) $row['total'];
         $total = ((@$tot_income['sales_invoice'][$row['month']]['total']) ? $tot_income['sales_invoice'][$row['month']]['total'] : 0) + $row['pg_amount'];
         $tot_income['sales_invoice'][$row['month']]['total'] = $total;
         $tot_income['sales_invoice'][$row['month']]['year'] = $row['year'];
@@ -952,9 +1012,9 @@ function get_pl_sales_return_monthly_data($start_date, $end_date, $id)
     }
     $builder = $db->table('sales_return pg');
     //$builder->select('pp.*');
-    $builder->select('MONTH(pg.return_date) as month,YEAR(pg.return_date) as year,pp.sub_total,pp.added_amt');
+    $builder->select('MONTH(pg.return_date) as month,YEAR(pg.return_date) as year,pp.total');
     $builder->join('sales_item pp', 'pg.id = pp.parent_id');
-    $builder->where(array('pp.item_id' => $id,'pp.is_expence'=>1,'pp.type'=>'return'));
+    $builder->where(array('pp.item_id' => $id,'pp.is_expence'=>1,'pp.type'=>'return','pp.is_delete'=>0));
     $builder->where(array('pg.is_delete' => '0','pg.is_cancle' => '0'));
     $builder->where(array('DATE(pg.return_date)  >= ' => db_date($start_date)));
     $builder->where(array('DATE(pg.return_date)  <= ' => db_date($end_date)));
@@ -967,7 +1027,7 @@ function get_pl_sales_return_monthly_data($start_date, $end_date, $id)
     $tot_income = array();
     foreach ($pg_income as $row) {
         $after_disc = 0;
-        $row['pg_amount'] = (float) $row['sub_total'] + (float) $row['added_amt'];
+        $row['pg_amount'] = (float) $row['total'];
         $total = ((@$tot_income['sales_return'][$row['month']]['total']) ? $tot_income['sales_return'][$row['month']]['total'] : 0) + $row['pg_amount'];
         $tot_income['sales_return'][$row['month']]['total'] = $total;
         $tot_income['sales_return'][$row['month']]['year'] = $row['year'];
@@ -979,8 +1039,7 @@ function get_pl_sales_return_monthly_data($start_date, $end_date, $id)
     $result = @$tot_income;
     $result['from'] = $start_date;
     $result['to'] = $end_date;
-    // echo '<pre>';print_r($result);exit;
-
+   
     return $result;
 }
 function get_pl_purchase_invoice_monthly_data($start_date, $end_date, $id)
@@ -1013,22 +1072,20 @@ function get_pl_purchase_invoice_monthly_data($start_date, $end_date, $id)
     }
     $builder = $db->table('purchase_invoice pg');
     //$builder->select('pp.*');
-    $builder->select('MONTH(pg.invoice_date) as month,YEAR(pg.invoice_date) as year,pp.sub_total,pp.added_amt');
+    $builder->select('MONTH(pg.invoice_date) as month,YEAR(pg.invoice_date) as year,pp.total,');
     $builder->join('purchase_item pp', 'pg.id = pp.parent_id');
-    $builder->where(array('pp.item_id' => $id,'pp.is_expence'=>1,'pp.type'=>'invoice'));
+    $builder->where(array('pp.item_id' => $id,'pp.is_expence'=>1,'pp.type'=>'invoice','pp.is_delete' => '0'));
     $builder->where(array('pg.is_delete' => '0','pg.is_cancle' => '0'));
     $builder->where(array('DATE(pg.invoice_date)  >= ' => db_date($start_date)));
     $builder->where(array('DATE(pg.invoice_date)  <= ' => db_date($end_date)));
     $query = $builder->get();
     $pg_income = $query->getResultArray();
-    //echo '<pre>';Print_r($pg_income);exit;
-    
-  
+   
     $arr = array();
     $tot_income = array();
     foreach ($pg_income as $row) {
         $after_disc = 0;
-        $row['pg_amount'] = (float) $row['sub_total'] + (float) $row['added_amt'];
+        $row['pg_amount'] = (float) $row['total'];
         $total = ((@$tot_income['purchase_invoice'][$row['month']]['total']) ? $tot_income['purchase_invoice'][$row['month']]['total'] : 0) + $row['pg_amount'];
         $tot_income['purchase_invoice'][$row['month']]['total'] = $total;
         $tot_income['purchase_invoice'][$row['month']]['year'] = $row['year'];
@@ -1040,8 +1097,7 @@ function get_pl_purchase_invoice_monthly_data($start_date, $end_date, $id)
     $result = @$tot_income;
     $result['from'] = $start_date;
     $result['to'] = $end_date;
-    //echo '<pre>';print_r($result);exit;
-
+   
     return $result;
 }
 function get_pl_purchase_return_monthly_data($start_date, $end_date, $id)
@@ -1074,22 +1130,20 @@ function get_pl_purchase_return_monthly_data($start_date, $end_date, $id)
     }
     $builder = $db->table('purchase_return pg');
     //$builder->select('pp.*');
-    $builder->select('MONTH(pg.return_date) as month,YEAR(pg.return_date) as year,pp.sub_total,pp.added_amt');
+    $builder->select('MONTH(pg.return_date) as month,YEAR(pg.return_date) as year,pp.total');
     $builder->join('purchase_item pp', 'pg.id = pp.parent_id');
-    $builder->where(array('pp.item_id' => $id,'pp.is_expence'=>1,'pp.type'=>'return'));
+    $builder->where(array('pp.item_id' => $id,'pp.is_expence'=>1,'pp.type'=>'return','pp.is_delete' => '0'));
     $builder->where(array('pg.is_delete' => '0','pg.is_cancle' => '0'));
     $builder->where(array('DATE(pg.return_date)  >= ' => db_date($start_date)));
     $builder->where(array('DATE(pg.return_date)  <= ' => db_date($end_date)));
     $query = $builder->get();
     $pg_income = $query->getResultArray();
-    //echo '<pre>';Print_r($pg_income);exit;
     
-  
     $arr = array();
     $tot_income = array();
     foreach ($pg_income as $row) {
         $after_disc = 0;
-        $row['pg_amount'] = (float) $row['sub_total'] + (float) $row['added_amt'];
+        $row['pg_amount'] = (float) $row['total'];
         $total = ((@$tot_income['purchase_return'][$row['month']]['total']) ? $tot_income['purchase_return'][$row['month']]['total'] : 0) + $row['pg_amount'];
         $tot_income['purchase_return'][$row['month']]['total'] = $total;
         $tot_income['purchase_return'][$row['month']]['year'] = $row['year'];

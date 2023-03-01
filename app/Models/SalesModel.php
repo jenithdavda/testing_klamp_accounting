@@ -2545,8 +2545,8 @@ class SalesModel extends Model
         $query = $item_builder->get();
         $getrounding = $query->getRowArray();
 
-        $getdata['salesinvoice']['round_acc'] = $getrounding['item_id'];
-        $getdata['salesinvoice']['round_acc_name'] = $getrounding['acc_name'];
+        $getdata['salesinvoice']['round_acc'] = @$getrounding['item_id'];
+        $getdata['salesinvoice']['round_acc_name'] = @$getrounding['acc_name'];
 
         $item_builder = $db->table('sales_item st');
         $item_builder->select('st.*,ac.name as acc_name');
@@ -2555,8 +2555,8 @@ class SalesModel extends Model
         $query = $item_builder->get();
         $getdiscount = $query->getRowArray();
 
-        $getdata['salesinvoice']['discount_acc'] = $getdiscount['item_id'];
-        $getdata['salesinvoice']['discount_acc_name'] = $getdiscount['acc_name'];
+        $getdata['salesinvoice']['discount_acc'] = @$getdiscount['item_id'];
+        $getdata['salesinvoice']['discount_acc_name'] = @$getdiscount['acc_name'];
 
         return $getdata;
     }
@@ -2597,7 +2597,7 @@ class SalesModel extends Model
         $price = $post['price'];
         $item_disc = $post['item_disc'];
         $discount = $post['discount'];
-        $amty = $post['amty'];
+       
         $cess = $post['cess'];
         $total = 0.0;
         $item_count = 0;
@@ -2642,17 +2642,7 @@ class SalesModel extends Model
                     $total = 0;
                     $item_total_amt = 0;
                     for ($i = 0; $i < count($pid); $i++) {
-                        // $devide_disc = $post['discount'] / count($pid);
-                        // if ($post['expence'][$i] == 0) {
-                        //     if ($item_disc[$i] != 0) {
-                        //         $sub = $post['qty'][$i] * $post['price'][$i];
-                        //         $disc_amt = $sub * $item_disc[$i] / 100;
-                        //     }
-                        //     $final_sub = $post['qty'][$i] * $post['price'][$i] - $disc_amt;
-                        // } else {
-                        //     $final_sub = $post['price'][$i];
-                        // }
-                        // $total += $final_sub - $devide_disc;
+                     
                         if ($post['expence'][$i] == 0) {
                             $sub = $post['qty'][$i] * $post['price'][$i];
                             $item_total_amt += $sub;
@@ -2697,31 +2687,17 @@ class SalesModel extends Model
                             $sub = $post['qty'][$i] * $post['price'][$i];
                             $item_per = ($sub * 100) / $item_total_amt;
                             $item_disc_amt = ($item_per / 100) * $post['discount'];
-                            $final_sub = $sub - $item_disc_amt;
-                            // echo '</br>';
-                            // echo '<pre>sub:';Print_r($sub);
-                            // echo '<pre>item_per:';Print_r($item_per);
-                            // echo '<pre>disc_amt:';Print_r($item_disc_amt);  
+                            $final_sub = $sub - $item_disc_amt; 
                         } else {
                             $final_sub = $post['price'][$i];
                         }
-                        //echo '<pre>';Print_r($final_sub);
-
+                     
                         $total += $final_sub;
                     }
                 }
             }
         }
 
-        if ($post['amty_type'] == '%') {
-            if ($post['amty'] == '')
-                $post['amty'] = 0;
-            else
-                $post['amty'] = $total *  $post['amty'] / 100;
-        } else {
-            if ($post['amty'] == '')
-                $post['amty'] = 0;
-        }
         if ($post['cess_type'] == '%') {
             if ($post['cess'] == '')
                 $post['cess'] = 0;
@@ -2738,7 +2714,7 @@ class SalesModel extends Model
             $tds_amt = 0;
         }
 
-        $netamount = $total + $post['cess'] + $post['amty'] +   $tds_amt + $post['tot_igst'];
+        $netamount = $total + $post['cess'] + $tds_amt + $post['tot_igst'];
 
         if (isset($post['taxes'])) {
             if (!empty($post['taxes'])) {
@@ -2779,8 +2755,6 @@ class SalesModel extends Model
             'total' => $total,
             'discount' => $discount,
             'disc_type' => $post['disc_type'],
-            'amty' => $amty,
-            'amty_type' => $post['amty_type'],
             'cess' => $cess,
             'cess_type' => $post['cess_type'],
             'tds_amt' => $post['tds_amt'],
@@ -2855,17 +2829,130 @@ class SalesModel extends Model
             if (empty($msg)) {
                 $builder->where(array("id" => $post['id']));
                 $result = $builder->Update($pdata);
-
-                $result_jv = $gnmodel->update_data_table('jv_management', array('invoice_no' => $post['id'],'type' => "return"), array('is_update' => '1'));
                 
+                if(session('DataSource')=='ACE20223HUY')
+                {
+                    $result_jv = $gnmodel->update_data_table('jv_management', array('invoice_no' => $post['id'],'type' => "return"), array('is_update' => '1'));
+                }
 
                 $item_builder = $db->table('sales_item');
-                $item_result = $item_builder->select('GROUP_CONCAT(item_id) as item_id')->where(array("parent_id" => $post['id'], "type" => 'return', "is_delete" => 0, "is_expence" => 0))->get();
+                $item_result = $item_builder->select('GROUP_CONCAT(item_id) as item_id')->where(array("parent_id" => $post['id'], "type" => 'return', 'expence_type'=>'',"is_delete" => 0, "is_expence" => 0))->get();
                 $getItem = $item_result->getRow();
 
                 $account_builder = $db->table('sales_item');
-                $account_result = $account_builder->select('GROUP_CONCAT(item_id) as item_id')->where(array("parent_id" => $post['id'], "type" => 'return', "is_delete" => 0, "is_expence" => 1))->get();
+                $account_result = $account_builder->select('GROUP_CONCAT(item_id) as item_id')->where(array("parent_id" => $post['id'], "type" => 'return','expence_type'=>'', "is_delete" => 0, "is_expence" => 1))->get();
                 $getAccount = $account_result->getRow();
+
+                $account_builder = $db->table('sales_item');
+                $discount_ac_result = $account_builder->select('item_id')->where(array("parent_id" => $post['id'], "type" => 'return', "is_delete" => 0,'expence_type'=>'discount', "is_expence" => 1))->get();
+                $getDiscount = $discount_ac_result->getRow();
+
+                $account_builder = $db->table('sales_item');
+                $round_ac_result = $account_builder->select('item_id')->where(array("parent_id" => $post['id'], "type" => 'return', "is_delete" => 0,'expence_type'=>'rounding_invoices', "is_expence" => 1))->get();
+                $getRound = $round_ac_result->getRow();
+                if(!empty($getDiscount))
+                {
+                    $disc_data = array(
+                        'item_id' => $post['discount_acc'],
+                        'rate' => $post['discount_amount_new'],
+                        'total' => $post['discount_amount_new'],
+                        'sub_total' => $post['discount_amount_new'],
+                        'update_at' => date('Y-m-d H:i:s'),
+                        'update_by' => session('uid'),
+                    );
+                    $account_builder->where(array('item_id' => $getDiscount->item_id, 'parent_id' => $post['id'], 'type' => 'return','expence_type'=>'discount'));
+                    $account_builder->update($disc_data);
+                }
+                else
+                {
+                    if(!empty($post['discount_amount_new']))
+                    {
+                        $discount_itemdata[] = array(
+                            'parent_id' => $post['id'],
+                            'expence_type'=>'discount',
+                            'is_expence' => 1,
+                            'item_id' => $post['discount_acc'],
+                            'hsn' => '',
+                            'type' => 'return',
+                            'uom' => '',
+                            'rate' => $post['discount_amount_new'],
+                            'qty' => 0,
+                            'igst' => '',
+                            'cgst' => '',
+                            'sgst' => '',
+                            'igst_amt' => '',
+                            'cgst_amt' => '',
+                            'sgst_amt' => '',
+                            'taxability' => '',
+                            //update discount column 17-01-2023
+                            'total' => $post['discount_amount_new'],
+                            'item_disc' => 0,
+                            'discount' => 0,
+                            'divide_disc_item_per' => 0,
+                            'divide_disc_item_amt' => 0,
+                            'sub_total' => $post['discount_amount_new'],
+                            // end
+                            'added_amt' => '',
+                            'remark' => '',
+                            'created_at' => date('Y-m-d H:i:s'),
+                            'created_by' => session('uid'),
+                        );
+                        $item_builder = $db->table('sales_item');
+                        $result3 = $item_builder->insertBatch($discount_itemdata);
+                    }
+                }
+
+                if(!empty($getRound))
+                {
+                    $round_data = array(
+                        'item_id' => $post['round'],
+                        'rate' => $post['round_diff'],
+                        'total' => $post['round_diff'],
+                        'sub_total' => $post['round_diff'],
+                        'update_at' => date('Y-m-d H:i:s'),
+                        'update_by' => session('uid'),
+                    );
+                    $account_builder->where(array('item_id' => $getRound->item_id, 'parent_id' => $post['id'], 'type' => 'return','expence_type'=>'rounding_invoices'));
+                    $account_builder->update($round_data);
+                }
+                else
+                {
+                    if(!empty($post['discount_amount_new']))
+                    {
+                        $round_itemdata[] = array(
+                            'parent_id' => $post['id'],
+                            'expence_type'=>'rounding_invoices',
+                            'is_expence' => 1,
+                            'item_id' => $post['round'],
+                            'hsn' => '',
+                            'type' => 'return',
+                            'uom' => '',
+                            'rate' => $post['round_diff'],
+                            'qty' => 0,
+                            'igst' => '',
+                            'cgst' => '',
+                            'sgst' => '',
+                            'igst_amt' => '',
+                            'cgst_amt' => '',
+                            'sgst_amt' => '',
+                            'taxability' => '',
+                            //update discount column 17-01-2023
+                            'total' => $post['round_diff'],
+                            'item_disc' => 0,
+                            'discount' => 0,
+                            'divide_disc_item_per' => 0,
+                            'divide_disc_item_amt' => 0,
+                            'sub_total' => $post['round_diff'],
+                            // end
+                            'added_amt' =>'',
+                            'remark' => '',
+                            'created_at' => date('Y-m-d H:i:s'),
+                            'created_by' => session('uid'),
+                        );
+                        $item_builder = $db->table('sales_item');
+                        $result2 = $item_builder->insertBatch($round_itemdata);
+                    }
+                }
 
                 $new_item = array();
                 $new_itempid = array();
@@ -3192,6 +3279,73 @@ class SalesModel extends Model
                 //print_r($itemdata);exit;
                 $item_builder = $db->table('sales_item');
                 $result1 = $item_builder->insertBatch($itemdata);
+
+                $round_itemdata[] = array(
+                    'parent_id' => $id,
+                    'expence_type'=>'rounding_invoices',
+                    'is_expence' => 1,
+                    'item_id' => $post['round'],
+                    'hsn' => '',
+                    'type' => 'return',
+                    'uom' => '',
+                    'rate' => $post['round_diff'],
+                    'qty' => 0,
+                    'igst' => '',
+                    'cgst' => '',
+                    'sgst' => '',
+                    'igst_amt' => '',
+                    'cgst_amt' => '',
+                    'sgst_amt' => '',
+                    'taxability' => '',
+                    //update discount column 17-01-2023
+                    'total' => $post['round_diff'],
+                    'item_disc' => 0,
+                    'discount' => 0,
+                    'divide_disc_item_per' => 0,
+                    'divide_disc_item_amt' => 0,
+                    'sub_total' => $post['round_diff'],
+                    // end
+                    'added_amt' =>'',
+                    'remark' => '',
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'created_by' => session('uid'),
+                );
+                $item_builder = $db->table('sales_item');
+                $result2 = $item_builder->insertBatch($round_itemdata);
+
+                $discount_itemdata[] = array(
+                    'parent_id' => $id,
+                    'expence_type'=>'discount',
+                    'is_expence' => 1,
+                    'item_id' => $post['discount_acc'],
+                    'hsn' => '',
+                    'type' => 'return',
+                    'uom' => '',
+                    'rate' => $post['discount_amount_new'],
+                    'qty' => 0,
+                    'igst' => '',
+                    'cgst' => '',
+                    'sgst' => '',
+                    'igst_amt' => '',
+                    'cgst_amt' => '',
+                    'sgst_amt' => '',
+                    'taxability' => '',
+                    //update discount column 17-01-2023
+                    'total' => $post['discount_amount_new'],
+                    'item_disc' => 0,
+                    'discount' => 0,
+                    'divide_disc_item_per' => 0,
+                    'divide_disc_item_amt' => 0,
+                    'sub_total' => $post['discount_amount_new'],
+                    // end
+                    'added_amt' => '',
+                    'remark' => '',
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'created_by' => session('uid'),
+                );
+                $item_builder = $db->table('sales_item');
+                $result3 = $item_builder->insertBatch($discount_itemdata);
+
                 if(session('DataSource')=='ACE20223HUY')
                 {
                     $builder = $db->table('sales_return');

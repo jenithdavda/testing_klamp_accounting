@@ -212,7 +212,7 @@ class TradingModel extends Model
             $end_date = date('Y-m-d',$end);
 
             $builder = $db->table('sales_invoice pi');
-            $builder->select('ac.name as party_name,pi.custom_inv_no,pi.invoice_date as date,pi.invoice_no as voucher_no,pi.id,pp.item_id as pp_acc,pp.discount,SUM(pp.added_amt) as added_amt,SUM(pp.sub_total) as sub_total');
+            $builder->select('ac.name as party_name,pi.custom_inv_no,pi.invoice_date as date,pi.invoice_no as voucher_no,pi.id,pp.item_id as pp_acc,((SUM(pp.total)) - (SUM(pp.discount))) as taxable');
             $builder->join('sales_item pp', 'pp.parent_id =pi.id');
             $builder->join('account ac', 'ac.id =pi.account');
             $builder->where(array('pp.is_delete' => 0,'pi.is_cancle' => 0,'pi.is_delete' => 0,'pp.type'=>'invoice','pp.is_expence'=>0));
@@ -229,7 +229,7 @@ class TradingModel extends Model
             $end_date = @$get['to'] ? db_date($get['to']) : '';
 
             $builder = $db->table('sales_invoice pi');
-            $builder->select('ac.name as party_name,pi.custom_inv_no,pi.invoice_date as date,pi.invoice_no as voucher_no,pi.id,pp.item_id as pp_acc,pp.discount,SUM(pp.added_amt) as added_amt,SUM(pp.sub_total) as sub_total');
+            $builder->select('ac.name as party_name,pi.custom_inv_no,pi.invoice_date as date,pi.invoice_no as voucher_no,pi.id,pp.item_id as pp_acc,((SUM(pp.total)) - (SUM(pp.discount))) as taxable');
             $builder->join('sales_item pp', 'pp.parent_id =pi.id');
             $builder->join('account ac', 'ac.id =pi.account');
             $builder->where(array('pp.is_delete' => 0,'pi.is_cancle' => 0,'pi.is_delete' => 0,'pp.type'=>'invoice','pp.is_expence'=>0));
@@ -244,30 +244,17 @@ class TradingModel extends Model
             $start_date = '';
             $end_date = '';
         }   
-        //echo '<pre>';Print_r($purchase['purchase']);exit;
+       
         
-        $result['sales'] = array();
-        $total = 0;
-        if(!empty($sales['sales'])){
-            foreach ($sales['sales'] as $row) {
-    
-                $row['pg_amount'] = (float)$row['sub_total'] + (float)$row['added_amt']; 
-                $row['taxable'] = $row['pg_amount'];
-                $result['sales'][] = $row; 
-            }
-        }
-
+        $result = $sales;
+       
         $result['date']['from'] = $start_date;
         $result['date']['to'] = $end_date;
         $result['month'] = @$get['month'];
         $result['year'] = @$get['year'];
 
-        //echo '<pre>';print_r($result);exit;
         return $result;      
-
-
-
-           
+  
     }
     // public function salesReturnItem_voucher_wise_data($get){
     //     $db = $this->db;
@@ -374,7 +361,7 @@ class TradingModel extends Model
             $end_date = date('Y-m-d',$end);
 
             $builder = $db->table('sales_return pi');
-            $builder->select('ac.name as party_name,pi.return_date as date,pi.return_no as voucher_no,pi.id,pp.item_id as pp_acc,pp.discount,SUM(pp.added_amt) as added_amt,SUM(pp.sub_total) as sub_total');
+            $builder->select('ac.name as party_name,pi.return_date as date,pi.return_no as voucher_no,pi.id,pp.item_id as pp_acc,((SUM(pp.total)) - (SUM(pp.discount))) as taxable');
             $builder->join('sales_item pp', 'pp.parent_id =pi.id');
             $builder->join('account ac', 'ac.id =pi.account');
             $builder->where(array('pp.is_delete' => 0,'pi.is_cancle' => 0,'pi.is_delete' => 0,'pp.type'=>'return','pp.is_expence'=>0));
@@ -391,7 +378,7 @@ class TradingModel extends Model
             $end_date = @$get['to'] ? db_date($get['to']) : '';
 
             $builder = $db->table('sales_return pi');
-            $builder->select('ac.name as party_name,pi.return_date as date,pi.return_no as voucher_no,pi.id,pp.item_id as pp_acc,pp.discount,SUM(pp.added_amt) as added_amt,SUM(pp.sub_total) as sub_total');
+            $builder->select('ac.name as party_name,pi.return_date as date,pi.return_no as voucher_no,pi.id,pp.item_id as pp_acc,((SUM(pp.total)) - (SUM(pp.discount))) as taxable');
             $builder->join('sales_item pp', 'pp.parent_id =pi.id');
             $builder->join('account ac', 'ac.id =pi.account');
             $builder->where(array('pp.is_delete' => 0,'pi.is_cancle' => 0,'pi.is_delete' => 0,'pp.type'=>'return','pp.is_expence'=>0));
@@ -406,25 +393,13 @@ class TradingModel extends Model
             $start_date = '';
             $end_date = '';
         }   
-        //echo '<pre>';Print_r($purchase['purchase']);exit;
-        
-        $result['sales'] = array();
-        $total = 0;
-        if(!empty($sales['sales'])){
-            foreach ($sales['sales'] as $row) {
-    
-                $row['pg_amount'] = (float)$row['sub_total'] + (float)$row['added_amt']; 
-                $row['taxable'] = $row['pg_amount'];
-                $result['sales'][] = $row; 
-            }
-        }
-
+      
+        $result = $sales;
+       
         $result['date']['from'] = $start_date;
         $result['date']['to'] = $end_date;
         $result['month'] = @$get['month'];
         $result['year'] = @$get['year'];
-
-        //echo '<pre>';print_r($result);exit;
         return $result;         
     }
     // public function purchaseItem_voucher_wise_data($get){
@@ -534,7 +509,7 @@ class TradingModel extends Model
             $end_date = date('Y-m-d',$end);
 
             $builder = $db->table('purchase_invoice pi');
-            $builder->select('ac.name as party_name,pi.invoice_date as date,pi.invoice_no as voucher_no,pi.id,pp.item_id as pp_acc,pp.discount,SUM(pp.added_amt) as added_amt,SUM(pp.sub_total) as sub_total');
+            $builder->select('ac.name as party_name,pi.invoice_date as date,pi.invoice_no as voucher_no,pi.id,pp.item_id as pp_acc,((SUM(pp.total)) - (SUM(pp.discount))) as taxable');
             $builder->join('purchase_item pp', 'pp.parent_id =pi.id');
             $builder->join('account ac', 'ac.id =pi.account');
             $builder->where(array('pp.is_delete' => 0,'pi.is_cancle' => 0,'pi.is_delete' => 0,'pp.type'=>'invoice','pp.is_expence'=>0));
@@ -551,7 +526,7 @@ class TradingModel extends Model
             $end_date = @$get['to'] ? db_date($get['to']) : '';
 
             $builder = $db->table('purchase_invoice pi');
-            $builder->select('ac.name as party_name,pi.invoice_date as date,pi.invoice_no as voucher_no,pi.id,pp.item_id as pp_acc,pp.discount,SUM(pp.added_amt) as added_amt,SUM(pp.sub_total) as sub_total');
+            $builder->select('ac.name as party_name,pi.invoice_date as date,pi.invoice_no as voucher_no,pi.id,pp.item_id as pp_acc,((SUM(pp.total)) - (SUM(pp.discount))) as taxable');
             $builder->join('purchase_item pp', 'pp.parent_id =pi.id');
             $builder->join('account ac', 'ac.id =pi.account');
             $builder->where(array('pp.is_delete' => 0,'pi.is_cancle' => 0,'pi.is_delete' => 0,'pp.type'=>'invoice','pp.is_expence'=>0));
@@ -566,25 +541,16 @@ class TradingModel extends Model
             $start_date = '';
             $end_date = '';
         }   
-        //echo '<pre>';Print_r($purchase['purchase']);exit;
+      
+        $result = $purchase;
+       // echo '<pre>';Print_r($result);exit;
         
-        $result['purchase'] = array();
-        $total = 0;
-        if(!empty($purchase['purchase'])){
-            foreach ($purchase['purchase'] as $row) {
-    
-                $row['pg_amount'] = (float)$row['sub_total'] + (float)$row['added_amt']; 
-                $row['taxable'] = $row['pg_amount'];
-                $result['purchase'][] = $row; 
-            }
-        }
 
         $result['date']['from'] = $start_date;
         $result['date']['to'] = $end_date;
         $result['month'] = @$get['month'];
         $result['year'] = @$get['year'];
 
-        //echo '<pre>';print_r($result);exit;
         return $result;         
     }
     // public function purchaseReturnItem_voucher_wise_data($get){
@@ -694,7 +660,7 @@ class TradingModel extends Model
             $end_date = date('Y-m-d',$end);
 
             $builder = $db->table('purchase_return pi');
-            $builder->select('ac.name as party_name,pi.return_date as date,pi.return_no as voucher_no,pi.id,pp.item_id as pp_acc,pp.discount,SUM(pp.added_amt) as added_amt,SUM(pp.sub_total) as sub_total');
+            $builder->select('ac.name as party_name,pi.return_date as date,pi.return_no as voucher_no,pi.id,pp.item_id as pp_acc,((SUM(pp.total)) - (SUM(pp.discount))) as taxable');
             $builder->join('purchase_item pp', 'pp.parent_id =pi.id');
             $builder->join('account ac', 'ac.id =pi.account');
             $builder->where(array('pp.is_delete' => 0,'pi.is_cancle' => 0,'pi.is_delete' => 0,'pp.type'=>'return','pp.is_expence'=>0));
@@ -711,7 +677,7 @@ class TradingModel extends Model
             $end_date = @$get['to'] ? db_date($get['to']) : '';
 
             $builder = $db->table('purchase_return pi');
-            $builder->select('ac.name as party_name,pi.return_date as date,pi.return_no as voucher_no,pi.id,pp.item_id as pp_acc,pp.discount,SUM(pp.added_amt) as added_amt,SUM(pp.sub_total) as sub_total');
+            $builder->select('ac.name as party_name,pi.return_date as date,pi.return_no as voucher_no,pi.id,pp.item_id as pp_acc,((SUM(pp.total)) - (SUM(pp.discount))) as taxable');
             $builder->join('purchase_item pp', 'pp.parent_id =pi.id');
             $builder->join('account ac', 'ac.id =pi.account');
             $builder->where(array('pp.is_delete' => 0,'pi.is_cancle' => 0,'pi.is_delete' => 0,'pp.type'=>'return','pp.is_expence'=>0));
@@ -726,25 +692,14 @@ class TradingModel extends Model
             $start_date = '';
             $end_date = '';
         }   
-        //echo '<pre>';Print_r($purchase['purchase']);exit;
-        
-        $result['purchase'] = array();
-        $total = 0;
-        if(!empty($purchase['purchase'])){
-            foreach ($purchase['purchase'] as $row) {
-    
-                $row['pg_amount'] = (float)$row['sub_total'] + (float)$row['added_amt']; 
-                $row['taxable'] = $row['pg_amount'];
-                $result['purchase'][] = $row; 
-            }
-        }
+      
+       $result = $purchase;
 
         $result['date']['from'] = $start_date;
         $result['date']['to'] = $end_date;
         $result['month'] = @$get['month'];
         $result['year'] = @$get['year'];
 
-        //echo '<pre>';print_r($result);exit;
         return $result;         
     }
     // *************trading voucher data*******************//
@@ -851,7 +806,7 @@ class TradingModel extends Model
             $end_date = date('Y-m-d',$end);
 
             $builder = $db->table('purchase_particu pp');
-            $builder->select('acc.name as party_name,pg.doc_date as date,pg.invoice_no as voucher_no ,pg.id as id ,pg.v_type as pg_type,pp.account as pp_acc,pp.amount as pg_amount,pp.sub_total,pp.added_amt');
+            $builder->select('acc.name as party_name,pg.doc_date as date,pg.invoice_no as voucher_no ,pg.id as id ,pg.v_type as pg_type,pp.account as pp_acc,pp.amount as pg_amount');
             $builder->join('purchase_general pg', 'pg.id = pp.parent_id');
             $builder->join('account ac', 'ac.id = pp.account');
             $builder->join('account acc', 'acc.id = pg.party_account');
@@ -872,7 +827,7 @@ class TradingModel extends Model
             $end_date = @$get['to'] ? db_date($get['to']) : '';
 
             $builder = $db->table('purchase_particu pp');
-            $builder->select('acc.name as party_name,pg.doc_date as date,pg.invoice_no as voucher_no ,pg.id as id ,pg.v_type as pg_type,pp.account as pp_acc,pp.amount as pg_amount,pp.sub_total,pp.added_amt');
+            $builder->select('acc.name as party_name,pg.doc_date as date,pg.invoice_no as voucher_no ,pg.id as id ,pg.v_type as pg_type,pp.account as pp_acc,pp.amount as pg_amount');
             $builder->join('purchase_general pg', 'pg.id = pp.parent_id');
             $builder->join('account ac', 'ac.id = pp.account');
             $builder->join('account acc', 'acc.id = pg.party_account');
@@ -895,9 +850,6 @@ class TradingModel extends Model
         $total = 0;
         if(!empty($pg_expence['purchase'])){
             foreach ($pg_expence['purchase'] as $row) {
-    
-                $row['pg_amount'] = (float)$row['sub_total'] + (float)$row['added_amt']; 
-              
                 if($row['pg_type'] == 'general'){
                     $total += (float)$row['pg_amount'];
                 }else{
