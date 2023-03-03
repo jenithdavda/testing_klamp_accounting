@@ -4399,391 +4399,396 @@ class ApiModel extends Model
      }
      public function klamp_ace_insert_edit_purchase_invoice($post)
      {
-         if (!@$post['pid']) {
-             $msg = array('st' => 'fail', 'msg' => "Please Select any Product");
-             return $msg;
-         }
- 
-         if ($post['database'] == '') {
-             $msg = array('st' => 'fail', 'msg' => 'Please Select Database..!');
-             return $msg;
-         }
- 
-         $db = $this->db;
-         $db->setDatabase($post['database']);
-         $builder = $db->table('purchase_invoice');
-         $builder->select('*');
-         $builder->where(array("id" => $post['id']));
-         $builder->limit(1);
-         $result = $builder->get();
-         $result_array = $result->getRow();
- 
-         $msg = array();
-         $builder = $db->table('purchase_invoice');
-         $builder->select('*');
-         $builder->where(array("supply_inv" => $post['custom_inv_no'], "is_delete" => 0, "is_cancle" => 0));
-         $builder->limit(1);
-         $result1 = $builder->get();
-         $result_array1 = $result1->getRow();
-         $msg = array();
- 
-         if (!empty($result_array1)) {
-             if ($result_array1->id != $post['id']) {
-                 $msg = array('st' => 'fail', 'msg' => "Supplier Invoice Number Already Exist!!!");
-                 return $msg;
-             }
-         }
- 
-         $pid = $post['pid'];
- 
-         $qty = $post['qty'];
-         $price = $post['price'];
-         $igst = $post['igst'];
-         $cgst = $post['cgst'];
-         $sgst = $post['sgst'];
- 
-         $discount = @$post['discount'] ? $post['discount'] : '0';
-         $total = 0.0;
-         $taxability_array = array();
-         $gmodel = new GeneralModel();
- 
-         for ($i = 0; $i < count($pid); $i++) {
-             $total += $post['qty'][$i] * $post['price'][$i];
- 
-             $item_data = $gmodel->get_data_table('item', array('id' => $pid[$i]), 'id,taxability');
-             $taxability_array[] = $item_data['taxability'];
-         }
- 
-         $post['taxable'] = $total;
- 
-         if (!empty($post['account_name'])) {
-             $acc = $gmodel->get_api_data_table($post['database'], 'account', array('name' => $post['account_name']), '*');
-             $state = $gmodel->get_api_data_table($post['database'], 'states', array('name' => $post['state_name']), '*');
-         }
- 
-         if (empty($acc)) {
- 
-             $sdata = array(
-                 'name' => ucwords($post['account_name']),
-                 'gl_group' => 13,
-                 'state' => @$state['id'],
-                 'country' => '101',
-                 'taxability' => 'Taxable',
-                 'gst_type' => 'Unregister'
- 
-             );
- 
-             $db = $this->db;
-             $db->setDatabase($post['database']);
-             $builder = $db->table('account');
-             $builder->insert($sdata);
-             $ac_id = $db->insertID();
- 
-             $post['account'] = $ac_id;
-         } else {
-             $post['account'] = $acc['id'];
-         }
- 
-         if (isset($post['lr_date'])) {
-             $lr_dt = date_create($post['lr_date']);
-             $lr_date = date_format($lr_dt, 'Y-m-d');
-         } else {
-             $lr_date = '';
-         }
- 
-         $gmodel = new GeneralModel();
- 
-         if (empty($post['id'])) {
-             $getId = $gmodel->get_api_voucher_invoice_id($post['database'], 'purchase_invoice');
-             $post['invoice_no'] = $getId + 1;
-         } else {
-             $getchallan = $gmodel->get_api_data_table($post['database'], 'purchase_invoice', array('id' => $post['id'], 'invoice_no'));
-             $post['invoice_no'] = $getchallan['invoice_no'];
-         }
- 
-         if ($post['account'] != '') {
-             $getaccount = $gmodel->get_api_data_table($post['database'], 'account', array('id' => $post['account']), 'tds_limit,state,gst');
- 
-             $post['tds_limit'] = $getaccount['tds_limit'];
-             $post['acc_state'] = $getaccount['state'];
-             $post['gst'] = $getaccount['gst'];
-         } else {
-             $msg = array('st' => 'fail', 'msg' => "Please Select Distributer Or Party..!!");
-             return $msg;
-         }
-         $igst = 0;
-         $cgst = 0;
-         $sgst = 0;
- 
-         if ($post['tot_igst'] > 0) {
-             $netamount = $total + $post['tot_igst'];
-             $igst = $post['tot_igst'];
-             $cgst = (float)$post['tot_igst'] / 2;
-             $sgst = (float)$post['tot_igst'] / 2;
-         } else {
-             $netamount = $total + $post['tot_sgst'] + $post['tot_cgst'];
-             $igst = @$post['tot_sgst'] + @$post['tot_cgst'];
-             $cgst = @$post['tot_cgst'];
-             $sgst = @$post['tot_sgst'];
-         }
-         // update trupti 28-11-2022
-         $taxes_array = @$post['taxes'];
-         if (in_array("igst", $taxes_array)) {
-             $igst_acc_id = $gmodel->get_data_table('account', array('name' => 'Output Igst'), 'id');
-             $igst_acc = $igst_acc_id['id'];
-             $cgst_acc = '';
-             $sgst_acc = '';
-         } else {
-             $cgst_acc_id = $gmodel->get_data_table('account', array('name' => 'Output Cgst'), 'id');
-             $sgst_acc_id = $gmodel->get_data_table('account', array('name' => 'Output Sgst'), 'id');
-             $igst_acc = '';
-             $cgst_acc = $cgst_acc_id['id'];
-             $sgst_acc = $sgst_acc_id['id'];
-         }
-         // update trupti 28-11-2022
-         $gl_id = $gmodel->get_data_table('account', array('id' => $post['account']), 'gl_group');
- 
-         $pdata = array(
-             'voucher_type' => $post['voucher_type'],
-             'gl_group' =>  $gl_id['gl_group'],
-             'invoice_date' => db_date($post['invoice_date']),
-             'invoice_no' => $post['invoice_no'],
-             'supply_inv' => $post['custom_inv_no'],
-             'challan_no' => @$post['challan'] ? $post['challan'] : '',
-             'account' => $post['account'],
-             'tds_limit' => $post['tds_limit'],
-             'acc_state' => $post['acc_state'],
-             'gst_no' => $post['gst'],
-             'broker' => @$post['broker'],
-             'other' => @$post['other'] ? $post['other'] : '',
-             'lr_no' => @$post['lrno'],
-             'lr_date' => @$lr_date,
-             'transport' => @$post['transport'],
-             'taxes' => json_encode(@$post['taxes']),
-             'tot_igst' => @$igst,
-             'tot_cgst' => @$cgst,
-             'tot_sgst' => @$sgst,
-             'total_amount' => $total,
-             'discount' => @$discount ? $discount : '',
-             'disc_type' => @$post['disc_type'] ? $post['disc_type'] : '',
-             'net_amount' => round($netamount),
-             'transport_mode' => @$post['trasport_mode'] ? $post['trasport_mode'] : 'ROAD',
-             'vehicle' => @$post['vehicle'],
-             'round' => @$post['round'],
-             'round_diff' => @$post['round_diff'],
-             'taxable' => @$post['taxable'],
-             'igst_acc' => @$igst_acc,
-             'cgst_acc' => @$cgst_acc,
-             'sgst_acc' => @$sgst_acc,
-         );
-         // update trupti 28-11-2022
-         if ($post['gst'] != '') {
-             if (in_array('Taxable', $taxability_array)) {
- 
- 
-                 $pdata['inv_taxability'] = 'Taxable';
-             } else if (!in_array('Taxable', $taxability_array) && in_array('Nill', $taxability_array) && in_array('Exempt', $taxability_array)) {
- 
-                 $pdata['inv_taxability'] = 'Exempt';
-             } else if (!in_array('Taxable', $taxability_array) && in_array('Nill', $taxability_array)) {
- 
-                 $pdata['inv_taxability'] = 'Nill';
-             } else if (!in_array('Taxable', $taxability_array) && in_array('Exempt', $taxability_array)) {
- 
-                 $pdata['inv_taxability'] = 'Exempt';
-             } else {
-                 $pdata['inv_taxability'] = 'N/A';
-             }
-         } else {
-             if (in_array('Exempt', $taxability_array)) {
- 
-                 $pdata['inv_taxability'] = 'Exempt';
-             } else if (in_array('Taxable', $taxability_array) && !in_array('Nill', $taxability_array) && !in_array('Exempt', $taxability_array)) {
- 
-                 $pdata['inv_taxability'] = 'Taxable';
-             } else if (in_array('Taxable', $taxability_array) && in_array('Nill', $taxability_array) && !in_array('Exempt', $taxability_array)) {
- 
-                 $pdata['inv_taxability'] = 'Nill';
-             } else {
-                 $pdata['inv_taxability'] = 'N/A';
-             }
-         }
- 
- 
-         if (!empty($result_array)) {
- 
-             $pdata['update_at'] = date('Y-m-d H:i:s');
-             $pdata['update_by'] = 0;
- 
-             if (empty($msg)) {
-                 $builder->where(array("id" => $post['id']));
-                 $result = $builder->Update($pdata);
- 
-                 $item_builder = $db->table('purchase_item');
-                 $item_result = $item_builder->select('GROUP_CONCAT(item_id) as item_id')->where(array("parent_id" => $post['id'], "type" => 'invoice'))->get();
-                 $getItem = $item_result->getRow();
- 
-                 $getpid = explode(',', $getItem->item_id);
-                 $delete_itemid = array_diff($getpid, $pid);
- 
- 
-                 if (!empty($delete_itemid)) {
-                     foreach ($delete_itemid as $key => $del_id) {
-                         $del_data = array('is_delete' => '1');
-                         $item_builder->where(array('item_id' => $del_id, 'parent_id' => $post['id'], 'type' => 'invoice'));
-                         $item_builder->update($del_data);
-                     }
-                 }
- 
-                 for ($i = 0; $i < count($pid); $i++) {
-                     $item_result = $item_builder->select('*')->where(array("item_id" => $pid[$i], "parent_id" => $post['id']))->get();
-                     $getItem = $item_result->getRow();
- 
-                     if (!empty($getItem)) {
-                         // update trupti 28-11-2022
-                         $item_data = $gmodel->get_data_table('item', array('id' => $pid[$i]), 'id,taxability');
- 
-                         $item_taxability = $item_data['taxability'];
-                         $sub = $post['qty'][$i] * $post['price'][$i];
-                         if (!empty($post['igst'][$i])) {
-                             $item_igst_amt = $sub * $post['igst'][$i] / 100;
-                             $item_cgst_amt = $item_igst_amt / 2;
-                             $item_sgst_amt = $item_igst_amt / 2;
-                         } else {
-                             $item_igst_amt = 0;
-                             $item_cgst_amt = 0;
-                             $item_sgst_amt = 0;
-                         }
-                         $item_data = array(
-                             'uom' => 'PCS',
-                             'rate' => $post['price'][$i],
-                             'qty' => $post['qty'][$i],
-                             'item_disc' => 0,
-                             'igst' => $post['igst'][$i] ? $post['igst'][$i] : 0,
-                             'cgst' => $post['cgst'][$i] ? $post['cgst'][$i] : 0,
-                             'sgst' => $post['sgst'][$i] ? $post['sgst'][$i] : 0,
-                             'igst_amt' => $item_igst_amt,
-                             'cgst_amt' => $item_cgst_amt,
-                             'sgst_amt' => $item_sgst_amt,
-                             'taxability' => $item_taxability,
-                             'total' => $sub,
-                             'sub_total' => $sub,
-                             'remark' => '',
-                             'is_delete' => 0,
-                             'update_at' => date('Y-m-d H:i:s'),
-                             'update_by' => 0,
-                         );
-                         $item_builder->where(array('item_id' => $pid[$i], 'parent_id' => $post['id']));
-                         $res = $item_builder->update($item_data);
-                     } else {
-                         // update trupti 28-11-2022
-                         $item_data = $gmodel->get_data_table('item', array('id' => $post['pid'][$i]), 'id,taxability');
- 
-                         $item_taxability = $item_data['taxability'];
-                         $sub = $post['qty'][$i] * $post['price'][$i];
-                         if (!empty($post['igst'][$i])) {
-                             $item_igst_amt = $sub * $post['igst'][$i] / 100;
-                             $item_cgst_amt = $item_igst_amt / 2;
-                             $item_sgst_amt = $item_igst_amt / 2;
-                         } else {
-                             $item_igst_amt = 0;
-                             $item_cgst_amt = 0;
-                             $item_sgst_amt = 0;
-                         }
- 
-                         $item_data = array(
-                             'parent_id' => $post['id'],
-                             'item_id' => $post['pid'][$i],
-                             'type' => 'invoice',
-                             'uom' => 'PCS',
-                             'rate' => $post['price'][$i],
-                             'qty' => $post['qty'][$i],
-                             'igst' => $post['igst'][$i] ? $post['igst'][$i] : 0,
-                             'cgst' => $post['cgst'][$i] ? $post['cgst'][$i] : 0,
-                             'sgst' => $post['sgst'][$i] ? $post['sgst'][$i] : 0,
-                             'igst_amt' => $item_igst_amt,
-                             'cgst_amt' => $item_cgst_amt,
-                             'sgst_amt' => $item_sgst_amt,
-                             'taxability' => $item_taxability,
-                             'item_disc' => 0,
-                             'total' => $sub,
-                             'sub_total' => $sub,
-                             'remark' => '',
-                             'created_at' => date('Y-m-d H:i:s'),
-                             'created_by' => 0,
-                         );
-                         $res = $item_builder->insert($item_data);
-                     }
-                     $item_builder->where(array('parent_id' => $post['id'], 'item_id' => $post['pid'][$i], "type" => 'invoice'));
-                     $result1 = $item_builder->update($item_data);
-                 }
-                 $builder = $db->table('purchase_invoice');
- 
-                 if ($result) {
-                     $msg = array('st' => 'success', 'msg' => "Your Details updated Successfully!!!");
-                 } else {
-                     $msg = array('st' => 'fail', 'msg' => "Your Details Updated fail");
-                 }
-             }
-         } else {
- 
-             $pdata['created_at'] = date('Y-m-d H:i:s');
-             $pdata['created_by'] = 0;
- 
-             if (empty($msg)) {
-                 $result = $builder->Insert($pdata);
-                 // print_r($result);
-                 $id = $db->insertID();
-                 for ($i = 0; $i < count($pid); $i++) {
-                     // update trupti 28-11-2022
-                     $item_data = $gmodel->get_data_table('item', array('id' => $post['pid'][$i]), 'id,taxability');
-                     $item_taxability = $item_data['taxability'];
-                     $sub = $post['qty'][$i] * $post['price'][$i];
-                     if (!empty($post['igst'][$i])) {
-                         $item_igst_amt = $sub * $post['igst'][$i] / 100;
-                         $item_cgst_amt = $item_igst_amt / 2;
-                         $item_sgst_amt = $item_igst_amt / 2;
-                     } else {
-                         $item_igst_amt = 0;
-                         $item_cgst_amt = 0;
-                         $item_sgst_amt = 0;
-                     }
- 
-                     $itemdata[] = array(
-                         'parent_id' => $id,
-                         'item_id' => $post['pid'][$i],
-                         'type' => 'invoice',
-                         'uom' => 'PCS',
-                         'rate' => $post['price'][$i],
-                         'qty' => $post['qty'][$i],
-                         'igst' => $post['igst'][$i] ? $post['igst'][$i] : 0,
-                         'cgst' => $post['cgst'][$i] ? $post['cgst'][$i] : 0,
-                         'sgst' => $post['sgst'][$i] ? $post['sgst'][$i] : 0,
-                         'igst_amt' => $item_igst_amt,
-                         'cgst_amt' => $item_cgst_amt,
-                         'sgst_amt' => $item_sgst_amt,
-                         'taxability' => $item_taxability,
-                         'item_disc' => 0,
-                         'total' => $sub,
-                         'sub_total' => $sub,
-                         'remark' => '',
-                         'created_at' => date('Y-m-d H:i:s'),
-                         'created_by' => 0,
-                     );
-                 }
-                 $item_builder = $db->table('purchase_item');
-                 $result1 = $item_builder->insertBatch($itemdata);
- 
-                 if ($result &&  $result1) {
-                     $msg = array('st' => 'success', 'msg' => "Your Details Added Successfully!!!");
-                 } else {
-                     $msg = array('st' => 'fail', 'msg' => "Your Details Updated fail");
-                 }
-             }
-         }
-         $msg['id'] = @$id ? $id : $post['id'];
-         return $msg;
-     }
+       
+        //echo '<pre>';Print_r($post);exit;
+        
+        if ($post['database'] == '') {
+            $msg = array('st' => 'fail', 'msg' => 'Please Select Database..!');
+            return $msg;
+        }
+        $gmodel = new GeneralModel();
+
+        $db = $this->db;
+        $db->setDatabase($post['database']);
+        $builder = $db->table('purchase_invoice');
+        $builder->select('*');
+        $builder->where(array("id" => $post['id']));
+        $builder->limit(1);
+        $result = $builder->get();
+        $result_array = $result->getRow();
+
+        $msg = array();
+        $pid = array();
+        if (!isset($post['pid'])) {
+            foreach ($post['hsn'] as $row) {
+
+                $item_id = $gmodel->get_api_data_table($post['database'], 'item', array('hsn' => $row), '*');
+                
+               // echo '<pre>';Print_r($item_id['id']);
+                if (!isset($item_id['id'])) {
+                    $msg = array('st' => 'failed', 'msg' => $row . ' This Hsn Item Not found in Accounting system..!');
+                    return $msg;
+                }
+                $pid[] = $item_id['id'];
+            }
+            //exit;
+        } else {
+            $pid = $post['pid'];
+        }
+        //echo '<pre>';Print_r($pid);exit;
+
+        $qty = $post['qty'];
+        $price = $post['price'];
+        $igst = $post['igst'];
+        $cgst = $post['cgst'];
+        $sgst = $post['sgst'];
+
+        $discount = @$post['discount'] ? $post['discount'] : '0';
+        $total = 0.0;
+
+        if (isset($post['pid'])) {
+            $count = count($post['pid']);
+        } else {
+            $count = count($post['hsn']);
+        }
+
+        // update trupti 28-11-2022
+        $taxability_array = array();
+        $gmodel = new GeneralModel();
+
+        for ($i = 0; $i < count($pid); $i++) {
+            $total += $post['qty'][$i] * $post['price'][$i];
+
+            $item_data = $gmodel->get_data_table('item', array('id' => $pid[$i]), 'id,taxability');
+            $taxability_array[] = $item_data['taxability'];
+        }
+        $post['taxable'] = $total;
+
+        if (isset($post['lr_date'])) {
+            $lr_dt = date_create($post['lr_date']);
+            $lr_date = date_format($lr_dt, 'Y-m-d');
+        } else {
+            $lr_date = '';
+        }
+
+        $gl_id = $gmodel->get_data_table('account', array('id' => $post['account']), 'gl_group');
+        if(empty($gl_id))
+        {
+            $msg = array('st' => 'fail', 'msg' => 'Ledger Account Not Found with this id: '.$post['account']);
+            return $msg;
+        }
+
+        if (empty($post['id'])) {
+            $getId = $gmodel->get_api_voucher_invoice_id($post['database'], 'purchase_invoice');
+            $post['invoice_no'] = $getId + 1;
+        } else {
+            $getchallan = $gmodel->get_api_data_table($post['database'], 'purchase_invoice', array('id' => $post['id'], 'invoice_no'));
+            $post['invoice_no'] = $getchallan['invoice_no'];
+        }
+
+        if ($post['account'] != '') {
+            $getaccount = $gmodel->get_api_data_table($post['database'], 'account', array('id' => $post['account']), 'tds_limit,state,gst');
+
+            $post['tds_limit'] = $getaccount['tds_limit'];
+            $post['acc_state'] = $getaccount['state'];
+            $post['gst'] = $getaccount['gst'];
+        } else {
+            $msg = array('st' => 'fail', 'msg' => "Please Select Distributer Or Party..!!");
+            return $msg;
+        }
+
+        // $netamount = $total-$post['amtx'] + $post['cess'] + $post['amty'] + $tds_amt + $post['tot_igst'];
+
+        $igst = 0;
+        $cgst = 0;
+        $sgst = 0;
+
+        if ($post['tot_igst'] > 0) {
+            $netamount = $total + $post['tot_igst'];
+            $igst = $post['tot_igst'];
+            $cgst = (float)$post['tot_igst'] / 2;
+            $sgst = (float)$post['tot_igst'] / 2;
+        } else {
+            $netamount = $total + (float)$post['tot_sgst'] + (float)$post['tot_cgst'];
+            $igst = (float)@$post['tot_sgst'] + (float)@$post['tot_cgst'];
+            $cgst = (float)@$post['tot_cgst'];
+            $sgst = (float)@$post['tot_sgst'];
+        }
+        // update trupti 28-11-2022
+        $taxes_array = @$post['taxes'];
+        if (in_array("igst", $taxes_array)) {
+            $igst_acc_id = $gmodel->get_data_table('account', array('name' => 'Output Igst'), 'id');
+            $igst_acc = $igst_acc_id['id'];
+            $cgst_acc = '';
+            $sgst_acc = '';
+        } else {
+            $cgst_acc_id = $gmodel->get_data_table('account', array('name' => 'Output Cgst'), 'id');
+            $sgst_acc_id = $gmodel->get_data_table('account', array('name' => 'Output Sgst'), 'id');
+            $igst_acc = '';
+            $cgst_acc = $cgst_acc_id['id'];
+            $sgst_acc = $sgst_acc_id['id'];
+        }
+        // update trupti 28-11-2022
+        
+
+        $pdata = array(
+            'voucher_type' => $post['voucher_type'],
+            'gl_group' =>  $gl_id['gl_group'],
+            'invoice_date' => db_date($post['invoice_date']),
+            'invoice_no' => $post['invoice_no'],
+            'supply_inv' => $post['custom_inv_no'],
+            'challan_no' => @$post['challan'] ? $post['challan'] : '',
+            'account' => $post['account'],
+            'tds_limit' => $post['tds_limit'],
+            'acc_state' => $post['acc_state'],
+            'gst_no' => $post['gst'],
+            'broker' => @$post['broker'],
+            'other' => @$post['other'] ? $post['other'] : '',
+            'lr_no' => @$post['lrno'],
+            'lr_date' => @$lr_date,
+            'transport' => @$post['transport'],
+            'taxes' => json_encode(@$post['taxes']),
+            'tot_igst' => @$igst,
+            'tot_cgst' => @$cgst,
+            'tot_sgst' => @$sgst,
+            'total_amount' => $total,
+            'discount' => @$discount ? $discount : '',
+            'disc_type' => @$post['disc_type'] ? $post['disc_type'] : '',    
+            'net_amount' => round($netamount),
+            'transport_mode' => @$post['trasport_mode'] ? $post['trasport_mode'] : 'ROAD',
+            'vehicle' => @$post['vehicle'],
+            'round' => @$post['round'],
+            'round_diff' => @$post['round_diff'],
+            'taxable' => @$post['taxable'],
+            'is_import' => isset($post['is_import']) ? $post['is_import'] : 0,
+            'import_gst' => isset($post['import_gst']) ? $post['import_gst'] : 0,
+            'import_taxable' => isset($post['import_taxable']) ? $post['import_taxable'] : 0,
+            'import_nontaxable' => isset($post['import_nontaxable']) ? $post['import_nontaxable'] : 0,
+            'igst_acc' => @$igst_acc,
+            'cgst_acc' => @$cgst_acc,
+            'sgst_acc' => @$sgst_acc,
+
+        );
+        // update trupti 28-11-2022
+        if ($post['gst'] != '') {
+            if (in_array('Taxable', $taxability_array)) {
+
+
+                $pdata['inv_taxability'] = 'Taxable';
+            } else if (!in_array('Taxable', $taxability_array) && in_array('Nill', $taxability_array) && in_array('Exempt', $taxability_array)) {
+
+                $pdata['inv_taxability'] = 'Exempt';
+            } else if (!in_array('Taxable', $taxability_array) && in_array('Nill', $taxability_array)) {
+
+                $pdata['inv_taxability'] = 'Nill';
+            } else if (!in_array('Taxable', $taxability_array) && in_array('Exempt', $taxability_array)) {
+
+                $pdata['inv_taxability'] = 'Exempt';
+            } else {
+                $pdata['inv_taxability'] = 'N/A';
+            }
+        } else {
+            if (in_array('Exempt', $taxability_array)) {
+
+                $pdata['inv_taxability'] = 'Exempt';
+            } else if (in_array('Taxable', $taxability_array) && !in_array('Nill', $taxability_array) && !in_array('Exempt', $taxability_array)) {
+
+                $pdata['inv_taxability'] = 'Taxable';
+            } else if (in_array('Taxable', $taxability_array) && in_array('Nill', $taxability_array) && !in_array('Exempt', $taxability_array)) {
+
+                $pdata['inv_taxability'] = 'Nill';
+            } else {
+                $pdata['inv_taxability'] = 'N/A';
+            }
+        }
+
+
+        if (!empty($result_array)) {
+
+            $pdata['update_at'] = date('Y-m-d H:i:s');
+            $pdata['update_by'] = 0;
+
+            if (empty($msg)) {
+                $builder->where(array("id" => $post['id']));
+                $result = $builder->Update($pdata);
+
+                $item_builder = $db->table('purchase_item');
+                $item_result = $item_builder->select('GROUP_CONCAT(item_id) as item_id')->where(array("parent_id" => $post['id'], "type" => 'invoice'))->get();
+                $getItem = $item_result->getRow();
+
+                $getpid = explode(',', $getItem->item_id);
+                $delete_itemid = array_diff($getpid, $pid);
+
+
+                if (!empty($delete_itemid)) {
+                    foreach ($delete_itemid as $key => $del_id) {
+                        $del_data = array('is_delete' => '1');
+                        $item_builder->where(array('item_id' => $del_id, 'parent_id' => $post['id'], 'type' => 'invoice'));
+                        $item_builder->update($del_data);
+                    }
+                }
+
+                for ($i = 0; $i < count($pid); $i++) {
+                    $item_result = $item_builder->select('*')->where(array("item_id" => $pid[$i], "parent_id" => $post['id']))->get();
+                    $getItem = $item_result->getRow();
+
+                    if (!empty($getItem)) {
+                        // update trupti 28-11-2022
+                        $item_data = $gmodel->get_data_table('item', array('id' => $pid[$i]), 'id,taxability,hsn');
+                        //$item_hsn = $item_data['hsn'];
+                        $item_taxability = $item_data['taxability'];
+                        $sub = $post['qty'][$i] * $post['price'][$i];
+                        if (!empty($post['igst'][$i])) {
+                            $item_igst_amt = $sub * $post['igst'][$i] / 100;
+                            $item_cgst_amt = $item_igst_amt / 2;
+                            $item_sgst_amt = $item_igst_amt / 2;
+                        } else {
+                            $item_igst_amt = 0;
+                            $item_cgst_amt = 0;
+                            $item_sgst_amt = 0;
+                        }
+                        $item_data = array(
+                            'uom' => 'PCS',
+                            'rate' => $post['price'][$i],
+                            'hsn' => $post['hsn'][$i],
+                            'qty' => $post['qty'][$i],
+                            'item_disc' => 0,
+                            'igst' => $post['igst'][$i] ? $post['igst'][$i] : 0,
+                            'cgst' => $post['cgst'][$i] ? $post['cgst'][$i] : 0,
+                            'sgst' => $post['sgst'][$i] ? $post['sgst'][$i] : 0,
+                            'igst_amt' => $item_igst_amt,
+                            'cgst_amt' => $item_cgst_amt,
+                            'sgst_amt' => $item_sgst_amt,
+                            'taxability' => $item_taxability,
+                            'total' => $sub,
+                            'sub_total' => $sub,
+                            'remark' => '',
+                            'is_delete' => 0,
+                            'update_at' => date('Y-m-d H:i:s'),
+                            'update_by' => 0,
+                        );
+                        $item_builder->where(array('item_id' => $pid[$i], 'parent_id' => $post['id']));
+                        $res = $item_builder->update($item_data);
+                    } else {
+
+                        if (!isset($post['pid'][$i]) || empty($post['pid'][$i])) {
+                            $item_id = $gmodel->get_api_data_table($post['database'], 'item', array('hsn' => $post['hsn'][$i]), '*');
+                        }
+                        // update trupti 28-11-2022
+                        $item_data = $gmodel->get_data_table('item', array('id' => $post['pid'][$i]), 'id,taxability');
+
+                        $item_taxability = $item_data['taxability'];
+                        $sub = $post['qty'][$i] * $post['price'][$i];
+                        if (!empty($post['igst'][$i])) {
+                            $item_igst_amt = $sub * $post['igst'][$i] / 100;
+                            $item_cgst_amt = $item_igst_amt / 2;
+                            $item_sgst_amt = $item_igst_amt / 2;
+                        } else {
+                            $item_igst_amt = 0;
+                            $item_cgst_amt = 0;
+                            $item_sgst_amt = 0;
+                        }
+
+                        $item_data = array(
+                            'parent_id' => $post['id'],
+                            'item_id' => isset($post['pid'][$i]) ? $post['pid'][$i] : $item_id['id'],
+                            'hsn' => $post['hsn'][$i],
+                            'type' => 'invoice',
+                            'uom' => 'PCS',
+                            'rate' => $post['price'][$i],
+                            'qty' => $post['qty'][$i],
+                            'igst' => $post['igst'][$i] ? $post['igst'][$i] : 0,
+                            'cgst' => $post['cgst'][$i] ? $post['cgst'][$i] : 0,
+                            'sgst' => $post['sgst'][$i] ? $post['sgst'][$i] : 0,
+                            'igst_amt' => $item_igst_amt,
+                            'cgst_amt' => $item_cgst_amt,
+                            'sgst_amt' => $item_sgst_amt,
+                            'taxability' => $item_taxability,
+                            'item_disc' => 0,
+                            'total' => $sub,
+                            'sub_total' => $sub,
+                            'remark' => '',
+                            'created_at' => date('Y-m-d H:i:s'),
+                            'created_by' => 0,
+                        );
+                        $res = $item_builder->insert($item_data);
+                    }
+                    $item_builder->where(array('parent_id' => $post['id'], 'item_id' => isset($post['pid'][$i]) ? $post['pid'][$i] : $item_id['id'], "type" => 'invoice'));
+                    $result1 = $item_builder->update($item_data);
+                }
+                $builder = $db->table('purchase_invoice');
+
+                if ($result) {
+                    $msg = array('st' => 'success', 'msg' => "Your Details updated Successfully!!!");
+                } else {
+                    $msg = array('st' => 'fail', 'msg' => "Your Details Updated fail");
+                }
+            }
+        } else {
+
+            $pdata['created_at'] = date('Y-m-d H:i:s');
+            $pdata['created_by'] = 0;
+
+            if (empty($msg)) {
+                $result = $builder->Insert($pdata);
+                // print_r($result);
+                $id = $db->insertID();
+                for ($i = 0; $i < count($pid); $i++) {
+                    if (!isset($post['pid'][$i]) || empty($post['pid'][$i])) {
+                        $item_id = $gmodel->get_api_data_table($post['database'], 'item', array('hsn' => $post['hsn'][$i]), '*');
+                    }
+                    $item_data = $gmodel->get_data_table('item', array('id' => $item_id['id']), 'id,taxability');
+
+                    $item_taxability = $item_data['taxability'];
+                    // update trupti 28-11-2022
+                    $sub = $post['qty'][$i] * $post['price'][$i];
+                    if (!empty($post['igst'][$i])) {
+                        $item_igst_amt = $sub * $post['igst'][$i] / 100;
+                        $item_cgst_amt = $item_igst_amt / 2;
+                        $item_sgst_amt = $item_igst_amt / 2;
+                    } else {
+                        $item_igst_amt = 0;
+                        $item_cgst_amt = 0;
+                        $item_sgst_amt = 0;
+                    }
+
+
+                    $itemdata[] = array(
+                        'parent_id' => $id,
+                        'item_id' => isset($post['pid'][$i]) ?  $post['pid'][$i] : $item_id['id'],
+                        'hsn' => @$post['hsn'][$i] ?  $post['hsn'][$i] : '',
+                        'type' => 'invoice',
+                        'uom' => 'PCS',
+                        'rate' => $post['price'][$i],
+                        'qty' => $post['qty'][$i],
+                        'igst' => $post['igst'][$i] ? $post['igst'][$i] : 0,
+                        'cgst' => $post['cgst'][$i] ? $post['cgst'][$i] : 0,
+                        'sgst' => $post['sgst'][$i] ? $post['sgst'][$i] : 0,
+                        'igst_amt' => $item_igst_amt,
+                        'cgst_amt' => $item_cgst_amt,
+                        'sgst_amt' => $item_sgst_amt,
+                        'taxability' => $item_taxability,
+                        'item_disc' => 0,
+                        'total' => $sub,
+                        'sub_total' => $sub,
+                        'remark' => '',
+                        'created_at' => date('Y-m-d H:i:s'),
+                        'created_by' => 0,
+                    );
+                }
+                $item_builder = $db->table('purchase_item');
+                $result1 = $item_builder->insertBatch($itemdata);
+
+                if ($result &&  $result1) {
+                    $msg = array('st' => 'success', 'msg' => "Your Details Added Successfully!!!");
+                } else {
+                    $msg = array('st' => 'fail', 'msg' => "Your Details Updated fail");
+                }
+            }
+        }
+        $msg['id'] = @$id ? $id : $post['id'];
+        return $msg;
+    }
      public function klamp_ace_insert_edit_custom_jv($post)
      {
          $db = $this->db;
@@ -5793,3 +5798,4 @@ class ApiModel extends Model
     }
    
 }
+?>

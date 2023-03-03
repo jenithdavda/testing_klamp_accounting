@@ -381,7 +381,7 @@ function trading_income_data($id, $start_date = '', $end_date = '')
     $builder->where(array('DATE(pg.invoice_date)  <= ' => $end_date));
     $query = $builder->get();
     $pg_income = $query->getResultArray();
-    
+    $total = 0;
     $tot_pg_income = array();
     foreach ($pg_income as $row) {
         $row['pg_amount'] = (float) $row['pg_amount'];
@@ -401,7 +401,7 @@ function trading_income_data($id, $start_date = '', $end_date = '')
     $builder->where(array('DATE(bt.receipt_date)  <= ' => $end_date));
     $query = $builder->get();
     $bank_income = $query->getResultArray();
-
+    $total = 0;
     foreach ($bank_income as $row) {
 
         if ($row['mode'] == 'Receipt') {
@@ -424,7 +424,7 @@ function trading_income_data($id, $start_date = '', $end_date = '')
     $builder->where(array('DATE(jv.date)  <= ' => $end_date));
     $query = $builder->get();
     $jv_income = $query->getResultArray();
-
+    $total = 0;
     foreach ($jv_income as $row) {
         if ($row['dr_cr'] == 'cr') {
             $total = ((@$tot_pg_income[$row['account_name']]['jv_total']) ? $tot_pg_income[$row['account_name']]['jv_total'] : 0) + $row['total'];
@@ -449,7 +449,7 @@ function trading_income_data($id, $start_date = '', $end_date = '')
     $builder->where(array('DATE(pg.doc_date)  <= ' => $end_date));
     $query = $builder->get();
     $pg_expense = $query->getResultArray();
- 
+    $total = 0;
     foreach ($pg_expense as $row) {
         $row['pg_amount'] = (float) $row['pg_amount'];
         $total = ((@$tot_pg_income[$row['account_name']]['purchase_'.$row['pg_type']]) ? $tot_pg_income[$row['account_name']]['purchase_'.$row['pg_type']] : 0) + $row['pg_amount'];
@@ -1280,6 +1280,7 @@ function get_trading_income_account_wise($start_date, $end_date, $id)
     $query = $builder->get();
     $pg_income = $query->getResultArray();
     $tot_income = array();
+    $tot_income['general_sales']['total'] = 0;
     foreach ($pg_income as $row) {
 
         $row['pg_amount'] = (float)$row['pg_amount'];
@@ -1360,7 +1361,7 @@ function get_trading_income_account_wise($start_date, $end_date, $id)
     
 
     $total = 0;
-   
+    $tot_income['general_purchase']['total'] =0;
     foreach ($pg_expence as $row) {
       
         
@@ -1526,6 +1527,8 @@ function get_trading_expence_account_wise($start_date, $end_date, $id)
     $builder->where(array('DATE(bt.receipt_date)  <= ' => db_date($end_date)));
     $query = $builder->get();
     $bank_expence = $query->getResultArray();
+   // echo '<pre>';Print_r($);exit;
+    
 
     $tot_expence['bank_trans']['total'] = 0;
 

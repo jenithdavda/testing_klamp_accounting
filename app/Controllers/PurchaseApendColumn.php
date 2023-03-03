@@ -248,6 +248,17 @@ class PurchaseApendColumn extends BaseController{
         $msg = $this->model->update_hsn_data_item();
         return $this->response->setJSON($msg);
     }
+
+    public function purchase_invoice_update_discount_inexpence()
+    {
+        $msg = $this->model->purchase_invoice_update_discount_inexpence_data();
+        return $this->response->setJSON($msg);
+    }
+    public function purchase_return_update_discount_inexpence()
+    {
+        $msg = $this->model->purchase_return_update_discount_inexpence_data();
+        return $this->response->setJSON($msg);
+    }
    
    
 

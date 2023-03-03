@@ -39,9 +39,8 @@
                                                 FROM:
                                             </div>
                                         </div>
-                                        <input class="form-control fc-datepicker" name="from" placeholder="YYYY-MM-DD"
-                                            type="text">
-
+                                        <input class="form-control fc-datepicker" name="from" placeholder="YYYY-MM-DD" type="text">
+                                
                                     </div>
                                 </div>
                             </div>
@@ -54,10 +53,9 @@
                                                 TO:
                                             </div>
                                         </div>
-                                        <input class="form-control fc-datepicker" name="to" placeholder="YYYY-MM-DD"
-                                            type="text">
-
-                                        <input type="hidden" name="id" value="<?=@$id?>">
+                                        <input class="form-control fc-datepicker" name="to" placeholder="YYYY-MM-DD" type="text">
+                                
+                                            <input type="hidden" name="id" value="<?=@$id?>">
                                     </div>
                                 </div>
                             </div>
@@ -88,7 +86,7 @@
                             <td>
                                 <span style="size:20px;"><b><?=@$ac_name?></b></span>
                                 </br>
-
+                                  
                                 <b><?=user_date($from)?></b> to
                                 <b><?=user_date($to); ?></b>
 
@@ -99,7 +97,7 @@
                         </tr>
                     </table>
                 </div>
-
+                
                 <div class="table-responsive">
                     <table class="table table-striped mg-b-0">
                         <thead>
@@ -107,92 +105,69 @@
                                 <th>ID</th>
                                 <th>Voucher Name</th>
                                 <th>Total Taxable</th>
-
+                               
                             </tr>
                         </thead>
 
                         <tbody>
                             <tr>
                                 <th scope="row">1</th>
-                                <td>Opening Balance</td>
+                                <td>Opening Bal</td>
                                 <td><?=number_format(@$opening['total'],2)?></td>
-                            </tr>
+                            </tr> 
                             <tr>
                                 <th scope="row">2</th>
-                                <td><a
-                                        href="<?=url('Balancesheet/currentassets_banktrans_monthly_PerWise?from='.$from.'&to='.$to.'&id='.$id)?>">Perticular
-                                        Bank/Cash Transaction</a></td>
+                                <td><a href="<?=url('Balancesheet/currentassets_banktrans_monthly_PerWise?from='.$from.'&to='.$to.'&id='.$id)?>">Perticular Bank/Cash Transaction</a></td>
                                 <td><?=number_format(@$per_bank_trans['total'],2)?></td>
                             </tr>
 
                             <tr>
                                 <th scope="row">3</th>
-                                <td><a
-                                        href="<?=url('Balancesheet/currentassets_jv_monthly?from='.$from.'&to='.$to.'&id='.$id)?>">Journal
-                                        Voucher</a></td>
+                                <td><a href="<?=url('Balancesheet/currentassets_jv_monthly?from='.$from.'&to='.$to.'&id='.$id)?>">Journal Voucher</a></td>
                                 <td><?=number_format(@$jv_currentassets['total'],2)?></td>
                             </tr>
 
                             <tr>
                                 <th scope="row">4</th>
-                                <td><a
-                                        href="<?=url('Balancesheet/currentassets_banktrans_monthly_AcWise?from='.$from.'&to='.$to.'&id='.$id)?>">Account
-                                        Bank/Cash Transaction</a></td>
+                                <td><a href="<?=url('Balancesheet/currentassets_banktrans_monthly_AcWise?from='.$from.'&to='.$to.'&id='.$id)?>">Account Bank/Cash Transaction</a></td>
                                 <td><?=number_format(@$ac_bank_trans['total'],2)?></td>
                             </tr>
 
                             <tr>
                                 <th scope="row">5</th>
-                                <td><a
-                                        href="<?=url('Balancesheet/currentassets_salesinvoice_monthly_AcWise?from='.$from.'&to='.$to.'&id='.$id)?>">Sales
-                                        Invoice</a></td>
+                                <td><a href="<?=url('Balancesheet/currentassets_salesinvoice_monthly_AcWise?from='.$from.'&to='.$to.'&id='.$id)?>">Sales Invoice</a></td>
                                 <td><?=number_format(@$sales_invoice['total'],2)?></td>
                             </tr>
 
                             <tr>
                                 <th scope="row">6</th>
-                                <td><a
-                                        href="<?=url('Balancesheet/currentassets_salesreturn_monthly_AcWise?from='.$from.'&to='.$to.'&id='.$id)?>">Sales
-                                        Return</a></td>
+                                <td><a href="<?=url('Balancesheet/currentassets_salesreturn_monthly_AcWise?from='.$from.'&to='.$to.'&id='.$id)?>">Sales Return</a></td>
                                 <td><?=number_format(@$sales_return['total'],2)?></td>
                             </tr>
 
                             <tr>
                                 <th scope="row">7</th>
-                                <td><a
-                                        href="<?=url('Balancesheet/currentassets_gnrl_sales_monthly_AcWise?from='.$from.'&to='.$to.'&id='.$id)?>">General
-                                        Sales</a></td>
+                                <td><a href="<?=url('Balancesheet/currentassets_gnrl_sales_monthly_AcWise?from='.$from.'&to='.$to.'&id='.$id)?>">General Sales</a></td>
                                 <td><?=number_format(@$general_sales['total'],2)?></td>
                             </tr>
 
                             <tr>
                                 <th scope="row">8</th>
-                                <td><a
-                                        href="<?=url('Balancesheet/currentassets_gnrl_salesreturn_monthly_AcWise?from='.$from.'&to='.$to.'&id='.$id)?>">General
-                                        Sales Return</a></td>
+                                <td><a href="<?=url('Balancesheet/currentassets_gnrl_salesreturn_monthly_AcWise?from='.$from.'&to='.$to.'&id='.$id)?>">General Sales Return</a></td>
                                 <td><?=number_format(@$general_sales_return['total'],2)?></td>
                             </tr>
 
                             <tr>
                                 <th scope="row">9</th>
-                                <td><a
-                                        href="<?=url('Balancesheet/currentassets_contra_monthly_PerWise?from='.$from.'&to='.$to.'&id='.$id)?>">Perticular
-                                        Contra Transaction</a></td>
+                                <td><a href="<?=url('Balancesheet/currentassets_contra_monthly_PerWise?from='.$from.'&to='.$to.'&id='.$id)?>">Perticular Contra Transaction</a></td>
                                 <td><?=number_format(@$per_contra_trans['total'],2)?></td>
                             </tr>
                             <tr>
                                 <th scope="row">10</th>
-                                <td><a
-                                        href="<?=url('Balancesheet/currentassets_contra_monthly_AcWise?from='.$from.'&to='.$to.'&id='.$id)?>">Account
-                                        Contra Transaction</a></td>
+                                <td><a href="<?=url('Balancesheet/currentassets_contra_monthly_AcWise?from='.$from.'&to='.$to.'&id='.$id)?>">Account Contra Transaction</a></td>
                                 <td><?=number_format(@$ac_contra_trans['total'],2)?></td>
                             </tr>
-                            <tr>
-                                <th scope="row">11</th>
-                                <td><a href="<?=url('Balancesheet/currentassets_gen_purchase_monthly_AcWise?from='.$from.'&to='.$to.'&id='.$id)?>">Purchase General</a></td>
-                                <td><?=number_format(@$general_purchase['total'],2)?></td>
-                            </tr>
-
+                            
                         </tbody>
                     </table>
                 </div>

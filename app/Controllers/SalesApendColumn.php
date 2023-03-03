@@ -259,6 +259,19 @@ class SalesApendColumn extends BaseController{
         $msg = $this->model->update_total_sales_item();
         return $this->response->setJSON($msg);
     }
+
+    public function sales_invoice_update_discount_inexpence()
+    {
+        $msg = $this->model->sales_invoice_update_discount_inexpence_data();
+        return $this->response->setJSON($msg);
+    }
+    public function sales_return_update_discount_inexpence()
+    {
+        $msg = $this->model->sales_return_update_discount_inexpence_data();
+        return $this->response->setJSON($msg);
+    }
+
+
    
    
 

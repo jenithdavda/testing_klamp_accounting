@@ -35,9 +35,6 @@ class Profitloss extends BaseController{
         $pl_inc_id = $this->gmodel->get_data_table('gl_group',array('name'=>'P & L Incomes','is_delete'=>0),'id,name');
         $gl_opening_id = $this->gmodel->get_data_table('gl_group',array('name'=>'Opening Stock'),'id,name');
 
-        $round_id = $this->gmodel->get_data_table('gl_group',array('name'=>'Round off'),'id,name');
-
-        
        
         $init_total =0;
 
@@ -82,7 +79,7 @@ class Profitloss extends BaseController{
             $manualy_closing_bal = $this->tmodel->get_manualy_stock($post['from'],$post['to']);
             $closing_data = $this->tmodel->get_closing_detail($post['from'],$post['to']);
 
-            $round_data = Round_off_data($round_id['id'],$post['from'],$post['to']);
+          
         
         }else if($company_from != 0000-00-00 && $company_to != 0000-00-00){
             $from =date_create($company_from) ;                                         
@@ -124,7 +121,7 @@ class Profitloss extends BaseController{
             $manualy_closing_bal = $this->tmodel->get_manualy_stock($post['from'],$post['to']);
             $closing_data = $this->tmodel->get_closing_detail($post['from'],$post['to']);
 
-            $round_data = Round_off_data($round_id['id'],$post['from'],$post['to']);
+          
         }
         else{
 
@@ -161,7 +158,7 @@ class Profitloss extends BaseController{
             $manualy_closing_bal = $this->tmodel->get_manualy_stock();
             $closing_data = $this->tmodel->get_closing_detail();
 
-            $round_data = Round_off_data($round_id['id']);
+           
         }
         $opening_stock[$gl_opening_id['id']] = opening_stock_data($gl_opening_id['id']);
         $opening_stock[$gl_opening_id['id']]['name'] = $gl_opening_id['name'];
@@ -188,9 +185,7 @@ class Profitloss extends BaseController{
         $data['pl']['exp_total'] = @$exp_pl_total;
         $data['pl']['inc_total'] = @$inc_pl_total;
 
-        $data['pl']['round_amount'] = @$round_data;
-        $data['pl']['round_id'] = @$round_id['id'];
-        $data['pl']['round_name'] = @$round_id['name'];
+      
         
         $data['trading']['opening_bal'] = $Opening_bal;
         $data['trading']['closing_bal'] = @$closing_data['closing_bal']; 

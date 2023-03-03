@@ -62,10 +62,9 @@
 
                                     <label class="form-label"><b> Type of Ledger:</b></label>
                                     <select class="form-control select2" name="ledger_type" id="ledger_type_sel">
-                                        <option value="">
-                                            None</option>
+                                        <option value="">None</option>
                                         <option <?= (@$account_view['tax_type'] == "rounding_invoices" ? 'selected' : '') ?> value="rounding_invoices">
-                                            Rounding Invoices</option>
+                                            Invoice Rounding</option>
                                         <option <?= (@$account_view['tax_type'] == "discount" ? 'selected' : '') ?> value="discount">
                                             Discount</option>
                                     </select>
@@ -652,7 +651,7 @@
     function hide_show() {
 
         var gl_id = $('#glgroup_ac').val();
-
+        //console.log(gl_id);
         $.ajax({
             url: '<?= url('account/get_gl_parent') ?>',
             type: "post",
@@ -661,7 +660,7 @@
 
             },
             success: function(data) {
-                // console.log(data);
+                //console.log(data);
                 var glDiv = document.getElementById("gl_hide");
                 var brokrage = document.getElementById("brokrage");
                 //var hsn_div = document.getElementById("hsn_div");
@@ -821,7 +820,7 @@
                     //$("#taxation_show").css("display", "none");
                     //$('#taxes_name').attr('disabled');
                 }
-                if (text == 'P & L Incomes' || text == 'P & L Expenses' || text == 'Trading Expenses' || text == 'Trading Income') {
+                if (text == 'P & L Incomes' || text == 'P & L Expenses' || text == 'Trading Expenses' || text == 'Trading Income' || main_id == '30' || main_id == '31' || main_id == '27' || main_id == '29' ) {
 
                     $("#ledger_type").css("display", "block");
                 }
@@ -938,7 +937,7 @@
 
         $('.select2').select2({
             width: '100%',
-            placeholder: "Select Option"
+           // placeholder: "Select Option"
         });
 
 
@@ -969,7 +968,7 @@
         $('#glgroup_ac').on('select2:select', function(e) {
 
             var data = e.params.data;
-
+            //console.log(data);
             var glDiv = document.getElementById("gl_hide");
             var brokrage = document.getElementById("brokrage");
 
@@ -1141,7 +1140,7 @@
                 //$('#name_show').css("display", "block");
                 //$('#taxes_name').attr('disabled');
             }
-            if (text == 'P & L Incomes' || text == 'P & L Expenses' || text == 'Trading Expenses' || text == 'Trading Income') {
+            if (text == 'P & L Incomes' || text == 'P & L Expenses' || text == 'Trading Expenses' || text == 'Trading Income' || main_id == '30' || main_id == '31' || main_id == '27' || main_id == '29' ) {
 
                 $("#ledger_type").css("display", "block");
             }

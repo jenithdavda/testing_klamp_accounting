@@ -650,3 +650,26 @@ function get_parent_gl_group($id)
     return $result;
 }
 
+function Activity_log($data)
+{
+    $db = \Config\Database::connect();
+
+    if (session('DataSource')) {
+        $db->setDatabase(session('DataSource'));
+    }
+        $builder = $db->table('Activity_log');
+  
+        $data['created_at'] = date('Y-m-d H:i:s');
+        $data['created_by'] = session('uid');
+        $result = $builder->Insert($data);
+        if ($result) {
+            $msg = array('st' => 'success', 'msg' => "Your Details Added Successfully!!!");
+        } else {
+            $msg = array('st' => 'fail', 'msg' => "Your Details Added fail");
+        }
+        return $msg;
+    
+
+}
+
+?>

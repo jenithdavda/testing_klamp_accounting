@@ -2305,4 +2305,244 @@ class SalesApendColumnModel extends Model
         }
         return $update_total_item;
     }
+    public function sales_invoice_update_discount_inexpence_data()
+    {
+        $db = $this->db;
+        $db->setDatabase(session('DataSource'));
+        $builder = $db->table('sales_invoice');
+        $builder->select('*');
+        $builder->where(array('is_delete' => 0));
+        $builder->where(array('discount>'=>0));
+        $result = $builder->get();
+        $result_array = $result->getResultArray();
+        $gmodel = new GeneralModel();
+        foreach($result_array as $row)
+        {
+            //echo '<pre>';Print_r($row);
+            
+                $discount_itemdata = array();
+                $getDiscountac = $gmodel->get_data_table('account', array('is_delete' => 0,'name'=>'Discount'), 'id');
+                $disc_id = $getDiscountac['id'];
+
+                if($row['disc_type'] == 'Fixed')
+                {
+                    $total_discount = $row['discount'];
+                }
+                else
+                {
+                    $builder = $db->table('sales_item');
+                    $builder->select('*');
+                    $builder->where(array('is_delete' => 0, 'parent_id' => $row['id'], 'type' => 'invoice'));
+                    $result = $builder->get();
+                    $result_array_item = $result->getResultArray();
+                    $item_total = 0;
+                    foreach ($result_array_item as $row1) {
+                        if ($row1['is_expence'] == 0) {
+                            $sub = $row1['qty'] * $row1['rate'];
+                            $item_total += $sub;
+                        }
+                    }
+                    $total_discount = $item_total * $row['discount'] / 100;   
+                }
+                $discount_itemdata[] = array(
+                    'parent_id' => $row['id'],
+                    'expence_type'=>'discount',
+                    'is_expence' => 1,
+                    'item_id' => $disc_id,
+                    'hsn' => '',
+                    'type' => 'invoice',
+                    'uom' => '',
+                    'rate' => $total_discount,
+                    'qty' => 0,
+                    'igst' => '',
+                    'cgst' => '',
+                    'sgst' => '',
+                    'igst_amt' => '',
+                    'cgst_amt' => '',
+                    'sgst_amt' => '',
+                    'taxability' => '',
+                    //update discount column 17-01-2023
+                    'total' => $total_discount,
+                    'item_disc' => 0,
+                    'discount' => 0,
+                    'divide_disc_item_per' => 0,
+                    'divide_disc_item_amt' => 0,
+                    'sub_total' => $total_discount,
+                    // end
+                    'added_amt' => '',
+                    'remark' => '',
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'created_by' => session('uid'),
+                );
+                $item_builder = $db->table('sales_item');
+                $result3 = $item_builder->insertBatch($discount_itemdata);
+        }
+        //exit;
+        $builder = $db->table('sales_invoice');
+        $builder->select('*');
+        $builder->where(array('is_delete' => 0));
+        $builder->where(array('round_diff!='=>0));
+        $result = $builder->get();
+        $result_array1 = $result->getResultArray();
+        foreach($result_array1 as $row)
+        {
+            $round_itemdata = array();
+           
+                $round_itemdata[] = array(
+                    'parent_id' => $row['id'],
+                    'expence_type'=>'rounding_invoices',
+                    'is_expence' => 1,
+                    'item_id' => $row['round'],
+                    'hsn' => '',
+                    'type' => 'invoice',
+                    'uom' => '',
+                    'rate' => $row['round_diff'],
+                    'qty' => 0,
+                    'igst' => '',
+                    'cgst' => '',
+                    'sgst' => '',
+                    'igst_amt' => '',
+                    'cgst_amt' => '',
+                    'sgst_amt' => '',
+                    'taxability' => '',
+                    //update discount column 17-01-2023
+                    'total' => $row['round_diff'],
+                    'item_disc' => 0,
+                    'discount' => 0,
+                    'divide_disc_item_per' => 0,
+                    'divide_disc_item_amt' => 0,
+                    'sub_total' => $row['round_diff'],
+                    // end
+                    'added_amt' =>'',
+                    'remark' => '',
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'created_by' => session('uid'),
+                );
+                $item_builder = $db->table('sales_item');
+                $result2 = $item_builder->insertBatch($round_itemdata);
+            
+        }
+            
+        
+    }
+    public function sales_return_update_discount_inexpence_data()
+    {
+        $db = $this->db;
+        $db->setDatabase(session('DataSource'));
+        $builder = $db->table('sales_return');
+        $builder->select('*');
+        $builder->where(array('is_delete' => 0));
+        $builder->where(array('discount>'=>0));
+        $result = $builder->get();
+        $result_array = $result->getResultArray();
+        $gmodel = new GeneralModel();
+        foreach($result_array as $row)
+        {
+            //echo '<pre>';Print_r($row);
+            
+                $discount_itemdata = array();
+                $getDiscountac = $gmodel->get_data_table('account', array('is_delete' => 0,'name'=>'Discount'), 'id');
+                $disc_id = $getDiscountac['id'];
+
+                if($row['disc_type'] == 'Fixed')
+                {
+                    $total_discount = $row['discount'];
+                }
+                else
+                {
+                    $builder = $db->table('sales_item');
+                    $builder->select('*');
+                    $builder->where(array('is_delete' => 0, 'parent_id' => $row['id'], 'type' => 'return'));
+                    $result = $builder->get();
+                    $result_array_item = $result->getResultArray();
+                    $item_total = 0;
+                    foreach ($result_array_item as $row1) {
+                        if ($row1['is_expence'] == 0) {
+                            $sub = $row1['qty'] * $row1['rate'];
+                            $item_total += $sub;
+                        }
+                    }
+                    $total_discount = $item_total * $row['discount'] / 100;   
+                }
+                $discount_itemdata[] = array(
+                    'parent_id' => $row['id'],
+                    'expence_type'=>'discount',
+                    'is_expence' => 1,
+                    'item_id' => $disc_id,
+                    'hsn' => '',
+                    'type' => 'return',
+                    'uom' => '',
+                    'rate' => $total_discount,
+                    'qty' => 0,
+                    'igst' => '',
+                    'cgst' => '',
+                    'sgst' => '',
+                    'igst_amt' => '',
+                    'cgst_amt' => '',
+                    'sgst_amt' => '',
+                    'taxability' => '',
+                    //update discount column 17-01-2023
+                    'total' => $total_discount,
+                    'item_disc' => 0,
+                    'discount' => 0,
+                    'divide_disc_item_per' => 0,
+                    'divide_disc_item_amt' => 0,
+                    'sub_total' => $total_discount,
+                    // end
+                    'added_amt' => '',
+                    'remark' => '',
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'created_by' => session('uid'),
+                );
+                $item_builder = $db->table('sales_item');
+                $result3 = $item_builder->insertBatch($discount_itemdata);
+        }
+        //exit;
+        $builder = $db->table('sales_return');
+        $builder->select('*');
+        $builder->where(array('is_delete' => 0));
+        $builder->where(array('round_diff!='=>0));
+        $result = $builder->get();
+        $result_array1 = $result->getResultArray();
+        foreach($result_array1 as $row)
+        {
+            $round_itemdata = array();
+           
+                $round_itemdata[] = array(
+                    'parent_id' => $row['id'],
+                    'expence_type'=>'rounding_invoices',
+                    'is_expence' => 1,
+                    'item_id' => $row['round'],
+                    'hsn' => '',
+                    'type' => 'return',
+                    'uom' => '',
+                    'rate' => $row['round_diff'],
+                    'qty' => 0,
+                    'igst' => '',
+                    'cgst' => '',
+                    'sgst' => '',
+                    'igst_amt' => '',
+                    'cgst_amt' => '',
+                    'sgst_amt' => '',
+                    'taxability' => '',
+                    //update discount column 17-01-2023
+                    'total' => $row['round_diff'],
+                    'item_disc' => 0,
+                    'discount' => 0,
+                    'divide_disc_item_per' => 0,
+                    'divide_disc_item_amt' => 0,
+                    'sub_total' => $row['round_diff'],
+                    // end
+                    'added_amt' =>'',
+                    'remark' => '',
+                    'created_at' => date('Y-m-d H:i:s'),
+                    'created_by' => session('uid'),
+                );
+                $item_builder = $db->table('sales_item');
+                $result2 = $item_builder->insertBatch($round_itemdata);
+            
+        }
+            
+        
+    }
 }

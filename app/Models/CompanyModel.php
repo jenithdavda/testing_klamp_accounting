@@ -283,9 +283,9 @@ class CompanyModel extends Model
             foreach ($lines as $line)
             {
                 if (substr($line, 0, 2) == '--'  || substr($line, 0, 1) == '#')
-                    continue;
-                    $temp_line .= $line;    
-             if (substr(trim($line), -1, 1) == ';')
+                continue;
+                $temp_line .= $line;    
+                if (substr(trim($line), -1, 1) == ';')
                 {
                     $this->db->setDatabase($DataSource);
                     try{
@@ -300,7 +300,8 @@ class CompanyModel extends Model
                     $temp_line = '';
                     // echo '<pre>';print_r($temp_line);
                 }
-            }     
+            }  
+           //exit;   
             if (empty($msg)) {
                 
                 $this->db->setDatabase('manifest_erp');

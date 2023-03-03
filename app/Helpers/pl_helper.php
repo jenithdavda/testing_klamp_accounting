@@ -153,6 +153,7 @@ function pl_expense_data($id, $start_date = '', $end_date = '')
     $builder->where(array('ac.is_delete' => '0'));
     $builder->where(array('sa.is_delete' => '0'));
     $builder->where(array('sa.is_cancle' => '0'));
+    $builder->where(array('sp.is_delete' => '0'));
     $builder->where(array('DATE(sa.invoice_date)  >= ' => $start_date));
     $builder->where(array('DATE(sa.invoice_date)  <= ' => $end_date));
     $query = $builder->get();

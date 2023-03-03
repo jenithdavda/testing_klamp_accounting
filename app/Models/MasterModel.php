@@ -1919,7 +1919,7 @@ public function get_glgrp_data($get){
     // if ($filter != '' && $filter != 'undefined') {
     //     $where .= ' and UserType ="' . $filter . '"';
     // }
-    $where .= " and is_delete=0";
+    $where .= " and is_delete=0 and is_view=0";
     // $dt_order = array('gl.id' => 'asc');
     $rResult = getManagedData($tablename, $dt_col, $dt_search, $where);
     $sEcho = $rResult['draw'];

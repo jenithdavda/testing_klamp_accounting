@@ -729,7 +729,7 @@ class GeneralModel extends Model
             $s_number = str_pad(0001, 4, "0", STR_PAD_LEFT);
             
         }
-        $result = 'A' . '/' . $custom_date . '/' . $s_number;
+        $result = 'KE' . '/' . $custom_date . '/B' . $s_number;
        
         
         return $result;
@@ -784,7 +784,7 @@ class GeneralModel extends Model
                 $s_number = str_pad(0001, 4, "0", STR_PAD_LEFT);
                 
             }
-            $result = 'A' . '/' . $custom_date . '/' . $s_number;
+            $result = 'KE' . '/' . $custom_date . '/' . $s_number;
         }
         else
         {
@@ -817,7 +817,7 @@ class GeneralModel extends Model
                 {
                     $s_number = str_pad(0001, 4, "0", STR_PAD_LEFT);
                 }   
-                $result = 'A' . '/' . $custom_date . '/B' . $s_number;      
+                $result = 'KE' . '/' . $custom_date . '/B' . $s_number;      
 
             }
             else
@@ -849,7 +849,7 @@ class GeneralModel extends Model
                 {
                     $s_number = str_pad(0001, 4, "0", STR_PAD_LEFT);
                 }   
-                $result = 'A' . '/' . $custom_date . '/C' . $s_number;  
+                $result = 'KE' . '/' . $custom_date . '/C' . $s_number;  
             }
         }
         
@@ -902,7 +902,7 @@ class GeneralModel extends Model
             $s_number = str_pad(0001, 4, "0", STR_PAD_LEFT);
             
         }
-        $result = 'AC' . '/' . $custom_date . '/' . $s_number;
+        $result = 'C/KE' . '/' . $custom_date . '/B' . $s_number;
        
         
         return $result;
@@ -957,7 +957,7 @@ class GeneralModel extends Model
                 $s_number = str_pad(0001, 4, "0", STR_PAD_LEFT);
                 
             }
-            $result = 'AC' . '/' . $custom_date . '/' . $s_number;
+            $result = 'C/KE' . '/' . $custom_date . '/' . $s_number;
         }
         else
         {
@@ -990,7 +990,7 @@ class GeneralModel extends Model
                 {
                     $s_number = str_pad(0001, 4, "0", STR_PAD_LEFT);
                 }   
-                $result = 'AC' . '/' . $custom_date . '/B' . $s_number;      
+                $result = 'C/KE' . '/' . $custom_date . '/B' . $s_number;      
 
             }
             else
@@ -1022,7 +1022,7 @@ class GeneralModel extends Model
                 {
                     $s_number = str_pad(0001, 4, "0", STR_PAD_LEFT);
                 }   
-                $result = 'AC' . '/' . $custom_date . '/C' . $s_number;  
+                $result = 'C/KE' . '/' . $custom_date . '/C' . $s_number;  
             }
         }
         
