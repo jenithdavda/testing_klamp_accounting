@@ -146,7 +146,7 @@ function balancesheet_detail($start_date = '', $end_date = '')
         $current_lib[$key]['total'] = (@$value['receipt_total'] - @$value['payment_total']) + (@$value['cr_total'] - @$value['dr_total']);
     }
 
-    $current_lib['Sundry Creditors']['total'] = (($sale_purchase['pur_total_rate']) - ($sale_purchase['Purret_total_rate'])) + (@$current_lib['Sundry Creditors']['total']);
+    $current_lib['Sundry Creditors']['total'] = (($sale_purchase['pur_total_rate'])) - ($sale_purchase['Purret_total_rate']) + (@$current_lib['Sundry Creditors']['total']);
 
     $bank_parti_fixAset = bank_parti_master($start_date, $end_date, $gl = "Fixed Assets");
     $jv_fixAset = jv_master($start_date, $end_date, $gl = "Fixed Assets");
@@ -935,11 +935,9 @@ function pl_tot_data_bl($start_date = '', $end_date = '')
     // echo '<pre>';print_r($data);exit;
     return $data;
 }
-
 //capital data
 function capital_data($id, $start_date = '', $end_date = '')
 {
-
     if ($start_date == '') {
         if (date('m') < '03') {
             $year = date('Y') - 1;
@@ -983,15 +981,9 @@ function capital_data($id, $start_date = '', $end_date = '')
         }
         $tot_pg_income[$row['account_name']]['opening_total'] = $total;
         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
-        //use of gl_group summary
-        $tot_pg_income[$row['account_name']]['type'] = 'capital';
     }
 
     $bank_income = array();
-    //     echo '<pre>';Print_r($start_date);
-    // echo '<pre>';Print_r($end_date);exit;
-
-    
 
     $builder = $db->table('gl_group gl');
     $builder->select('ac.id as account_id,gl.name as gl_name,bt.payment_type,gl.parent,gl.id as gl_id,ac.name as account_name,bt.amount as bt_total,bt.mode');
@@ -1014,8 +1006,6 @@ function capital_data($id, $start_date = '', $end_date = '')
 
         $tot_pg_income[$row['account_name']]['bt_total'] = $total;
         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
-         //use of gl_group summary
-         $tot_pg_income[$row['account_name']]['type'] = 'capital';
     }
 
     $jv_income = array();
@@ -1041,8 +1031,6 @@ function capital_data($id, $start_date = '', $end_date = '')
 
         $tot_pg_income[$row['account_name']]['jv_total'] = $total;
         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
-        //use of gl_group summary
-        $tot_pg_income[$row['account_name']]['type'] = 'capital';
     }
 
     $total_arr = array();
@@ -1146,8 +1134,6 @@ function loans_data($id, $start_date = '', $end_date = '')
         }
         $tot_pg_income[$row['account_name']]['opening_total'] = $total;
         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
-         //use of gl_group summary
-         $tot_pg_income[$row['account_name']]['type'] = 'loan';
     }
 
 
@@ -1173,8 +1159,6 @@ function loans_data($id, $start_date = '', $end_date = '')
         }
         $tot_pg_income[$row['account_name']]['bt_total'] = $total;
         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
-        //use of gl_group summary
-        $tot_pg_income[$row['account_name']]['type'] = 'loan';
     }
     // echo '<pre>';print_r($bank_income);
     $jv_income = array();
@@ -1198,8 +1182,6 @@ function loans_data($id, $start_date = '', $end_date = '')
         }
         $tot_pg_income[$row['account_name']]['jv_total'] = $total;
         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
-        //use of gl_group summary
-        $tot_pg_income[$row['account_name']]['type'] = 'loan';
     }
     // echo '<pre>';Print_r($tot_pg_income);exit;
 
@@ -1261,799 +1243,6 @@ function get_loans_sub_grp_data($parent_id, $start_date = '', $end_date = '')
     return  $categories;
 }
 //current liabilities data
-// function Currlib_data($id, $start_date = '', $end_date = '')
-// {
-
-//     if ($start_date == '') {
-//         if (date('m') < '03') {
-//             $year = date('Y') - 1;
-//             $start_date = $year . '-04-01';
-//         } else {
-//             $year = date('Y');
-//             $start_date = $year . '-04-01';
-//         }
-//     }
-
-//     if ($end_date == '') {
-
-//         if (date('m') < '03') {
-//             $year = date('Y');
-//         } else {
-//             $year = date('Y') + 1;
-//         }
-//         $end_date = $year . '-03-31';
-//     }
-
-//     $db = \Config\Database::connect();
-
-//     if (session('DataSource')) {
-//         $db->setDatabase(session('DataSource'));
-//     }
-
-//     $tot_pg_income = array();
-
-//     $account = array();
-
-//     $builder = $db->table('gl_group gl');
-//     $builder->select('ac.id as account_id,gl.name as gl_name,gl.id as gl_id,gl.parent, ac.name as account_name,opening_bal as opening_total,opening_type');
-//     $builder->join('account ac', 'gl.id =ac.gl_group');
-//     $builder->where(array('gl.id' => $id));
-//     $builder->where(array('ac.is_delete' => '0'));
-//     $query = $builder->get();
-//     $account = $query->getResultArray();
-
-//     foreach ($account as $row) {
-//         if ($row['opening_type'] == 'Debit') {
-//             $total = ((@$tot_pg_income[$row['account_name']]['opening_total']) ? $tot_pg_income[$row['account_name']]['opening_total'] : 0) - (float)$row['opening_total'];
-//         } else {
-//             $total = ((@$tot_pg_income[$row['account_name']]['opening_total']) ? $tot_pg_income[$row['account_name']]['opening_total'] : 0) + (float)$row['opening_total'];
-//         }
-//         $tot_pg_income[$row['account_name']]['opening_total'] = $total;
-//         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
-//         //use of gl_group summary
-//         $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
-//     }
-
-
-//     $pg_expense = array();
-
-//     $builder = $db->table('gl_group gl');
-//     $builder->select('gl.id as gl_id,gl.name,gl.parent,pg.v_type as pg_type,pg.party_account as pg_acc,ac.name as account_name,ac.id as account_id,pg.net_amount as pg_amount,pg.disc_type,pg.discount,pg.amty,pg.amty_type');
-//     $builder->join('account ac', 'gl.id =ac.gl_group');
-//     $builder->join('purchase_general pg', 'pg.party_account = ac.id');
-//     $builder->join('purchase_particu pp', 'pp.parent_id = pg.id');
-//     $builder->where('(pg.v_type="general" OR pg.v_type = "return")');
-//     $builder->where(array('gl.id' => $id));
-//     $builder->where(array('ac.is_delete' => '0'));
-//     $builder->where(array('pg.is_delete' => '0'));
-//     $builder->where(array('pg.is_cancle' => '0'));
-//     $builder->where(array('DATE(pg.doc_date)  >= ' => $start_date));
-//     $builder->where(array('DATE(pg.doc_date)  <= ' => $end_date));
-//     $builder->groupBy('pg.id');
-//     $query = $builder->get();
-//     $pg_expense = $query->getResultArray();
-
-
-//     foreach ($pg_expense as $row) {
-
-//         $total = ((@$tot_pg_income[$row['account_name']][$row['pg_type']]) ? $tot_pg_income[$row['account_name']][$row['pg_type']] : 0) + $row['pg_amount'];
-//         $tot_pg_income[$row['account_name']][$row['pg_type']] = $total;
-//         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
-//           //use of gl_group summary
-//           $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
-//     }
-
-//     $bank_income = array();
-
-//     $builder = $db->table('gl_group gl');
-//     $builder->select('ac.id as account_id,gl.name as gl_name,gl.parent,gl.id as gl_id,ac.name as account_name,bt.amount as bt_total,bt.mode');
-//     $builder->join('account ac', 'gl.id = ac.gl_group');
-//     $builder->join('bank_tras bt', 'bt.particular = ac.id');
-//     $builder->where(array('gl.id' => $id));
-//     $builder->where(array('ac.is_delete' => '0'));
-//     $builder->where(array('bt.is_delete' => '0'));
-//     $builder->where(array('DATE(bt.receipt_date)  >= ' => $start_date));
-//     $builder->where(array('DATE(bt.receipt_date)  <= ' => $end_date));
-//     $query = $builder->get();
-//     $bank_income = $query->getResultArray();
-
-//     foreach ($bank_income as $row) {
-
-//         if ($row['mode'] == 'Receipt') {
-//             $total = ((@$tot_pg_income[$row['account_name']]['bt_total']) ? $tot_pg_income[$row['account_name']]['bt_total'] : 0) + $row['bt_total'];
-//         } else {
-//             $total = ((@$tot_pg_income[$row['account_name']]['bt_total']) ? $tot_pg_income[$row['account_name']]['bt_total'] : 0) - $row['bt_total'];
-//         }
-
-//         $tot_pg_income[$row['account_name']]['bt_total'] = $total;
-//         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
-//           //use of gl_group summary
-//           $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
-//     }
-
-//     $jv_income = array();
-
-//     $builder = $db->table('gl_group gl');
-//     $builder->select('ac.id as account_id,gl.name as gl_name,gl.id as gl_id,gl.parent,jv.amount as total, ac.name as account_name,jv.dr_cr');
-//     $builder->join('account ac', 'gl.id =ac.gl_group');
-//     $builder->join('jv_particular jv', 'jv.particular = ac.id');
-//     $builder->join('jv_main jm', 'jm.id = jv.jv_id');
-//     $builder->where(array('gl.id' => $id));
-//     $builder->where(array('ac.is_delete' => '0'));
-//     $builder->where(array('jv.is_delete' => '0'));
-//     $builder->where(array('jm.is_delete' => '0'));
-//     $builder->where(array('DATE(jv.date)  >= ' => $start_date));
-//     $builder->where(array('DATE(jv.date)  <= ' => $end_date));
-//     $query = $builder->get();
-//     $jv_income = $query->getResultArray();
-
-//     foreach ($jv_income as $row) {
-
-//         if ($row['dr_cr'] == 'cr') {
-//             $total = ((@$tot_pg_income[$row['account_name']]['jv_total']) ? $tot_pg_income[$row['account_name']]['jv_total'] : 0) + $row['total'];
-//         } else {
-//             $total = ((@$tot_pg_income[$row['account_name']]['jv_total']) ? $tot_pg_income[$row['account_name']]['jv_total'] : 0) - $row['total'];
-//         }
-
-//         $tot_pg_income[$row['account_name']]['jv_total'] = $total;
-//         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
-//           //use of gl_group summary
-//           $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
-//     }
-
-//     $purchase = array();
-
-//     $builder = $db->table('gl_group gl');
-//     $builder->select('ac.id as account_id,gl.name as gl_name,gl.id as gl_id,gl.parent,pi.net_amount as total, ac.name as account_name,pi.amty,pi.amty_type,pi.discount,pi.disc_type');
-//     $builder->join('account ac', 'gl.id =ac.gl_group');
-//     $builder->join('purchase_invoice pi', 'pi.account = ac.id');
-//     $builder->where(array('gl.id' => $id));
-//     $builder->where(array('ac.is_delete' => '0'));
-//     $builder->where(array('pi.is_delete' => '0'));
-//     $builder->where(array('pi.is_cancle' => '0'));
-//     $builder->where(array('DATE(pi.invoice_date)  >= ' => $start_date));
-//     $builder->where(array('DATE(pi.invoice_date)  <= ' => $end_date));
-//     $query = $builder->get();
-//     $purchase = $query->getResultArray();
-
-//     foreach ($purchase as $row) {
-
-//         $total = ((@$tot_pg_income[$row['account_name']]['purchase_total']) ? $tot_pg_income[$row['account_name']]['purchase_total'] : 0) + $row['total'];
-//         $tot_pg_income[$row['account_name']]['purchase_total'] = $total;
-//         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
-//           //use of gl_group summary
-//           $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
-//     }
-//     $purchase_return = array();
-
-//     $builder = $db->table('gl_group gl');
-//     $builder->select('ac.id as account_id,gl.name as gl_name,gl.id as gl_id,gl.parent,pi.net_amount as total, ac.name as account_name,pi.amty,pi.amty_type,pi.discount,pi.disc_type');
-//     $builder->join('account ac', 'gl.id =ac.gl_group');
-//     $builder->join('purchase_return pi', 'pi.account = ac.id');
-//     $builder->where(array('gl.id' => $id));
-//     $builder->where(array('ac.is_delete' => '0'));
-//     $builder->where(array('DATE(pi.return_date)  >= ' => $start_date));
-//     $builder->where(array('DATE(pi.return_date)  <= ' => $end_date));
-//     $query = $builder->get();
-//     $purchase_return = $query->getResultArray();
-
-//     foreach ($purchase_return as $row) {
-
-//         $total = ((@$tot_pg_income[$row['account_name']]['purchase_ret_total']) ? $tot_pg_income[$row['account_name']]['purchase_ret_total'] : 0) + $row['total'];
-//         $tot_pg_income[$row['account_name']]['purchase_ret_total'] = $total;
-//         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
-//           //use of gl_group summary
-//           $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
-//     }
-
-//     // update trupti 26-12-2022 duties and taxes add taxes account
-//     $data = gst_gl_group_data($id, $start_date, $end_date);
-
-//     $pg_expense_igst = $data['pg_expense_igst'];
-//     $pg_expense_cgst = $data['pg_expense_cgst'];
-//     $pg_expense_sgst = $data['pg_expense_sgst'];
-
-//     foreach ($pg_expense_igst as $row) {
-
-//         $total = ((@$tot_pg_income[$row['account_name']][$row['pg_type'] . 'purchase_igst']) ? $tot_pg_income[$row['account_name']][$row['pg_type'] . 'purchase_igst'] : 0) + $row['pg_amount'];
-//         $tot_pg_income[$row['account_name']][$row['pg_type'] . 'purchase_igst'] = $total;
-//         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
-//           //use of gl_group summary
-//           $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
-//     }
-//     foreach ($pg_expense_cgst as $row) {
-
-//         $total = ((@$tot_pg_income[$row['account_name']][$row['pg_type'] . 'purchase_cgst']) ? $tot_pg_income[$row['account_name']][$row['pg_type'] . 'purchase_cgst'] : 0) + $row['pg_amount'];
-//         $tot_pg_income[$row['account_name']][$row['pg_type'] . 'purchase_cgst'] = $total;
-//         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
-//           //use of gl_group summary
-//           $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
-//     }
-//     foreach ($pg_expense_sgst as $row) {
-
-//         $total = ((@$tot_pg_income[$row['account_name']][$row['pg_type'] . 'purchase_sgst']) ? $tot_pg_income[$row['account_name']][$row['pg_type'] . 'purchase_sgst'] : 0) + $row['pg_amount'];
-//         $tot_pg_income[$row['account_name']][$row['pg_type'] . 'purchase_sgst'] = $total;
-//         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
-//           //use of gl_group summary
-//           $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
-//     }
-//     $sg_expense_igst = $data['sg_expense_igst'];
-//     $sg_expense_cgst = $data['sg_expense_cgst'];
-//     $sg_expense_sgst = $data['sg_expense_sgst'];
-//     foreach ($sg_expense_igst as $row) {
-
-//         $total = ((@$tot_pg_income[$row['account_name']][$row['pg_type']]) ? $tot_pg_income[$row['account_name']][$row['pg_type']] : 0) + $row['sg_amount_igst'];
-//         $tot_pg_income[$row['account_name']][$row['pg_type'] . 'sales_igst'] = $total;
-//         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
-//           //use of gl_group summary
-//           $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
-//     }
-//     foreach ($sg_expense_cgst as $row) {
-
-//         $total = ((@$tot_pg_income[$row['account_name']][$row['pg_type']]) ? $tot_pg_income[$row['account_name']][$row['pg_type']] : 0) + $row['sg_amount_cgst'];
-//         $tot_pg_income[$row['account_name']][$row['pg_type'] . 'sales_cgst'] = $total;
-//         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
-//           //use of gl_group summary
-//           $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
-//     }
-//     foreach ($sg_expense_sgst as $row) {
-
-//         $total = ((@$tot_pg_income[$row['account_name']][$row['pg_type']]) ? $tot_pg_income[$row['account_name']][$row['pg_type']] : 0) + $row['sg_amount_sgst'];
-//         $tot_pg_income[$row['account_name']][$row['pg_type'] . 'sales_sgst'] = $total;
-//         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
-//           //use of gl_group summary
-//           $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
-//     }
-//     $purchase_igst = $data['purchase_igst'];
-//     $purchase_cgst = $data['purchase_cgst'];
-//     $purchase_sgst = $data['purchase_sgst'];
-//     foreach ($purchase_igst as $row) {
-
-//         $total = ((@$tot_pg_income[$row['account_name']]['purchase_total_igst']) ? $tot_pg_income[$row['account_name']]['purchase_total_igst'] : 0) + $row['total'];
-//         $tot_pg_income[$row['account_name']]['purchase_total_igst'] = $total;
-//         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
-//           //use of gl_group summary
-//           $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
-//     }
-//     foreach ($purchase_cgst as $row) {
-
-//         $total = ((@$tot_pg_income[$row['account_name']]['purchase_total_cgst']) ? $tot_pg_income[$row['account_name']]['purchase_total_cgst'] : 0) + $row['total'];
-//         $tot_pg_income[$row['account_name']]['purchase_total_cgst'] = $total;
-//         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
-//           //use of gl_group summary
-//           $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
-//     }
-//     foreach ($purchase_sgst as $row) {
-
-//         $total = ((@$tot_pg_income[$row['account_name']]['purchase_total_sgst']) ? $tot_pg_income[$row['account_name']]['purchase_total_sgst'] : 0) + $row['total'];
-//         $tot_pg_income[$row['account_name']]['purchase_total_sgst'] = $total;
-//         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
-//           //use of gl_group summary
-//           $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
-//     }
-//     $sales_igst = $data['sales_igst'];
-//     $sales_cgst = $data['sales_cgst'];
-//     $sales_sgst = $data['sales_sgst'];
-//     foreach ($sales_igst as $row) {
-
-//         $total = ((@$tot_pg_income[$row['account_name']]['sales_igst_total']) ? $tot_pg_income[$row['account_name']]['sales_igst_total'] : 0) + $row['sales_igst_total'];
-//         $tot_pg_income[$row['account_name']]['sales_igst_total'] = $total;
-//         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
-//           //use of gl_group summary
-//           $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
-//     }
-//     foreach ($sales_cgst as $row) {
-
-//         $total = ((@$tot_pg_income[$row['account_name']]['sales_cgst_total']) ? $tot_pg_income[$row['account_name']]['sales_cgst_total'] : 0) + $row['sales_cgst_total'];
-//         $tot_pg_income[$row['account_name']]['sales_cgst_total'] = $total;
-//         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
-//           //use of gl_group summary
-//           $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
-//     }
-//     foreach ($sales_sgst as $row) {
-
-//         $total = ((@$tot_pg_income[$row['account_name']]['sales_sgst_total']) ? $tot_pg_income[$row['account_name']]['sales_sgst_total'] : 0) + $row['sales_sgst_total'];
-//         $tot_pg_income[$row['account_name']]['sales_sgst_total'] = $total;
-//         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
-//           //use of gl_group summary
-//           $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
-//     }
-
-//     $purchase_return_igst = $data['purchase_return_igst'];
-//     $purchase_return_cgst = $data['purchase_return_cgst'];
-//     $purchase_return_sgst = $data['purchase_return_sgst'];
-
-//     foreach ($purchase_return_igst as $row) {
-
-//         $total = ((@$tot_pg_income[$row['account_name']]['purchase_return_igst_total']) ? $tot_pg_income[$row['account_name']]['purchase_return_igst_total'] : 0) + $row['total'];
-//         $tot_pg_income[$row['account_name']]['purchase_return_igst_total'] = $total;
-//         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
-//           //use of gl_group summary
-//           $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
-//     }
-//     foreach ($purchase_return_cgst as $row) {
-
-//         $total = ((@$tot_pg_income[$row['account_name']]['purchase_return_cgst_total']) ? $tot_pg_income[$row['account_name']]['purchase_return_cgst_total'] : 0) + $row['total'];
-//         $tot_pg_income[$row['account_name']]['purchase_return_cgst_total'] = $total;
-//         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
-//           //use of gl_group summary
-//           $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
-//     }
-//     foreach ($purchase_return_sgst as $row) {
-
-//         $total = ((@$tot_pg_income[$row['account_name']]['purchase_return_sgst_total']) ? $tot_pg_income[$row['account_name']]['purchase_return_sgst_total'] : 0) + $row['total'];
-//         $tot_pg_income[$row['account_name']]['purchase_return_sgst_total'] = $total;
-//         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
-//           //use of gl_group summary
-//           $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
-//     }
-//     $sales_return_igst = $data['sales_return_igst'];
-//     $sales_return_cgst = $data['sales_return_cgst'];
-//     $sales_return_sgst = $data['sales_return_sgst'];
-//     foreach ($sales_return_igst as $row) {
-
-//         $total = ((@$tot_pg_income[$row['account_name']]['sales_return_igst_total']) ? $tot_pg_income[$row['account_name']]['sales_return_igst_total'] : 0) + $row['sales_return_igst_total'];
-//         $tot_pg_income[$row['account_name']]['sales_return_igst_total'] = $total;
-//         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
-//           //use of gl_group summary
-//           $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
-//     }
-//     foreach ($sales_return_cgst as $row) {
-
-//         $total = ((@$tot_pg_income[$row['account_name']]['sales_return_cgst_total']) ? $tot_pg_income[$row['account_name']]['sales_return_cgst_total'] : 0) + $row['sales_return_cgst_total'];
-//         $tot_pg_income[$row['account_name']]['sales_return_cgst_total'] = $total;
-//         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
-//           //use of gl_group summary
-//           $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
-//     }
-//     foreach ($sales_return_sgst as $row) {
-
-//         $total = ((@$tot_pg_income[$row['account_name']]['sales_return_sgst_total']) ? $tot_pg_income[$row['account_name']]['sales_return_sgst_total'] : 0) + $row['sales_return_sgst_total'];
-//         $tot_pg_income[$row['account_name']]['sales_return_sgst_total'] = $total;
-//         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
-//           //use of gl_group summary
-//           $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
-//     }
-
-
-//     $total_arr = array();
-
-//     foreach ($tot_pg_income as $key => $value) {
-
-//         $tot_pg_income[$key]['total'] = @$value['jv_total'] + @$value['bt_total']  + @$value['purchase_total'] - @$value['purchase_ret_total']  + @$value['general'] - @$value['return']
-//             + @$value['generalsales_igst'] + @$value['generalsales_cgst'] + @$value['generalsales_sgst']
-//             - @$value['returnsales_igst'] - @$value['returnsales_cgst'] - @$value['returnsales_sgst']
-//             + @$value['sales_igst_total'] + @$value['sales_sgst_total'] + @$value['sales_cgst_total']
-//             - @$value['sales_return_igst_total'] - @$value['sales_return_sgst_total'] - @$value['sales_return_cgst_total']
-//             + @$value['generalpurchase_igst'] + @$value['generalpurchase_sgst'] + @$value['generalpurchase_cgst']
-//             - @$value['returnpurchase_igst'] - @$value['returnpurchase_sgst'] - @$value['returnpurchase_cgst']
-//             + @$value['purchase_total_igst'] + @$value['purchase_total_sgst'] + @$value['purchase_total_cgst']
-//             - @$value['purchase_return_igst_total'] - @$value['purchase_return_sgst_total'] - @$value['purchase_return_cgst_total'] + @$value['opening_total'];
-//         $total_arr[] = @$value['jv_total'] + @$value['bt_total']  + @$value['purchase_total'] - @$value['purchase_ret_total'] +  @$value['general'] - @$value['return']
-//             + @$value['generalsales_igst'] + @$value['generalsales_cgst'] + @$value['generalsales_sgst']
-//             - @$value['returnsales_igst'] - @$value['returnsales_cgst'] - @$value['returnsales_sgst']
-//             + @$value['sales_igst_total'] + @$value['sales_sgst_total'] + @$value['sales_cgst_total']
-//             - @$value['sales_return_igst_total'] - @$value['sales_return_sgst_total'] - @$value['sales_return_cgst_total']
-//             + @$value['generalpurchase_igst'] + @$value['generalpurchase_sgst'] + @$value['generalpurchase_cgst']
-//             - @$value['returnpurchase_igst'] - @$value['returnpurchase_sgst'] - @$value['returnpurchase_cgst']
-//             + @$value['purchase_total_igst'] + @$value['purchase_total_sgst'] + @$value['purchase_total_cgst']
-//             - @$value['purchase_return_igst_total'] - @$value['purchase_return_sgst_total'] - @$value['purchase_return_cgst_total'] + @$value['opening_total'];
-//     }
-
-//     if (!empty($total_arr)) {
-//         $trading_income_total = array_sum($total_arr);
-//     } else {
-//         $trading_income_total = 0;
-//     }
-
-//     $arr['account'] = $tot_pg_income;
-//     $arr['total'] = $trading_income_total;
-
-//     return $arr;
-// }
-// function Currlib_data($id, $start_date = '', $end_date = '')
-// {
-
-//     if ($start_date == '') {
-//         if (date('m') < '03') {
-//             $year = date('Y') - 1;
-//             $start_date = $year . '-04-01';
-//         } else {
-//             $year = date('Y');
-//             $start_date = $year . '-04-01';
-//         }
-//     }
-
-//     if ($end_date == '') {
-
-//         if (date('m') < '03') {
-//             $year = date('Y');
-//         } else {
-//             $year = date('Y') + 1;
-//         }
-//         $end_date = $year . '-03-31';
-//     }
-
-//     $db = \Config\Database::connect();
-
-//     if (session('DataSource')) {
-//         $db->setDatabase(session('DataSource'));
-//     }
-
-//     $tot_pg_income = array();
-
-//     $account = array();
-
-//     $builder = $db->table('gl_group gl');
-//     $builder->select('ac.id as account_id,gl.name as gl_name,gl.id as gl_id,gl.parent, ac.name as account_name,opening_bal as opening_total,opening_type');
-//     $builder->join('account ac', 'gl.id =ac.gl_group');
-//     $builder->where(array('gl.id' => $id));
-//     $builder->where(array('ac.is_delete' => '0'));
-//     $query = $builder->get();
-//     $account = $query->getResultArray();
-
-//     foreach ($account as $row) {
-//         if ($row['opening_type'] == 'Debit') {
-//             $total = ((@$tot_pg_income[$row['account_name']]['opening_total']) ? $tot_pg_income[$row['account_name']]['opening_total'] : 0) - (float)$row['opening_total'];
-//         } else {
-//             $total = ((@$tot_pg_income[$row['account_name']]['opening_total']) ? $tot_pg_income[$row['account_name']]['opening_total'] : 0) + (float)$row['opening_total'];
-//         }
-//         $tot_pg_income[$row['account_name']]['opening_total'] = $total;
-//         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
-//         $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
-//     }
-
-
-//     $pg_expense = array();
-
-//     $builder = $db->table('gl_group gl');
-//     $builder->select('gl.id as gl_id,gl.name,gl.parent,pg.v_type as pg_type,pg.party_account as pg_acc,ac.name as account_name,ac.id as account_id,pg.net_amount as pg_amount,pg.disc_type,pg.discount,pg.amty,pg.amty_type');
-//     $builder->join('account ac', 'gl.id =ac.gl_group');
-//     $builder->join('purchase_general pg', 'pg.party_account = ac.id');
-//     $builder->join('purchase_particu pp', 'pp.parent_id = pg.id');
-//     $builder->where('(pg.v_type="general" OR pg.v_type = "return")');
-//     $builder->where(array('gl.id' => $id));
-//     $builder->where(array('ac.is_delete' => '0'));
-//     $builder->where(array('pg.is_delete' => '0'));
-//     $builder->where(array('pg.is_cancle' => '0'));
-//     $builder->where(array('DATE(pg.doc_date)  >= ' => $start_date));
-//     $builder->where(array('DATE(pg.doc_date)  <= ' => $end_date));
-//     $builder->groupBy('pg.id');
-//     $query = $builder->get();
-//     $pg_expense = $query->getResultArray();
-
-
-//     foreach ($pg_expense as $row) {
-
-//         $total = ((@$tot_pg_income[$row['account_name']][$row['pg_type']]) ? $tot_pg_income[$row['account_name']][$row['pg_type']] : 0) + $row['pg_amount'];
-//         $tot_pg_income[$row['account_name']][$row['pg_type']] = $total;
-//         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
-//         $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
-//     }
-
-//     $bank_income = array();
-
-//     $builder = $db->table('gl_group gl');
-//     $builder->select('ac.id as account_id,gl.name as gl_name,gl.parent,gl.id as gl_id,ac.name as account_name,bt.amount as bt_total,bt.mode');
-//     $builder->join('account ac', 'gl.id = ac.gl_group');
-//     $builder->join('bank_tras bt', 'bt.particular = ac.id');
-//     $builder->where(array('gl.id' => $id));
-//     $builder->where(array('ac.is_delete' => '0'));
-//     $builder->where(array('bt.is_delete' => '0'));
-//     $builder->where(array('DATE(bt.receipt_date)  >= ' => $start_date));
-//     $builder->where(array('DATE(bt.receipt_date)  <= ' => $end_date));
-//     $query = $builder->get();
-//     $bank_income = $query->getResultArray();
-
-//     foreach ($bank_income as $row) {
-
-//         if ($row['mode'] == 'Receipt') {
-//             $total = ((@$tot_pg_income[$row['account_name']]['bt_total']) ? $tot_pg_income[$row['account_name']]['bt_total'] : 0) + $row['bt_total'];
-//         } else {
-//             $total = ((@$tot_pg_income[$row['account_name']]['bt_total']) ? $tot_pg_income[$row['account_name']]['bt_total'] : 0) - $row['bt_total'];
-//         }
-
-//         $tot_pg_income[$row['account_name']]['bt_total'] = $total;
-//         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
-//         $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
-//     }
-
-//     $jv_income = array();
-
-//     $builder = $db->table('gl_group gl');
-//     $builder->select('ac.id as account_id,gl.name as gl_name,gl.id as gl_id,gl.parent,jv.amount as total, ac.name as account_name,jv.dr_cr');
-//     $builder->join('account ac', 'gl.id =ac.gl_group');
-//     $builder->join('jv_particular jv', 'jv.particular = ac.id');
-//     $builder->join('jv_main jm', 'jm.id = jv.jv_id');
-//     $builder->where(array('gl.id' => $id));
-//     $builder->where(array('ac.is_delete' => '0'));
-//     $builder->where(array('jv.is_delete' => '0'));
-//     $builder->where(array('jm.is_delete' => '0'));
-//     $builder->where(array('DATE(jv.date)  >= ' => $start_date));
-//     $builder->where(array('DATE(jv.date)  <= ' => $end_date));
-//     $query = $builder->get();
-//     $jv_income = $query->getResultArray();
-
-//     foreach ($jv_income as $row) {
-
-//         if ($row['dr_cr'] == 'cr') {
-//             $total = ((@$tot_pg_income[$row['account_name']]['jv_total']) ? $tot_pg_income[$row['account_name']]['jv_total'] : 0) + $row['total'];
-//         } else {
-//             $total = ((@$tot_pg_income[$row['account_name']]['jv_total']) ? $tot_pg_income[$row['account_name']]['jv_total'] : 0) - $row['total'];
-//         }
-
-//         $tot_pg_income[$row['account_name']]['jv_total'] = $total;
-//         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
-//         $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
-//     }
-
-//     $purchase = array();
-
-//     $builder = $db->table('gl_group gl');
-//     $builder->select('ac.id as account_id,gl.name as gl_name,gl.id as gl_id,gl.parent,pi.net_amount as total, ac.name as account_name,pi.amty,pi.amty_type,pi.discount,pi.disc_type');
-//     $builder->join('account ac', 'gl.id =ac.gl_group');
-//     $builder->join('purchase_invoice pi', 'pi.account = ac.id');
-//     $builder->where(array('gl.id' => $id));
-//     $builder->where(array('ac.is_delete' => '0'));
-//     $builder->where(array('pi.is_delete' => '0'));
-//     $builder->where(array('pi.is_cancle' => '0'));
-//     $builder->where(array('DATE(pi.invoice_date)  >= ' => $start_date));
-//     $builder->where(array('DATE(pi.invoice_date)  <= ' => $end_date));
-//     $query = $builder->get();
-//     $purchase = $query->getResultArray();
-
-//     foreach ($purchase as $row) {
-
-//         $total = ((@$tot_pg_income[$row['account_name']]['purchase_total']) ? $tot_pg_income[$row['account_name']]['purchase_total'] : 0) + $row['total'];
-//         $tot_pg_income[$row['account_name']]['purchase_total'] = $total;
-//         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
-//         $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
-//     }
-//     $purchase_return = array();
-
-//     $builder = $db->table('gl_group gl');
-//     $builder->select('ac.id as account_id,gl.name as gl_name,gl.id as gl_id,gl.parent,pi.net_amount as total, ac.name as account_name,pi.amty,pi.amty_type,pi.discount,pi.disc_type');
-//     $builder->join('account ac', 'gl.id =ac.gl_group');
-//     $builder->join('purchase_return pi', 'pi.account = ac.id');
-//     $builder->where(array('gl.id' => $id));
-//     $builder->where(array('ac.is_delete' => '0'));
-//     $builder->where(array('DATE(pi.return_date)  >= ' => $start_date));
-//     $builder->where(array('DATE(pi.return_date)  <= ' => $end_date));
-//     $query = $builder->get();
-//     $purchase_return = $query->getResultArray();
-
-//     foreach ($purchase_return as $row) {
-
-//         $total = ((@$tot_pg_income[$row['account_name']]['purchase_ret_total']) ? $tot_pg_income[$row['account_name']]['purchase_ret_total'] : 0) + $row['total'];
-//         $tot_pg_income[$row['account_name']]['purchase_ret_total'] = $total;
-//         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
-//         $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
-//     }
-
-    
-//     $builder = $db->table('gl_group gl');
-//     $builder->select('gl.id as gl_id,gl.name,gl.parent,sg.v_type as sg_type,sg.party_account as sg_acc,ac.name as account_name,ac.id as account_id,sg.net_amount as sg_amount,sg.disc_type,sg.discount,sg.amty,sg.amty_type');
-//     $builder->join('account ac', 'gl.id =ac.gl_group');
-//     $builder->join('sales_ACinvoice sg', 'sg.party_account = ac.id');
-//     $builder->join('sales_ACparticu sp', 'sp.parent_id = sg.id');
-//     $builder->where('(sg.v_type="general" OR sg.v_type = "return")');
-//     $builder->where(array('gl.id' => $id));
-//     $builder->where(array('ac.is_delete' => '0'));
-//     $builder->where(array('sg.is_delete' => '0'));
-//     $builder->where(array('sg.is_cancle' => '0'));
-//     $builder->where(array('DATE(sg.invoice_date)  >= ' => $start_date));
-//     $builder->where(array('DATE(sg.invoice_date)  <= ' => $end_date));
-//     $builder->groupBy('sg.id');
-//     $query = $builder->get();
-//     $sale_general = $query->getResultArray();
-
-//     foreach ($sale_general as $row) {
-
-//         $total = ((@$tot_pg_income[$row['account_name']]['sales_'.$row['sg_type']]) ? $tot_pg_income[$row['account_name']]['sales_'.$row['sg_type']] : 0) + $row['sg_amount'];
-//         $tot_pg_income[$row['account_name']]['sales_'.$row['sg_type']] = $total;
-//         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
-//         $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
-//     }
-
-
-//     // update trupti 26-12-2022 duties and taxes add taxes account
-//     $data = gst_gl_group_data($id, $start_date, $end_date);
-
-//     $pg_expense_igst = $data['pg_expense_igst'];
-//     $pg_expense_cgst = $data['pg_expense_cgst'];
-//     $pg_expense_sgst = $data['pg_expense_sgst'];
-
-//     foreach ($pg_expense_igst as $row) {
-
-//         $total = ((@$tot_pg_income[$row['account_name']][$row['pg_type'] . 'purchase_igst']) ? $tot_pg_income[$row['account_name']][$row['pg_type'] . 'purchase_igst'] : 0) + $row['pg_amount'];
-//         $tot_pg_income[$row['account_name']][$row['pg_type'] . 'purchase_igst'] = $total;
-//         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
-//         $tot_pg_income[$row['account_name']]['type'] = 'current liabilities'; 
-//     }
-//     foreach ($pg_expense_cgst as $row) {
-
-//         $total = ((@$tot_pg_income[$row['account_name']][$row['pg_type'] . 'purchase_cgst']) ? $tot_pg_income[$row['account_name']][$row['pg_type'] . 'purchase_cgst'] : 0) + $row['pg_amount'];
-//         $tot_pg_income[$row['account_name']][$row['pg_type'] . 'purchase_cgst'] = $total;
-//         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
-//         $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
-//     }
-//     foreach ($pg_expense_sgst as $row) {
-
-//         $total = ((@$tot_pg_income[$row['account_name']][$row['pg_type'] . 'purchase_sgst']) ? $tot_pg_income[$row['account_name']][$row['pg_type'] . 'purchase_sgst'] : 0) + $row['pg_amount'];
-//         $tot_pg_income[$row['account_name']][$row['pg_type'] . 'purchase_sgst'] = $total;
-//         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
-//         $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
-//     }
-
-//     $sg_expense_igst = $data['sg_expense_igst'];
-//     $sg_expense_cgst = $data['sg_expense_cgst'];
-//     $sg_expense_sgst = $data['sg_expense_sgst'];
-
-
-//     foreach ($sg_expense_igst as $row) {
-
-//         $total = ((@$tot_pg_income[$row['account_name']][$row['pg_type'] . 'sales_igst']) ? $tot_pg_income[$row['account_name']][$row['pg_type'] . 'sales_igst'] : 0) + $row['sg_amount_igst'];
-//         $tot_pg_income[$row['account_name']][$row['pg_type'] . 'sales_igst'] = $total;
-//         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
-//         $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
-//     }
-//     foreach ($sg_expense_cgst as $row) {
-
-//         $total = ((@$tot_pg_income[$row['account_name']][$row['pg_type']. 'sales_cgst']) ? $tot_pg_income[$row['account_name']][$row['pg_type']. 'sales_cgst'] : 0) + $row['sg_amount_cgst'];
-
-//         $tot_pg_income[$row['account_name']][$row['pg_type'] . 'sales_cgst'] = $total;
-//         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
-//         $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
-     
-//     }
-//     foreach ($sg_expense_sgst as $row) {
-
-//         $total = ((@$tot_pg_income[$row['account_name']][$row['pg_type'] . 'sales_sgst']) ? $tot_pg_income[$row['account_name']][$row['pg_type'] . 'sales_sgst'] : 0) + $row['sg_amount_sgst'];
-//         $tot_pg_income[$row['account_name']][$row['pg_type'] . 'sales_sgst'] = $total;
-//         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
-//         $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
-//     }
-
-
-//     $purchase_igst = $data['purchase_igst'];
-//     $purchase_cgst = $data['purchase_cgst'];
-//     $purchase_sgst = $data['purchase_sgst'];
-
-//     foreach ($purchase_igst as $row) {
-
-//         $total = ((@$tot_pg_income[$row['account_name']]['purchase_total_igst']) ? $tot_pg_income[$row['account_name']]['purchase_total_igst'] : 0) + $row['total'];
-//         $tot_pg_income[$row['account_name']]['purchase_total_igst'] = $total;
-//         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
-//         $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
-//     }
-//     foreach ($purchase_cgst as $row) {
-
-//         $total = ((@$tot_pg_income[$row['account_name']]['purchase_total_cgst']) ? $tot_pg_income[$row['account_name']]['purchase_total_cgst'] : 0) + $row['total'];
-//         $tot_pg_income[$row['account_name']]['purchase_total_cgst'] = $total;
-//         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
-//         $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
-//     }
-//     foreach ($purchase_sgst as $row) {
-
-//         $total = ((@$tot_pg_income[$row['account_name']]['purchase_total_sgst']) ? $tot_pg_income[$row['account_name']]['purchase_total_sgst'] : 0) + $row['total'];
-//         $tot_pg_income[$row['account_name']]['purchase_total_sgst'] = $total;
-//         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
-//         $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
-//     }
-//     $sales_igst = $data['sales_igst'];
-//     $sales_cgst = $data['sales_cgst'];
-//     $sales_sgst = $data['sales_sgst'];
-//     foreach ($sales_igst as $row) {
-
-//         $total = ((@$tot_pg_income[$row['account_name']]['sales_igst_total']) ? $tot_pg_income[$row['account_name']]['sales_igst_total'] : 0) + $row['sales_igst_total'];
-//         $tot_pg_income[$row['account_name']]['sales_igst_total'] = $total;
-//         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
-//         $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
-//     }
-//     foreach ($sales_cgst as $row) {
-
-//         $total = ((@$tot_pg_income[$row['account_name']]['sales_cgst_total']) ? $tot_pg_income[$row['account_name']]['sales_cgst_total'] : 0) + $row['sales_cgst_total'];
-//         $tot_pg_income[$row['account_name']]['sales_cgst_total'] = $total;
-//         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
-//         $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
-//     }
-//     foreach ($sales_sgst as $row) {
-
-//         $total = ((@$tot_pg_income[$row['account_name']]['sales_sgst_total']) ? $tot_pg_income[$row['account_name']]['sales_sgst_total'] : 0) + $row['sales_sgst_total'];
-//         $tot_pg_income[$row['account_name']]['sales_sgst_total'] = $total;
-//         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
-//         $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
-//     }
-
-//     $purchase_return_igst = $data['purchase_return_igst'];
-//     $purchase_return_cgst = $data['purchase_return_cgst'];
-//     $purchase_return_sgst = $data['purchase_return_sgst'];
-
-//     foreach ($purchase_return_igst as $row) {
-
-//         $total = ((@$tot_pg_income[$row['account_name']]['purchase_return_igst_total']) ? $tot_pg_income[$row['account_name']]['purchase_return_igst_total'] : 0) + $row['total'];
-//         $tot_pg_income[$row['account_name']]['purchase_return_igst_total'] = $total;
-//         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
-//         $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
-//     }
-//     foreach ($purchase_return_cgst as $row) {
-
-//         $total = ((@$tot_pg_income[$row['account_name']]['purchase_return_cgst_total']) ? $tot_pg_income[$row['account_name']]['purchase_return_cgst_total'] : 0) + $row['total'];
-//         $tot_pg_income[$row['account_name']]['purchase_return_cgst_total'] = $total;
-//         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
-//         $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
-//     }
-//     foreach ($purchase_return_sgst as $row) {
-
-//         $total = ((@$tot_pg_income[$row['account_name']]['purchase_return_sgst_total']) ? $tot_pg_income[$row['account_name']]['purchase_return_sgst_total'] : 0) + $row['total'];
-//         $tot_pg_income[$row['account_name']]['purchase_return_sgst_total'] = $total;
-//         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
-//         $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
-//     }
-//     $sales_return_igst = $data['sales_return_igst'];
-//     $sales_return_cgst = $data['sales_return_cgst'];
-//     $sales_return_sgst = $data['sales_return_sgst'];
-//     foreach ($sales_return_igst as $row) {
-
-//         $total = ((@$tot_pg_income[$row['account_name']]['sales_return_igst_total']) ? $tot_pg_income[$row['account_name']]['sales_return_igst_total'] : 0) + $row['sales_return_igst_total'];
-//         $tot_pg_income[$row['account_name']]['sales_return_igst_total'] = $total;
-//         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
-//         $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
-//     }
-//     foreach ($sales_return_cgst as $row) {
-
-//         $total = ((@$tot_pg_income[$row['account_name']]['sales_return_cgst_total']) ? $tot_pg_income[$row['account_name']]['sales_return_cgst_total'] : 0) + $row['sales_return_cgst_total'];
-//         $tot_pg_income[$row['account_name']]['sales_return_cgst_total'] = $total;
-//         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
-//         $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
-//     }
-//     foreach ($sales_return_sgst as $row) {
-
-//         $total = ((@$tot_pg_income[$row['account_name']]['sales_return_sgst_total']) ? $tot_pg_income[$row['account_name']]['sales_return_sgst_total'] : 0) + $row['sales_return_sgst_total'];
-//         $tot_pg_income[$row['account_name']]['sales_return_sgst_total'] = $total;
-//         $tot_pg_income[$row['account_name']]['account_id'] = $row['account_id'];
-//         $tot_pg_income[$row['account_name']]['type'] = 'current liabilities';
-//     }
-
-
-//     $total_arr = array();
-
-//     foreach ($tot_pg_income as $key => $value) {
-
-//         $tot_pg_income[$key]['total'] = @$value['jv_total'] + @$value['bt_total']  + @$value['purchase_total'] - @$value['purchase_ret_total']  
-//             + @$value['general'] - @$value['return'] - @$value['sales_general'] + @$value['sales_return'] 
-//             + @$value['generalsales_igst'] + @$value['generalsales_cgst'] + @$value['generalsales_sgst']
-//             - @$value['returnsales_igst'] - @$value['returnsales_cgst'] - @$value['returnsales_sgst']
-//             + @$value['sales_igst_total'] + @$value['sales_sgst_total'] + @$value['sales_cgst_total']
-//             - @$value['sales_return_igst_total'] - @$value['sales_return_sgst_total'] - @$value['sales_return_cgst_total']
-//             + @$value['generalpurchase_igst'] + @$value['generalpurchase_sgst'] + @$value['generalpurchase_cgst']
-//             - @$value['returnpurchase_igst'] - @$value['returnpurchase_sgst'] - @$value['returnpurchase_cgst']
-//             + @$value['purchase_total_igst'] + @$value['purchase_total_sgst'] + @$value['purchase_total_cgst']
-//             - @$value['purchase_return_igst_total'] - @$value['purchase_return_sgst_total'] - @$value['purchase_return_cgst_total']+ @$value['opening_total'];
-
-//         $total_arr[] = @$value['jv_total'] + @$value['bt_total']  + @$value['purchase_total'] - @$value['purchase_ret_total'] 
-//             +  @$value['general'] - @$value['return'] - @$value['sales_general'] + @$value['sales_return'] 
-//             + @$value['generalsales_igst'] + @$value['generalsales_cgst'] + @$value['generalsales_sgst']
-//             - @$value['returnsales_igst'] - @$value['returnsales_cgst'] - @$value['returnsales_sgst']
-//             + @$value['sales_igst_total'] + @$value['sales_sgst_total'] + @$value['sales_cgst_total']
-//             - @$value['sales_return_igst_total'] - @$value['sales_return_sgst_total'] - @$value['sales_return_cgst_total']
-//             + @$value['generalpurchase_igst'] + @$value['generalpurchase_sgst'] + @$value['generalpurchase_cgst']
-//             - @$value['returnpurchase_igst'] - @$value['returnpurchase_sgst'] - @$value['returnpurchase_cgst']
-//             + @$value['purchase_total_igst'] + @$value['purchase_total_sgst'] + @$value['purchase_total_cgst']
-//             - @$value['purchase_return_igst_total'] - @$value['purchase_return_sgst_total'] - @$value['purchase_return_cgst_total'] + @$value['opening_total'];
-//     }
-
-//     if (!empty($total_arr)) {
-//         $trading_income_total = array_sum($total_arr);
-//     } else {
-//         $trading_income_total = 0;
-//     }
-
-//     $arr['account'] = $tot_pg_income;
-//     $arr['total'] = $trading_income_total;
-
-//     return $arr;
-// }
 function Currlib_data($id, $start_date = '', $end_date = '')
 {
 
@@ -2112,7 +1301,7 @@ function Currlib_data($id, $start_date = '', $end_date = '')
     $builder->select('gl.id as gl_id,gl.name,gl.parent,pg.v_type as pg_type,pg.party_account as pg_acc,ac.name as account_name,ac.id as account_id,pg.net_amount as pg_amount,pg.disc_type,pg.discount,pg.amty,pg.amty_type');
     $builder->join('account ac', 'gl.id =ac.gl_group');
     $builder->join('purchase_general pg', 'pg.party_account = ac.id');
-    //$builder->join('purchase_particu pp', 'pp.parent_id = pg.id');
+    $builder->join('purchase_particu pp', 'pp.parent_id = pg.id');
     $builder->where('(pg.v_type="general" OR pg.v_type = "return")');
     $builder->where(array('gl.id' => $id));
     $builder->where(array('ac.is_delete' => '0'));
@@ -2120,7 +1309,7 @@ function Currlib_data($id, $start_date = '', $end_date = '')
     $builder->where(array('pg.is_cancle' => '0'));
     $builder->where(array('DATE(pg.doc_date)  >= ' => $start_date));
     $builder->where(array('DATE(pg.doc_date)  <= ' => $end_date));
-   // $builder->groupBy('pg.id');
+    $builder->groupBy('pg.id');
     $query = $builder->get();
     $pg_expense = $query->getResultArray();
 
@@ -2215,8 +1404,6 @@ function Currlib_data($id, $start_date = '', $end_date = '')
     $builder->join('purchase_return pi', 'pi.account = ac.id');
     $builder->where(array('gl.id' => $id));
     $builder->where(array('ac.is_delete' => '0'));
-    $builder->where(array('pi.is_delete' => '0'));
-    $builder->where(array('pi.is_cancle' => '0'));
     $builder->where(array('DATE(pi.return_date)  >= ' => $start_date));
     $builder->where(array('DATE(pi.return_date)  <= ' => $end_date));
     $query = $builder->get();
@@ -2232,7 +1419,7 @@ function Currlib_data($id, $start_date = '', $end_date = '')
     $builder->select('gl.id as gl_id,gl.name,gl.parent,sg.v_type as sg_type,sg.party_account as sg_acc,ac.name as account_name,ac.id as account_id,sg.net_amount as sg_amount,sg.disc_type,sg.discount,sg.amty,sg.amty_type');
     $builder->join('account ac', 'gl.id =ac.gl_group');
     $builder->join('sales_ACinvoice sg', 'sg.party_account = ac.id');
-    //$builder->join('sales_ACparticu sp', 'sp.parent_id = sg.id');
+    $builder->join('sales_ACparticu sp', 'sp.parent_id = sg.id');
     $builder->where('(sg.v_type="general" OR sg.v_type = "return")');
     $builder->where(array('gl.id' => $id));
     $builder->where(array('ac.is_delete' => '0'));
@@ -2516,10 +1703,7 @@ function Fixed_Assets_data($id, $start_date = '', $end_date = '')
         }
         $tot_fixedassets[$row['account_name']]['opening_total'] = $total;
         $tot_fixedassets[$row['account_name']]['account_id'] = $row['account_id'];
-          //use of gl_group summary
-          $tot_pg_income[$row['account_name']]['type'] = 'fixed assets';
     }
-    
 
     $bank_FixedAssets = array();
     $builder = $db->table('gl_group gl');
@@ -2544,10 +1728,8 @@ function Fixed_Assets_data($id, $start_date = '', $end_date = '')
         }
         $tot_fixedassets[$row['account_name']]['bt_total'] = $total;
         $tot_fixedassets[$row['account_name']]['account_id'] = $row['account_id'];
-         //use of gl_group summary
-         $tot_fixedassets[$row['account_name']]['type'] = 'fixed assets';
     }
-   
+
     $jv_FixedAssets = array();
     $builder = $db->table('gl_group gl');
     $builder->select('ac.id as account_id,gl.name as gl_name,gl.id as gl_id,gl.parent,jv.amount as total, ac.name as account_name,jv.dr_cr');
@@ -2568,13 +1750,9 @@ function Fixed_Assets_data($id, $start_date = '', $end_date = '')
         } else {
             $total = ((@$tot_fixedassets[$row['account_name']]['jv_total']) ? $tot_fixedassets[$row['account_name']]['jv_total'] : 0) + $row['total'];
         }
-        $tot_fixedassets[$row['account_name']]['bt_total'] = $total;
+        $tot_fixedassets[$row['account_name']]['jv_total'] = $total;
         $tot_fixedassets[$row['account_name']]['account_id'] = $row['account_id'];
-         //use of gl_group summary
-         $tot_fixedassets[$row['account_name']]['type'] = 'fixed assets';
-        
     }
-    
     $sales_FixedAssets = array();
     $builder = $db->table('gl_group gl');
     $builder->select('ac.id as account_id,sa.type as type,sa.sub_total,sa.added_amt,gl.name as gl_name, ac.name as account_name');
@@ -2600,10 +1778,7 @@ function Fixed_Assets_data($id, $start_date = '', $end_date = '')
         $total =  @$gen_total - @$ret_total;
         $tot_fixedassets[$row['account_name']]['sale_total'] = $total;
         $tot_fixedassets[$row['account_name']]['account_id'] = @$row['account_id'];
-           //use of gl_group summary
-           $tot_fixedassets[$row['account_name']]['type'] = 'fixed assets';
     }
-   
     $purchase_FixedAssets = array();
     $builder = $db->table('gl_group gl');
     $builder->select('ac.id as account_id,pg.type as type,pg.sub_total,pg.added_amt,gl.name as gl_name, ac.name as account_name');
@@ -2622,9 +1797,8 @@ function Fixed_Assets_data($id, $start_date = '', $end_date = '')
     //echo '<pre>';Print_r($purchase_FixedAssets);exit;
     //echo $db->getLastQuery();exit;
 
-   
+
     foreach ($purchase_FixedAssets as $row) {
-        $total =0;
         $total1 = $row['sub_total'] + $row['added_amt'];
         if ($row['type'] == 'general') {
 
@@ -2635,13 +1809,10 @@ function Fixed_Assets_data($id, $start_date = '', $end_date = '')
         //$total = $gen_total - (@$ret_total ? @$ret_total : 0);
         $tot_fixedassets[$row['account_name']]['purchase_total'] = $total;
         $tot_fixedassets[$row['account_name']]['account_id'] = @$row['account_id'];
-           //use of gl_group summary
-           $tot_fixedassets[$row['account_name']]['type'] = 'fixed assets';
     }
-    //echo '<pre>';Print_r($tot_fixedassets);exit;
+
     $total_arr = array();
-   
-    
+
     foreach ($tot_fixedassets as $key => $value) {
         $tot_fixedassets[$key]['total'] = @$value['jv_total'] + @$value['bt_total'] + @$value['sale_total'] + @$value['purchase_total'] + @$value['opening_total'];
         $total_arr[] = @$value['jv_total'] + @$value['bt_total'] + @$value['sale_total'] + @$value['purchase_total'] + @$value['opening_total'];
@@ -2740,15 +1911,13 @@ function Current_Assets_data($id, $start_date = '', $end_date = '')
         }
         $tot_currentassets[$row['account_name']]['opening_total'] = $total;
         $tot_currentassets[$row['account_name']]['account_id'] = $row['account_id'];
-           //use of gl_group summary
-           $tot_currentassets[$row['account_name']]['type'] = 'current assets';
     }
 
     $builder = $db->table('gl_group gl');
     $builder->select('gl.id as gl_id,gl.name,gl.parent,sg.v_type as sg_type,sg.party_account as sg_acc,ac.name as account_name,ac.id as account_id,sg.net_amount as sg_amount,sg.disc_type,sg.discount,sg.amty,sg.amty_type');
     $builder->join('account ac', 'gl.id =ac.gl_group');
     $builder->join('sales_ACinvoice sg', 'sg.party_account = ac.id');
-   // $builder->join('sales_ACparticu sp', 'sp.parent_id = sg.id');
+    $builder->join('sales_ACparticu sp', 'sp.parent_id = sg.id');
     $builder->where('(sg.v_type="general" OR sg.v_type = "return")');
     $builder->where(array('gl.id' => $id));
     $builder->where(array('ac.is_delete' => '0'));
@@ -2756,24 +1925,29 @@ function Current_Assets_data($id, $start_date = '', $end_date = '')
     $builder->where(array('sg.is_cancle' => '0'));
     $builder->where(array('DATE(sg.invoice_date)  >= ' => $start_date));
     $builder->where(array('DATE(sg.invoice_date)  <= ' => $end_date));
-    //$builder->groupBy('sg.id');
+    $builder->groupBy('sg.id');
     $query = $builder->get();
     $sale_gnrl_current_asset = $query->getResultArray();
+
+    // echo $db->getLastQuery();
+    // echo '<pre>';print_r($id);
+    // echo '<pre>';print_r($start_date);
+    // echo '<pre>';print_r($end_date);
+    // echo '<pre>';print_r($sale_gnrl_current_asset);
+
 
     foreach ($sale_gnrl_current_asset as $row) {
 
         $total = ((@$tot_currentassets[$row['account_name']][$row['sg_type']]) ? $tot_currentassets[$row['account_name']][$row['sg_type']] : 0) + $row['sg_amount'];
         $tot_currentassets[$row['account_name']][$row['sg_type']] = $total;
         $tot_currentassets[$row['account_name']]['account_id'] = $row['account_id'];
-        //use of gl_group summary
-        $tot_currentassets[$row['account_name']]['type'] = 'current assets';
     }
 
     $builder = $db->table('gl_group gl');
     $builder->select('gl.id as gl_id,gl.name,gl.parent,pg.v_type as pg_type,pg.party_account as pg_acc,ac.name as account_name,ac.id as account_id,pg.net_amount as pg_amount,pg.disc_type,pg.discount,pg.amty,pg.amty_type');
     $builder->join('account ac', 'gl.id =ac.gl_group');
     $builder->join('purchase_general pg', 'pg.party_account = ac.id');
-    //$builder->join('purchase_particu pp', 'pp.parent_id = pg.id');
+    $builder->join('purchase_particu pp', 'pp.parent_id = pg.id');
     $builder->where('(pg.v_type="general" OR pg.v_type = "return")');
     $builder->where(array('gl.id' => $id));
     $builder->where(array('ac.is_delete' => '0'));
@@ -2781,7 +1955,7 @@ function Current_Assets_data($id, $start_date = '', $end_date = '')
     $builder->where(array('pg.is_cancle' => '0'));
     $builder->where(array('DATE(pg.doc_date)  >= ' => $start_date));
     $builder->where(array('DATE(pg.doc_date)  <= ' => $end_date));
-    //$builder->groupBy('pg.id');
+    $builder->groupBy('pg.id');
     $query = $builder->get();
     $purchase_gnrl_current_asset = $query->getResultArray();
 
@@ -2790,10 +1964,8 @@ function Current_Assets_data($id, $start_date = '', $end_date = '')
         $total = ((@$tot_currentassets[$row['account_name']]['purchase'.$row['pg_type']]) ? $tot_currentassets[$row['account_name']]['purchase'.$row['pg_type']] : 0) + $row['pg_amount'];
         $tot_currentassets[$row['account_name']]['purchase'.$row['pg_type']] = $total;
         $tot_currentassets[$row['account_name']]['account_id'] = $row['account_id'];
-        //use of gl_group summary
-        $tot_currentassets[$row['account_name']]['type'] = 'current assets';
+     
     }
-
 
     $bank_CurrentAssets = array();
     $builder = $db->table('gl_group gl');
@@ -2819,8 +1991,6 @@ function Current_Assets_data($id, $start_date = '', $end_date = '')
 
         $tot_currentassets[$row['account_name']]['bt_total'] = $total;
         $tot_currentassets[$row['account_name']]['account_id'] = @$row['account_id'];
-        //use of gl_group summary
-        $tot_currentassets[$row['account_name']]['type'] = 'current assets';
     }
 
 
@@ -2847,8 +2017,6 @@ function Current_Assets_data($id, $start_date = '', $end_date = '')
         }
         $tot_currentassets[$row['account_name']]['jv_total'] = $total;
         $tot_currentassets[$row['account_name']]['account_id'] = $row['account_id'];
-        //use of gl_group summary
-        $tot_currentassets[$row['account_name']]['type'] = 'current assets';
     }
 
     $ac_CurrentAssets = array();
@@ -2875,8 +2043,6 @@ function Current_Assets_data($id, $start_date = '', $end_date = '')
 
         $tot_currentassets[$row['account_name']]['ac_total'] = $total;
         $tot_currentassets[$row['account_name']]['account_id'] = @$row['account_id'];
-        //use of gl_group summary
-        $tot_currentassets[$row['account_name']]['type'] = 'current assets';
     }
 
     $sales = array();
@@ -2902,8 +2068,6 @@ function Current_Assets_data($id, $start_date = '', $end_date = '')
         $total = ((@$tot_currentassets[$row['account_name']]['sales_total']) ? $tot_currentassets[$row['account_name']]['sales_total'] : 0) + $row['total'];
         $tot_currentassets[$row['account_name']]['sales_total'] = $total;
         $tot_currentassets[$row['account_name']]['account_id'] = $row['account_id'];
-        //use of gl_group summary
-        $tot_currentassets[$row['account_name']]['type'] = 'current assets';
     }
 
 
@@ -2915,8 +2079,6 @@ function Current_Assets_data($id, $start_date = '', $end_date = '')
     $builder->join('sales_return pi', 'pi.account = ac.id');
     $builder->where(array('gl.id' => $id));
     $builder->where(array('ac.is_delete' => '0'));
-    $builder->where(array('pi.is_delete' => '0'));
-    $builder->where(array('pi.is_cancle' => '0'));
     $builder->where(array('DATE(pi.return_date)  >= ' => $start_date));
     $builder->where(array('DATE(pi.return_date)  <= ' => $end_date));
     $query = $builder->get();
@@ -2928,8 +2090,6 @@ function Current_Assets_data($id, $start_date = '', $end_date = '')
         $total = ((@$tot_currentassets[$row['account_name']]['sales_ret_total']) ? $tot_currentassets[$row['account_name']]['sales_ret_total'] : 0) + $row['total'];
         $tot_currentassets[$row['account_name']]['sales_ret_total'] = $total;
         $tot_currentassets[$row['account_name']]['account_id'] = $row['account_id'];
-        //use of gl_group summary
-        $tot_currentassets[$row['account_name']]['type'] = 'current assets';
     }
 
 
@@ -2952,8 +2112,6 @@ function Current_Assets_data($id, $start_date = '', $end_date = '')
 
         $tot_currentassets[$row['account_name']]['contra_total'] = $total;
         $tot_currentassets[$row['account_name']]['account_id'] = @$row['account_id'];
-        //use of gl_group summary
-        $tot_currentassets[$row['account_name']]['type'] = 'current assets';
     }
 
 
@@ -2977,15 +2135,13 @@ function Current_Assets_data($id, $start_date = '', $end_date = '')
 
         $tot_currentassets[$row['account_name']]['contra_ac_total'] = $total;
         $tot_currentassets[$row['account_name']]['account_id'] = @$row['account_id'];
-        //use of gl_group summary
-        $tot_currentassets[$row['account_name']]['type'] = 'current assets';
     }
 
     $total_arr = array();
 
     foreach ($tot_currentassets as $key => $value) {
-        $tot_currentassets[$key]['total'] = @$value['jv_total'] + @$value['bt_total'] + @$value['ac_total'] + @$value['sales_total'] - @$value['sales_ret_total'] + @$value['contra_ac_total'] + @$value['contra_total'] + @$value['general'] - @$value['return'] - @$value['purchase_general'] + @$value['purchase_return'] + @$value['opening_total'];
-        $total_arr[] = @$value['jv_total'] + @$value['bt_total'] + @$value['ac_total'] + @$value['sales_total'] - @$value['sales_ret_total'] + @$value['contra_ac_total'] + @$value['contra_total'] + @$value['general'] - @$value['return'] - @$value['purchase_general'] + @$value['purchase_return'] + @$value['opening_total'];
+        $tot_currentassets[$key]['total'] = @$value['jv_total'] + @$value['bt_total'] + @$value['ac_total'] + @$value['sales_total'] - @$value['sales_ret_total']+ @$value['contra_ac_total'] + @$value['contra_total'] + @$value['general'] - @$value['return'] - @$value['purchase_general'] + @$value['purchase_return'] + @$value['opening_total'];
+        $total_arr[] = @$value['jv_total'] + @$value['bt_total'] + @$value['ac_total'] + @$value['sales_total'] - @$value['sales_ret_total'] + @$value['contra_ac_total'] + @$value['contra_total'] + @$value['general'] - @$value['return']  - @$value['purchase_general'] + @$value['purchase_return'] + @$value['opening_total'];
     }
 
     if (!empty($total_arr)) {
@@ -2996,8 +2152,7 @@ function Current_Assets_data($id, $start_date = '', $end_date = '')
 
     $arr['account'] = $tot_currentassets;
     $arr['total'] = $current_assets_total;
-   // echo '<pre>';Print_r($arr);exit;
-    
+
 
     return $arr;
 }
@@ -3062,7 +2217,7 @@ function Other_Assets_data($id, $start_date = '', $end_date = '')
     if (session('DataSource')) {
         $db->setDatabase(session('DataSource'));
     }
-    $bank_OtherAssets = array();
+    $bank_FixedAssets = array();
     $builder = $db->table('gl_group gl');
     $builder->select('ac.id as account_id,gl.name as gl_name,gl.parent,gl.id as gl_id,ac.name as account_name,bt.amount as bt_total,bt.mode');
     $builder->join('account ac', 'gl.id =ac.gl_group');
@@ -3086,11 +2241,9 @@ function Other_Assets_data($id, $start_date = '', $end_date = '')
         }
         $tot_otherassets[$row['account_name']]['bt_total'] = $total;
         $tot_otherassets[$row['account_name']]['account_id'] = $row['account_id'];
-        //use of gl_group summary
-        $tot_otherassets[$row['account_name']]['type'] = 'other assets';
     }
 
-    $jv_OtherAssets = array();
+    $jv_FixedAssets = array();
     $builder = $db->table('gl_group gl');
     $builder->select('ac.id as account_id,gl.name as gl_name,gl.id as gl_id,gl.parent,jv.amount as total, ac.name as account_name,jv.dr_cr');
     $builder->join('account ac', 'gl.id =ac.gl_group');
@@ -3112,8 +2265,6 @@ function Other_Assets_data($id, $start_date = '', $end_date = '')
         }
         $tot_otherassets[$row['account_name']]['jv_total'] = $total;
         $tot_otherassets[$row['account_name']]['account_id'] = $row['account_id'];
-        //use of gl_group summary
-        $tot_otherassets[$row['account_name']]['type'] = 'other assets';
     }
 
     $sales_OtherAssets = array();
@@ -3141,8 +2292,6 @@ function Other_Assets_data($id, $start_date = '', $end_date = '')
         $total =  @$gen_total - @$ret_total;
         $tot_otherassets[$row['account_name']]['sale_total'] = $total;
         $tot_otherassets[$row['account_name']]['account_id'] = @$row['account_id'];
-        //use of gl_group summary
-        $tot_otherassets[$row['account_name']]['type'] = 'other assets';
     }
 
     $purchase_OtherAssets = array();
@@ -3169,8 +2318,6 @@ function Other_Assets_data($id, $start_date = '', $end_date = '')
         $total = $gen_total - $ret_total;
         $tot_otherassets[$row['account_name']]['purchase_total'] = $total;
         $tot_otherassets[$row['account_name']]['account_id'] = @$row['account_id'];
-        //use of gl_group summary
-        $tot_otherassets[$row['account_name']]['type'] = 'other assets';
     }
 
     $total_arr = array();
@@ -3237,7 +2384,7 @@ function gst_gl_group_data($id, $start_date, $end_date)
     $builder->select('gl.id as gl_id,gl.name,gl.parent,pg.v_type as pg_type,pg.party_account as pg_acc,ac.name as account_name,ac.id as account_id,pg.tot_igst as pg_amount,pg.disc_type,pg.discount,pg.amty,pg.amty_type');
     $builder->join('account ac', 'gl.id =ac.gl_group');
     $builder->join('purchase_general pg', 'pg.igst_acc = ac.id', 'left');
-    //$builder->join('purchase_particu pp', 'pp.parent_id = pg.id', "left");
+    $builder->join('purchase_particu pp', 'pp.parent_id = pg.id', "left");
     $builder->where('(pg.v_type="general" OR pg.v_type = "return")');
     $builder->where(array('gl.id' => $id));
     $builder->where(array('ac.is_delete' => '0'));
@@ -3245,7 +2392,7 @@ function gst_gl_group_data($id, $start_date, $end_date)
     $builder->where(array('pg.is_cancle' => '0'));
     $builder->where(array('DATE(pg.doc_date)  >= ' => $start_date));
     $builder->where(array('DATE(pg.doc_date)  <= ' => $end_date));
-    //$builder->groupBy('pg.id');
+    $builder->groupBy('pg.id');
     $query = $builder->get();
     $pg_expense_igst = $query->getResultArray();
 
@@ -3253,7 +2400,7 @@ function gst_gl_group_data($id, $start_date, $end_date)
     $builder->select('gl.id as gl_id,gl.name,gl.parent,pg.v_type as pg_type,pg.party_account as pg_acc,ac.name as account_name,ac.id as account_id,pg.tot_cgst as pg_amount,pg.disc_type,pg.discount,pg.amty,pg.amty_type');
     $builder->join('account ac', 'gl.id =ac.gl_group');
     $builder->join('purchase_general pg', 'pg.cgst_acc = ac.id', 'left');
-    //$builder->join('purchase_particu pp', 'pp.parent_id = pg.id', "left");
+    $builder->join('purchase_particu pp', 'pp.parent_id = pg.id', "left");
     $builder->where('(pg.v_type="general" OR pg.v_type = "return")');
     $builder->where(array('gl.id' => $id));
     $builder->where(array('ac.is_delete' => '0'));
@@ -3261,7 +2408,7 @@ function gst_gl_group_data($id, $start_date, $end_date)
     $builder->where(array('pg.is_cancle' => '0'));
     $builder->where(array('DATE(pg.doc_date)  >= ' => $start_date));
     $builder->where(array('DATE(pg.doc_date)  <= ' => $end_date));
-    //$builder->groupBy('pg.id');
+    $builder->groupBy('pg.id');
     $query = $builder->get();
     $pg_expense_cgst = $query->getResultArray();
 
@@ -3269,7 +2416,7 @@ function gst_gl_group_data($id, $start_date, $end_date)
     $builder->select('gl.id as gl_id,gl.name,gl.parent,pg.v_type as pg_type,pg.party_account as pg_acc,ac.name as account_name,ac.id as account_id,pg.tot_sgst as pg_amount,pg.disc_type,pg.discount,pg.amty,pg.amty_type');
     $builder->join('account ac', 'gl.id =ac.gl_group');
     $builder->join('purchase_general pg', 'pg.sgst_acc = ac.id', 'left');
-    //$builder->join('purchase_particu pp', 'pp.parent_id = pg.id', "left");
+    $builder->join('purchase_particu pp', 'pp.parent_id = pg.id', "left");
     $builder->where('(pg.v_type="general" OR pg.v_type = "return")');
     $builder->where(array('gl.id' => $id));
     $builder->where(array('ac.is_delete' => '0'));
@@ -3277,7 +2424,7 @@ function gst_gl_group_data($id, $start_date, $end_date)
     $builder->where(array('pg.is_cancle' => '0'));
     $builder->where(array('DATE(pg.doc_date)  >= ' => $start_date));
     $builder->where(array('DATE(pg.doc_date)  <= ' => $end_date));
-    //$builder->groupBy('pg.id');
+    $builder->groupBy('pg.id');
     $query = $builder->get();
     $pg_expense_sgst = $query->getResultArray();
 
@@ -3286,7 +2433,7 @@ function gst_gl_group_data($id, $start_date, $end_date)
     $builder->select('gl.id as gl_id,gl.name,gl.parent,pg.v_type as pg_type,pg.party_account as pg_acc,ac.name as account_name,ac.id as account_id,pg.tot_igst as sg_amount_igst,pg.disc_type,pg.discount,pg.amty,pg.amty_type');
     $builder->join('account ac', 'gl.id =ac.gl_group');
     $builder->join('sales_ACinvoice pg', 'pg.igst_acc = ac.id', 'left');
-    //$builder->join('sales_ACparticu pp', 'pp.parent_id = pg.id', "left");
+    $builder->join('sales_ACparticu pp', 'pp.parent_id = pg.id', "left");
     $builder->where('(pg.v_type="general" OR pg.v_type = "return")');
     $builder->where(array('gl.id' => $id));
     $builder->where(array('ac.is_delete' => '0'));
@@ -3294,7 +2441,7 @@ function gst_gl_group_data($id, $start_date, $end_date)
     $builder->where(array('pg.is_cancle' => '0'));
     $builder->where(array('DATE(pg.invoice_date)  >= ' => $start_date));
     $builder->where(array('DATE(pg.invoice_date)  <= ' => $end_date));
-    //$builder->groupBy('pg.id');
+    $builder->groupBy('pg.id');
     $query = $builder->get();
     $sg_expense_igst = $query->getResultArray();
 
@@ -3302,7 +2449,7 @@ function gst_gl_group_data($id, $start_date, $end_date)
     $builder->select('gl.id as gl_id,gl.name,gl.parent,pg.v_type as pg_type,pg.party_account as pg_acc,ac.name as account_name,ac.id as account_id,pg.tot_cgst as sg_amount_cgst,pg.disc_type,pg.discount,pg.amty,pg.amty_type');
     $builder->join('account ac', 'gl.id =ac.gl_group');
     $builder->join('sales_ACinvoice pg', 'pg.cgst_acc = ac.id', 'left');
-    //$builder->join('sales_ACparticu pp', 'pp.parent_id = pg.id', "left");
+    $builder->join('sales_ACparticu pp', 'pp.parent_id = pg.id', "left");
     $builder->where('(pg.v_type="general" OR pg.v_type = "return")');
     $builder->where(array('gl.id' => $id));
     $builder->where(array('ac.is_delete' => '0'));
@@ -3310,15 +2457,16 @@ function gst_gl_group_data($id, $start_date, $end_date)
     $builder->where(array('pg.is_cancle' => '0'));
     $builder->where(array('DATE(pg.invoice_date)  >= ' => $start_date));
     $builder->where(array('DATE(pg.invoice_date)  <= ' => $end_date));
-    //$builder->groupBy('pg.id');
+    $builder->groupBy('pg.id');
     $query = $builder->get();
     $sg_expense_cgst = $query->getResultArray();
+
 
     $builder = $db->table('gl_group gl');
     $builder->select('gl.id as gl_id,gl.name,gl.parent,pg.v_type as pg_type,pg.party_account as pg_acc,ac.name as account_name,ac.id as account_id,pg.tot_sgst as sg_amount_sgst,pg.disc_type,pg.discount,pg.amty,pg.amty_type');
     $builder->join('account ac', 'gl.id =ac.gl_group');
     $builder->join('sales_ACinvoice pg', 'pg.sgst_acc = ac.id', 'left');
-    //$builder->join('sales_ACparticu pp', 'pp.parent_id = pg.id', "left");
+    $builder->join('sales_ACparticu pp', 'pp.parent_id = pg.id', "left");
     $builder->where('(pg.v_type="general" OR pg.v_type = "return")');
     $builder->where(array('gl.id' => $id));
     $builder->where(array('ac.is_delete' => '0'));
@@ -3326,9 +2474,12 @@ function gst_gl_group_data($id, $start_date, $end_date)
     $builder->where(array('pg.is_cancle' => '0'));
     $builder->where(array('DATE(pg.invoice_date)  >= ' => $start_date));
     $builder->where(array('DATE(pg.invoice_date)  <= ' => $end_date));
-    //$builder->groupBy('pg.id');
+    $builder->groupBy('pg.id');
     $query = $builder->get();
     $sg_expense_sgst = $query->getResultArray();
+
+    // echo '<pre>';print_r($sg_expense_sgst);
+
 
     // purchase invoice
     $builder = $db->table('gl_group gl');
@@ -3377,8 +2528,6 @@ function gst_gl_group_data($id, $start_date, $end_date)
     $builder->join('purchase_return pi', 'pi.igst_acc = ac.id');
     $builder->where(array('gl.id' => $id));
     $builder->where(array('ac.is_delete' => '0'));
-    $builder->where(array('pi.is_delete' => '0'));
-    $builder->where(array('pi.is_cancle' => '0'));
     $builder->where(array('DATE(pi.return_date)  >= ' => $start_date));
     $builder->where(array('DATE(pi.return_date)  <= ' => $end_date));
     $query = $builder->get();
@@ -3390,8 +2539,6 @@ function gst_gl_group_data($id, $start_date, $end_date)
     $builder->join('purchase_return pi', 'pi.cgst_acc = ac.id');
     $builder->where(array('gl.id' => $id));
     $builder->where(array('ac.is_delete' => '0'));
-    $builder->where(array('pi.is_delete' => '0'));
-    $builder->where(array('pi.is_cancle' => '0'));
     $builder->where(array('DATE(pi.return_date)  >= ' => $start_date));
     $builder->where(array('DATE(pi.return_date)  <= ' => $end_date));
     $query = $builder->get();
@@ -3403,8 +2550,6 @@ function gst_gl_group_data($id, $start_date, $end_date)
     $builder->join('purchase_return pi', 'pi.sgst_acc = ac.id');
     $builder->where(array('gl.id' => $id));
     $builder->where(array('ac.is_delete' => '0'));
-    $builder->where(array('pi.is_delete' => '0'));
-    $builder->where(array('pi.is_cancle' => '0'));
     $builder->where(array('DATE(pi.return_date)  >= ' => $start_date));
     $builder->where(array('DATE(pi.return_date)  <= ' => $end_date));
     $query = $builder->get();
@@ -3457,8 +2602,6 @@ function gst_gl_group_data($id, $start_date, $end_date)
     $builder->join('sales_return pi', 'pi.igst_acc = ac.id');
     $builder->where(array('gl.id' => $id));
     $builder->where(array('ac.is_delete' => '0'));
-    $builder->where(array('pi.is_delete' => '0'));
-    $builder->where(array('pi.is_cancle' => '0'));
     $builder->where(array('DATE(pi.return_date)  >= ' => $start_date));
     $builder->where(array('DATE(pi.return_date)  <= ' => $end_date));
     $query = $builder->get();
@@ -3470,8 +2613,6 @@ function gst_gl_group_data($id, $start_date, $end_date)
     $builder->join('sales_return pi', 'pi.cgst_acc = ac.id');
     $builder->where(array('gl.id' => $id));
     $builder->where(array('ac.is_delete' => '0'));
-    $builder->where(array('pi.is_delete' => '0'));
-    $builder->where(array('pi.is_cancle' => '0'));
     $builder->where(array('DATE(pi.return_date)  >= ' => $start_date));
     $builder->where(array('DATE(pi.return_date)  <= ' => $end_date));
     $query = $builder->get();
@@ -3483,8 +2624,6 @@ function gst_gl_group_data($id, $start_date, $end_date)
     $builder->join('sales_return pi', 'pi.sgst_acc = ac.id');
     $builder->where(array('gl.id' => $id));
     $builder->where(array('ac.is_delete' => '0'));
-    $builder->where(array('pi.is_delete' => '0'));
-    $builder->where(array('pi.is_cancle' => '0'));
     $builder->where(array('DATE(pi.return_date)  >= ' => $start_date));
     $builder->where(array('DATE(pi.return_date)  <= ' => $end_date));
     $query = $builder->get();
@@ -3573,6 +2712,7 @@ function get_capital_account_wise($start_date, $end_date, $id)
 
     $total = 0;
     foreach ($bank_expence as $row) {
+
         if ($row['mode'] == 'Payment') {
             $total -= $row['bt_total'];
         } else {
@@ -3580,6 +2720,7 @@ function get_capital_account_wise($start_date, $end_date, $id)
         }
     }
     $capital['bank_trans']['total'] = $total;
+
     $builder = $db->table('jv_particular jv');
     $builder->select('ac.id as account_id,jv.amount as total,ac.name as account_name,jv.dr_cr');
     $builder->join('account ac', 'ac.id = jv.particular');
@@ -3590,6 +2731,7 @@ function get_capital_account_wise($start_date, $end_date, $id)
     $builder->where(array('DATE(jv.date)  <= ' => db_date($end_date)));
     $query = $builder->get();
     $jv_expence = $query->getResultArray();
+
 
     $capital['jv_parti']['total'] = 0;
     $total = 0;
@@ -3775,9 +2917,6 @@ function get_current_lib_account_wise($start_date, $end_date, $id)
         $current_lib['general_purchase']['total'] = (float)@$current_lib['general_purchase']['general'] - (float)@$current_lib['general_purchase']['return'];
     }
 
-
-
-
     $builder = $db->table('bank_tras bt');
     $builder->select('ac.id as account_id,ac.name as account_name,bt.amount as bt_total,bt.mode');
     $builder->join('account ac', 'ac.id =' . $id);
@@ -3847,7 +2986,22 @@ function get_current_lib_account_wise($start_date, $end_date, $id)
     $total = 0;
 
     foreach ($purchase as $row) {
-      
+        // $after_disc=0;
+
+        // if($row['disc_type'] == '%'){
+        //     $row['total'] = ((float)$row['total'] * ((float)$row['discount'] / 100));
+        //     $after_disc =  $row['total'];
+        // }else{
+        //     $row['total'] = (float)$row['total'] -  (float)$row['discount'];
+        //     $after_disc =  $row['total'];
+        // }
+
+        // if($row['amty_type'] == '%'){
+        //     $row['total'] = (float)$row['total'] + ((float)$after_disc * ((float)$row['amty'] / 100));
+        // }else{
+        //     $row['total'] = (float)$row['total'] + (float)$row['amty']; 
+        // }
+
         $total += $row['total'];
     }
     @$current_lib['purchase']['total'] += $total;
@@ -3870,6 +3024,21 @@ function get_current_lib_account_wise($start_date, $end_date, $id)
     $total = 0;
 
     foreach ($purchase_return as $row) {
+        // $after_disc=0;
+
+        // if($row['disc_type'] == '%'){
+        //     $row['total'] = ((float)$row['total'] * ((float)$row['discount'] / 100));
+        //     $after_disc =  $row['total'];
+        // }else{
+        //     $row['total'] = (float)$row['total'] -  (float)$row['discount'];
+        //     $after_disc =  $row['total'];            
+        // }
+
+        // if($row['amty_type'] == '%'){
+        //     $row['total'] = (float)$row['total'] + ((float)$after_disc * ((float)$row['amty'] / 100));
+        // }else{
+        //     $row['total'] = (float)$row['total'] + (float)$row['amty']; 
+        // }
 
         $total += $row['total'];
     }
@@ -3895,13 +3064,13 @@ function get_current_lib_account_wise($start_date, $end_date, $id)
 
         $current_lib['general_sales']['total'] = (float)@$current_lib['general_sales']['return'] - (float)@$current_lib['general_sales']['general'];
     }
-
-
     // update trupti 26-12-2022 duties and taxes add taxes account
     $gst_data = gst_account_data($id, $start_date, $end_date);
-    //echo '<pre>';Print_r($gst_data);exit;
+
+    // echo '<pre>';print_r($gst_data);exit; 
+
     @$current_lib['sales_general_igst']['total'] = $gst_data['sales_general_igst']['total'];
-    @$current_lib['sales_general_sgst']['total'] = $gst_data['sales_general_sgst']['total'];
+    @$current_lib['sales_general_cgst']['total'] = $gst_data['sales_general_cgst']['total'];
     @$current_lib['sales_general_sgst']['total'] = $gst_data['sales_general_sgst']['total'];
 
     @$current_lib['sales_igst']['total'] = $gst_data['sales_igst']['total'];
@@ -3928,8 +3097,6 @@ function get_current_lib_account_wise($start_date, $end_date, $id)
     $current_lib['to'] = $end_date;
     $current_lib['id'] = $id;
 
-
-
     return $current_lib;
 }
 function gst_account_data($id, $start_date, $end_date)
@@ -3954,6 +3121,7 @@ function gst_account_data($id, $start_date, $end_date)
     $builder->groupBy('pg.id');
     $query = $builder->get();
     $sales_general_igst = $query->getResultArray();
+
     $total = 0;
 
     foreach ($sales_general_igst as $row) {
@@ -3985,7 +3153,7 @@ function gst_account_data($id, $start_date, $end_date)
     $builder->groupBy('pg.id');
     $query = $builder->get();
     $sales_general_sgst = $query->getResultArray();
-
+    // echo $db->getLastQuery();
 
     $total = 0;
 
@@ -4018,6 +3186,8 @@ function gst_account_data($id, $start_date, $end_date)
     $builder->groupBy('pg.id');
     $query = $builder->get();
     $sales_general_cgst = $query->getResultArray();
+    // echo $db->getLastQuery();exit;
+    // echo $id.'<pre>';print_r($sales_general_cgst);
 
 
     $total = 0;
@@ -4198,9 +3368,9 @@ function gst_account_data($id, $start_date, $end_date)
 
         //$total = (((float) @$current_lib['purchase_general_igst'][$row['pg_type']]) ? (float) $current_lib['purchase_general_igst'][$row['pg_type']] : 0) + (float) $row['pg_amount'];
         if ($row['pg_type'] == 'general') {
-            $total += (float) $row['pg_amount'];
-        } else {
             $total -= (float) $row['pg_amount'];
+        } else {
+            $total += (float) $row['pg_amount'];
         }
         // echo '<pre>';print_r($total);
         //$purchase_general[$row['pg_type']] = $total;
@@ -4234,9 +3404,9 @@ function gst_account_data($id, $start_date, $end_date)
 
         //$total = (((float) @$current_lib['purchase_general_igst'][$row['pg_type']]) ? (float) $current_lib['purchase_general_igst'][$row['pg_type']] : 0) + (float) $row['pg_amount'];
         if ($row['pg_type'] == 'general') {
-            $total += (float) $row['pg_amount'];
-        } else {
             $total -= (float) $row['pg_amount'];
+        } else {
+            $total += (float) $row['pg_amount'];
         }
         // echo '<pre>';print_r($total);
         //$purchase_general[$row['pg_type']] = $total;
@@ -4268,9 +3438,9 @@ function gst_account_data($id, $start_date, $end_date)
 
         //$total = (((float) @$current_lib['purchase_general_igst'][$row['pg_type']]) ? (float) $current_lib['purchase_general_igst'][$row['pg_type']] : 0) + (float) $row['pg_amount'];
         if ($row['pg_type'] == 'general') {
-            $total += (float) $row['pg_amount'];
-        } else {
             $total -= (float) $row['pg_amount'];
+        } else {
+            $total += (float) $row['pg_amount'];
         }
         // echo '<pre>';print_r($total);
         //$purchase_general[$row['pg_type']] = $total;
@@ -4300,7 +3470,7 @@ function gst_account_data($id, $start_date, $end_date)
 
     foreach ($purchase_igst as $row) {
 
-        $total += $row['total'];
+        $total -= $row['total'];
     }
     @$current_lib['purchase_igst']['total'] = $total;
 
@@ -4322,7 +3492,7 @@ function gst_account_data($id, $start_date, $end_date)
 
     foreach ($purchase_cgst as $row) {
 
-        $total += $row['total'];
+        $total -= $row['total'];
     }
     @$current_lib['purchase_cgst']['total'] = $total;
 
@@ -4344,7 +3514,7 @@ function gst_account_data($id, $start_date, $end_date)
 
     foreach ($purchase_sgst as $row) {
 
-        $total += $row['total'];
+        $total -= $row['total'];
     }
     @$current_lib['purchase_sgst']['total'] = $total;
 
@@ -4368,7 +3538,7 @@ function gst_account_data($id, $start_date, $end_date)
 
     foreach ($purchase_return_igst as $row) {
 
-        $total -= $row['total'];
+        $total += $row['total'];
     }
     @$current_lib['purchase_return_igst']['total'] = $total;
 
@@ -4391,7 +3561,7 @@ function gst_account_data($id, $start_date, $end_date)
 
     foreach ($purchase_return_cgst as $row) {
 
-        $total -= $row['total'];
+        $total += $row['total'];
     }
     @$current_lib['purchase_return_cgst']['total'] = $total;
 
@@ -4413,9 +3583,9 @@ function gst_account_data($id, $start_date, $end_date)
     $total = 0;
 
     foreach ($purchase_return_sgst as $row) {
-
-        $total -= $row['total'];
+        $total += $row['total'];
     }
+
     @$current_lib['purchase_return_sgst']['total'] = $total;
     return $current_lib;
 }
@@ -5081,7 +4251,7 @@ function get_generalSales_monthly($start_date, $end_date, $id)
         $total = ((@$tot_expence['generalSales'][$row['month']][$row['pg_type']]) ? $tot_expence['generalSales'][$row['month']][$row['pg_type']] : 0) + $row['pg_amount'];
         $tot_expence['generalSales'][$row['month']][$row['pg_type']] = $total;
 
-        $tot_expence['generalSales'][$row['month']]['total'] = (float)@$tot_expence['generalSales'][$row['month']]['return'] - (float) @$tot_expence['generalSales'][$row['month']]['general'];
+        $tot_expence['generalSales'][$row['month']]['total'] = (float)@$tot_expence['generalSales'][$row['month']]['general'] - (float) @$tot_expence['generalSales'][$row['month']]['return'];
         $tot_expence['generalSales'][$row['month']]['year'] = $row['year'];
         $tot_expence['generalSales'][$row['month']]['month'] = $row['month'];
     }
@@ -5244,34 +4414,6 @@ function get_currentassets_account_wise($start_date, $end_date, $id)
 
     @$tot_currentassets['general_sales']['total'] += $genral_total;
     @$tot_currentassets['general_sales_return']['total'] += $return_total;
-
-
-    $builder = $db->table('purchase_general pg');
-    $builder->select('pg.id as voucher_id,pg.v_type as pg_type,ac.name as account_name,pg.net_amount as pg_amount,pg.disc_type,pg.discount,pg.amty,pg.amty_type');
-    $builder->join('account ac', 'ac.id = ' . $id);
-    $builder->where(array('pg.party_account' => $id));
-    $builder->where(array('ac.is_delete' => '0'));
-    $builder->where(array('pg.is_delete' => '0'));
-    $builder->where(array('pg.is_cancle' => '0'));
-    $builder->where(array('DATE(pg.doc_date)  >= ' => db_date($start_date)));
-    $builder->where(array('DATE(pg.doc_date)  <= ' => db_date($end_date)));
-    $builder->groupBy('pg.id');
-    $query = $builder->get();
-    $pg_expence = $query->getResultArray();
-
-
-    $total = 0;
-    foreach ($pg_expence as $row) {
-
-        if ($row['pg_type'] == 'general') {
-            $total -= $row['pg_amount'];
-        } else {
-            $total += $row['pg_amount'];
-        }
-    }
-
-    @$tot_currentassets['general_purchase']['total'] += $total;
-   
 
     $builder = $db->table('bank_tras bt');
     $builder->select('ac.id as account_id,ac.name as account_name,bt.amount as bt_total,bt.mode');
@@ -6104,553 +5246,5 @@ function get_fixedassets_jv_monthly($start_date,$end_date,$id){
     $result['from'] = $start_date;
     $result['to'] = $end_date;
     // echo '<pre>';print_r($result);exit;
-    return $result;
-}
-function get_sub_sub_glgroup($parent_id)
-{
-    $categories = array();
-
-    $db = \Config\Database::connect();
-
-    if (session('DataSource')) {
-        $db->setDatabase(session('DataSource'));
-    }
-
-    $builder = $db->table('gl_group');
-    $builder->select('id,name,parent');
-    $builder->where('parent', $parent_id);
-    $builder->where('is_delete', 0);
-    $query = $builder->get();
-    $result = $query->getResult();
-
-    foreach ($result as $mainCategory) {
-        //$category = array();
-
-            $category = gl_list_new($mainCategory->id);
-            //$category['name'] = $mainCategory->name;
-            $sub_category = get_sub_sub_glgroup($mainCategory->id);
-            if(!empty($sub_category))
-            {
-                foreach($sub_category as $key=>$value)
-                {
-                    $category[$key] = $value;
-                    //if(!empty($value as ))
-                }
-            }
-            //$new_Array = array_merge($category,$sub_category);
-            // echo '<pre>id';Print_r($mainCategory->id);
-            // echo '<pre>main';Print_r($category);
-            // echo '<pre>sub';Print_r($sub_category);
-            
-        
-
-       $categories[$mainCategory->id] = $category;
-    }
-    return  $categories;
-}
-// function new_get_sub_sub_glgroup($parent_id)
-// {
-//     $categories = array();
-
-//     $db = \Config\Database::connect();
-
-//     if (session('DataSource')) {
-//         $db->setDatabase(session('DataSource'));
-//     }
-
-//     $builder = $db->table('gl_group');
-//     $builder->select('id,name,parent');
-//     $builder->where('is_delete', 0);
-//     $query = $builder->get();
-//     $builder->orderBy('id', 'desc');
-//     $result = $query->getResult();
-//     //echo '<pre>';Print_r($result);exit;
-
-    
-//     foreach ($result as $mainCategory) {
-//         //$category = array();
-
-//             $category = gl_list_new($mainCategory->id);
-//             //$category['name'] = $mainCategory->name;
-//             $sub_category = get_sub_sub_glgroup($mainCategory->id);
-//             if(!empty($sub_category))
-//             {
-//                 foreach($sub_category as $key=>$value)
-//                 {
-//                     $category[$key] = $value;
-//                     //if(!empty($value as ))
-//                 }
-//             }
-//             //$new_Array = array_merge($category,$sub_category);
-//             // echo '<pre>id';Print_r($mainCategory->id);
-//             // echo '<pre>main';Print_r($category);
-//             // echo '<pre>sub';Print_r($sub_category);
-            
-        
-
-//        $categories[$mainCategory->id] = $category;
-//     }
-//     return  $categories;
-// }
-// function new_new_get_sub_sub_glgroup($id)
-// {
-    
-//     $categories = array();
-
-//     $db = \Config\Database::connect();
-
-//     if (session('DataSource')) {
-//         $db->setDatabase(session('DataSource'));
-//     }
-
-//     $builder = $db->table('gl_group');
-//     $builder->select('id,name,parent');
-//     $builder->where('is_delete', 0);
-//     $builder->orderBy('id', 'desc');
-//     $builder->where('id', $id);
-//     $query = $builder->get();
-//     $result = $query->getResultArray();
-//     $data = new_parent_get_sub_sub_glgroup($result[0]['parent']);
-//     if($result[0]['parent'] != 0)
-//     {
-//         $data[$id]  = new_new_get_sub_sub_glgroup($result[0]['id']);
-//     }
-//     return $data;
-//     //echo '<pre>';Print_r($result);exit;
-    
-//     // $data = array();
-//     // foreach($result as $row)
-//     // {
-//     //     //$data[$row['id']] = new_parent_get_sub_sub_glgroup($row['parent']);
-//     // }
-//     //echo '<pre>';Print_r($data);exit;
-    
-// }
-function new_parent_get_sub_sub_glgroup($pid)
-{
-    $categories = array();
-
-    $db = \Config\Database::connect();
-
-    if (session('DataSource')) {
-        $db->setDatabase(session('DataSource'));
-    }
-
-    // $builder = $db->table('gl_group');
-    // $builder->select('id,name,parent');
-    // $builder->where('id', $pid);
-    // $builder->where('is_delete', 0);
-    // $query = $builder->get();
-    // $result = $query->getRowArray();
-    // echo '<pre>';Print_r($result);
-    
-  
-
-    $main = get_parent_gl_group_old($pid);
-    $parent_id = floatval($main['parent']);
-    // echo '<pre>';Print_r($main);
-    //$parent_data = get_parent_gl_group($pid);
-    //$n=1;
-    $result = array();
-        while($parent_id > 0){  
-            // $new_array[] = $pid; 
-            //echo "test";
-           $get_pid = get_parent_gl_group_old($parent_id);
-           //print_r($get_pid);
-            // $result = new_parent_get_sub_sub_glgroup($pid);
-            $result[] = $get_pid;
-            if(!empty($get_pid)){
-                $parent_id = floatval($get_pid['parent']);
-             }
-           else {
-            $parent_id = 0;
-           }    
-        }
-
-            // echo '<pre>in';Print_r($get_pid);
-        //$n++;      
-   //echo '<pre>';Print_r($result);exit;
-
-
-    
-
-    // foreach ($result as $mainCategory) {
-    //     //$category = array();
-
-    //         //$category = gl_list_new($mainCategory->id);
-    //         //$category['name'] = $mainCategory->name;
-    //         $sub_category = new_parent_get_sub_sub_glgroup($mainCategory->id);
-    //         // if(!empty($sub_category))
-    //         // {
-    //         //     foreach($sub_category as $key=>$value)
-    //         //     {
-    //         //         $category[$key] = $value;
-    //         //         //if(!empty($value as ))
-    //         //     }
-    //         // }
-    //         //$new_Array = array_merge($category,$sub_category);
-    //         echo '<pre>id';Print_r($mainCategory->id);
-    //         //echo '<pre>main';Print_r($category);
-    //         echo '<pre>sub';Print_r($sub_category);
-            
-        
-
-    //    $categories[$mainCategory->id] = $sub_category;
-    // }
-    return  $result;
-}
-function get_parent_gl_group_old($id)
-{
-    $db = \Config\Database::connect();
-
-    if (session('DataSource')) {
-        $db->setDatabase(session('DataSource'));
-    }
-
-    $builder = $db->table('gl_group');
-    $builder->select('id,name,parent');
-    $builder->where('id', $id);
-    $builder->where('is_delete', 0);
-    $query = $builder->get();
-    $result = $query->getRowArray();
-    // $parent_id = $result->parent;
-    return $result;
-}
-// function get_otherassets_account_wise($start_date, $end_date, $id)
-// {
-
-//     if ($start_date == '') {
-//         if (date('m') < '03') {
-//             $year = date('Y') - 1;
-//             $start_date = $year . '-04-01';
-//         } else {
-//             $year = date('Y');
-//             $start_date = $year . '-04-01';
-//         }
-//     }
-
-//     if ($end_date == '') {
-
-//         if (date('m') < '03') {
-//             $year = date('Y');
-//         } else {
-//             $year = date('Y') + 1;
-//         }
-//         $end_date = $year . '-03-31';
-//     }
-
-//     $db = \Config\Database::connect();
-
-//     if (session('DataSource')) {
-//         $db->setDatabase(session('DataSource'));
-//     }
-//     $tot_otherassets = array();
-
-//     $gmodel  = new GeneralModel();
-//     $acc = $gmodel->get_data_table('account', array('id' => $id), 'opening_bal,opening_type');
-
-//     $tot_otherassets['opening']['total'] = 0;
-
-//     if ($acc['opening_type'] == 'Debit') {
-//         $tot_otherassets['opening']['total'] += (float)@$acc['opening_bal'];
-//     } else {
-//         $tot_otherassets['opening']['total'] -= (float)@$acc['opening_bal'];
-//     }
-
-//     $builder = $db->table('bank_tras bt');
-//     $builder->select('ac.id as account_id,ac.name as account_name,bt.amount as bt_total,bt.mode');
-//     $builder->join('account ac', 'ac.id =' . $id);
-//     $builder->where(array('bt.particular' => $id));
-//     $builder->where(array('ac.is_delete' => '0'));
-//     $builder->where(array('DATE(bt.receipt_date)  >= ' => db_date($start_date)));
-//     $builder->where(array('DATE(bt.receipt_date)  <= ' => db_date($end_date)));
-//     $query = $builder->get();
-//     $bank_otherAssets = $query->getResultArray();
-
-//     $tot_otherassets['per_bank_trans']['total'] = 0;
-
-//     $total = 0;
-
-//     foreach ($bank_otherAssets as $row) {
-
-//         if ($row['mode'] == 'Payment') {
-//             $total += $row['bt_total'];
-//         } else {
-//             $total -= $row['bt_total'];
-//         }
-//     }
-//     $tot_otherassets['per_bank_trans']['total'] += $total;
-
-//     $builder = $db->table('jv_particular jv');
-//     $builder->select('ac.id as account_id,jv.amount as total,ac.name as account_name,jv.dr_cr');
-//     $builder->join('account ac', 'ac.id = jv.particular');
-//     $builder->where('jv.particular', $id);
-//     $builder->where(array('ac.is_delete' => '0'));
-//     $builder->where(array('jv.is_delete' => '0'));
-//     $builder->where(array('DATE(jv.date)  >= ' => db_date($start_date)));
-//     $builder->where(array('DATE(jv.date)  <= ' => db_date($end_date)));
-//     $query = $builder->get();
-//     $jv_otherAssets = $query->getResultArray();
-//     $tot_otherassets['jv_otherassets']['total'] = 0;
-//     $total = 0;
-
-//     foreach ($jv_otherAssets as $row) {
-//         if ($row['dr_cr'] == 'cr') {
-//             $total -= $row['total'];
-//         } else {
-//             $total += $row['total'];
-//         }
-//     }
-//     $tot_otherassets['jv_otherassets']['total'] += $total;
-
-//     $builder = $db->table('purchase_particu pp');
-//     $builder->select('ac.id as account_id,pp.sub_total,pp.added_amt,ac.name as account_name,pp.type');
-//     $builder->join('purchase_general pg', 'pp.parent_id = pg.id');
-//     $builder->join('account ac', 'ac.id = pp.account');
-//     $builder->where('pp.account', $id);
-//     $builder->where(array('ac.is_delete' => '0'));
-//     $builder->where(array('pg.is_delete' => '0'));
-//     $builder->where(array('DATE(pg.doc_date)  >= ' => db_date($start_date)));
-//     $builder->where(array('DATE(pg.doc_date)  <= ' => db_date($end_date)));
-//     $query = $builder->get();
-//     $expence_otherAssets = $query->getResultArray();
-//     //echo '<pre>';Print_r($expence_FixedAssets);exit;
-    
-//     $tot_otherassets['expence_otherassets']['total'] = 0;
-//     $total = 0;
-
-//     foreach ($expence_otherAssets as $row) {
-//         $total1 = $row['sub_total'] + $row['added_amt'];
-//         if ($row['type'] == 'general') {
-//             $total += $total1;
-//         } else {
-//             $total -= $total1;
-//         }
-//     }
-//     $tot_otherassets['expence_otherassets']['total'] = $total;
-
-
-//     $builder = $db->table('sales_ACparticu pp');
-//     $builder->select('ac.id as account_id,pp.sub_total,pp.added_amt,ac.name as account_name,pp.type');
-//     $builder->join('sales_ACinvoice pg', 'pp.parent_id = pg.id');
-//     $builder->join('account ac', 'ac.id = pp.account');
-//     $builder->where('pp.account', $id);
-//     $builder->where(array('ac.is_delete' => '0'));
-//     $builder->where(array('pg.is_delete' => '0'));
-//     $builder->where(array('DATE(pg.invoice_date)  >= ' => db_date($start_date)));
-//     $builder->where(array('DATE(pg.invoice_date)  <= ' => db_date($end_date)));
-//     $query = $builder->get();
-//     $income_otherAssets = $query->getResultArray();
-//     $tot_otherassets['income_otherassets']['total'] = 0;
-//     $total = 0;
-
-//     foreach ($income_otherAssets as $row) {
-//         $total1 = $row['sub_total'] + $row['added_amt'];
-//         if ($row['type'] == 'general') {
-//             $total += $total1;
-//         } else {
-//             $total -= $total1;
-//         }
-//     }
-//     $tot_otherassets['income_othersssets']['total'] = $total;
-
-//     $tot_otherassets['from'] = $start_date;
-//     $tot_otherassets['to'] = $end_date;
-//     $tot_otherassets['id'] = $id;
-
-//     return $tot_otherassets;
-// }
-function get_otherassets_account_wise($start_date, $end_date, $id)
-{
-    if ($start_date == '') {
-        if (date('m') < '03') {
-            $year = date('Y') - 1;
-            $start_date = $year . '-04-01';
-        } else {
-            $year = date('Y');
-            $start_date = $year . '-04-01';
-        }
-    }
-
-    if ($end_date == '') {
-        if (date('m') < '03') {
-            $year = date('Y');
-        } else {
-            $year = date('Y') + 1;
-        }
-        $end_date = $year . '-03-31';
-    }
-
-    $db = \Config\Database::connect();
-
-    if (session('DataSource')) {
-        $db->setDatabase(session('DataSource'));
-    }
-
-    $builder = $db->table('bank_tras bt');
-    $builder->select('MONTH(bt.receipt_date) as month,YEAR(bt.receipt_date) as year,ac.id as account_id,ac.name as account_name,bt.amount as bt_total,bt.mode');
-    $builder->join('account ac', 'ac.id =bt.particular');
-    $builder->where(array('bt.particular' => $id,'bt.payment_type !=' => 'contra'));
-    $builder->where(array('ac.is_delete' => '0'));
-    $builder->where(array('bt.is_delete' => '0'));
-    $builder->where(array('DATE(bt.receipt_date)  >= ' => db_date($start_date)));
-    $builder->where(array('DATE(bt.receipt_date)  <= ' => db_date($end_date)));
-    $query = $builder->get();
-    $bank_income = $query->getResultArray();
-
-    $total = 0;
-    $arr = array();
-   // echo '<pre><br> detail :';print_r($bank_income);
-
-    foreach ($bank_income as $row) {
-
-        if ($row['mode'] == 'Receipt') {
-
-            $rec_total = (@$arr[$row['month']]['debit'] ? $arr[$row['month']]['debit'] : 0) + $row['bt_total'];
-            $arr[$row['month']]['debit'] = $rec_total;
-            $total = (@$arr[$row['month']]['total'] ? $arr[$row['month']]['total'] : 0) + $row['bt_total'];
-            $arr[$row['month']]['total'] = $total;
-            $arr[$row['month']]['month'] = $row['month'];
-            $arr[$row['month']]['year'] = $row['year'];
-            $arr[$row['month']]['account_id'] = $row['account_id'];
-            $arr[$row['month']]['account_name'] = $row['account_name'];
-
-        } else {
-
-            $pay_total = (@$arr[$row['month']]['credit'] ? $arr[$row['month']]['credit'] : 0) + $row['bt_total'];
-            $arr[$row['month']]['credit'] = $pay_total;
-
-            $total = (@$arr[$row['month']]['total'] ? $arr[$row['month']]['total'] : 0) - $row['bt_total'];
-            $arr[$row['month']]['total'] = $total;
-            $arr[$row['month']]['month'] = $row['month'];
-            $arr[$row['month']]['year'] = $row['year'];
-            $arr[$row['month']]['account_id'] = $row['account_id'];
-            $arr[$row['month']]['account_name'] = $row['account_name'];
-
-        }
-    }
-
-    $builder = $db->table('jv_particular jv');
-    $builder->select('MONTH(jv.date) as month,YEAR(jv.date) as year,ac.id as account_id,jv.amount as total, ac.name as account_name,jv.dr_cr');
-    $builder->join('account ac', 'ac.id =jv.particular');
-    $builder->where(array('jv.particular' => $id));
-    $builder->where(array('ac.is_delete' => '0'));
-    $builder->where(array('jv.is_delete' => '0'));
-    $builder->where(array('DATE(jv.date)  >= ' => db_date($start_date)));
-    $builder->where(array('DATE(jv.date)  <= ' => db_date($end_date)));
-    $query = $builder->get();
-    $jv_income = $query->getResultArray();
-    // echo '<pre>';print_r($jv_income);exit;
-
-    foreach ($jv_income as $row) {
-        if ($row['dr_cr'] == 'cr') {
-            $cr_tot = ((@$arr[$row['month']]['credit']) ? @$arr[$row['month']]['credit'] : 0) + $row['total'];
-            $arr[$row['month']]['credit'] = $cr_tot;
-
-            $total = (@$arr[$row['month']]['total'] ? $arr[$row['month']]['total'] : 0) + $row['total'];
-            $arr[$row['month']]['total'] = $total;
-            $arr[$row['month']]['month'] = $row['month'];
-            $arr[$row['month']]['year'] = $row['year'];
-            $arr[$row['month']]['account_id'] = $row['account_id'];
-            $arr[$row['month']]['account_name'] = $row['account_name'];
-        } else {
-
-            $dr_tot = ((@$arr[$row['month']]['debit']) ? @$arr[$row['month']]['debit'] : 0) + $row['total'];
-            $arr[$row['month']]['debit'] = $dr_tot;
-
-            $total = (@$arr[$row['month']]['total'] ? $arr[$row['month']]['total'] : 0) - $row['total'];
-            $arr[$row['month']]['total'] = $total;
-            $arr[$row['month']]['month'] = $row['month'];
-            $arr[$row['month']]['year'] = $row['year'];
-            $arr[$row['month']]['account_id'] = $row['account_id'];
-            $arr[$row['month']]['account_name'] = $row['account_name'];
-        }
-    }
-
-    $builder = $db->table('sales_ACinvoice pg');
-    $builder->select('MONTH(pg.invoice_date) as month,YEAR(pg.invoice_date) as year,pg.v_type as pg_type,pg.net_amount as pg_amount,ac.id as account_id,ac.name as account_name');
-    $builder->join('sales_ACparticu pp', 'pg.id = pp.parent_id');
-    $builder->join('account ac', 'ac.id =pg.party_account');
-    $builder->where('(pg.v_type="general" OR pg.v_type = "return")');
-    $builder->where(array('pg.party_account' => $id));
-    // $builder->where(array('ac.is_delete' => '0'));
-    $builder->where(array('pg.is_delete' => '0'));
-    $builder->where(array('pg.is_cancle' => '0'));
-    $builder->where(array('DATE(pg.invoice_date)  >= ' => db_date($start_date)));
-    $builder->where(array('DATE(pg.invoice_date)  <= ' => db_date($end_date)));
-    $builder->groupBy('pg.id');
-    $query = $builder->get();
-    $sg_expence = $query->getResultArray();
-
-    foreach ($sg_expence as $row) {
-        if ($row['pg_type'] == 'return') {
-            $cr_tot = ((@$arr[$row['month']]['credit']) ? @$arr[$row['month']]['credit'] : 0) + $row['pg_amount'];
-            $arr[$row['month']]['credit'] = $cr_tot;
-
-            $total = (@$arr[$row['month']]['total'] ? $arr[$row['month']]['total'] : 0) + $row['pg_amount'];
-            $arr[$row['month']]['total'] = $total;
-            $arr[$row['month']]['month'] = $row['month'];
-            $arr[$row['month']]['year'] = $row['year'];
-            $arr[$row['month']]['account_id'] = $row['account_id'];
-            $arr[$row['month']]['account_name'] = $row['account_name'];
-        } else {
-
-            $dr_tot = ((@$arr[$row['month']]['debit']) ? @$arr[$row['month']]['debit'] : 0) + $row['pg_amount'];
-            $arr[$row['month']]['debit'] = $dr_tot;
-
-            $total = (@$arr[$row['month']]['total'] ? $arr[$row['month']]['total'] : 0) - $row['pg_amount'];
-            $arr[$row['month']]['total'] = $total;
-            $arr[$row['month']]['month'] = $row['month'];
-            $arr[$row['month']]['year'] = $row['year'];
-            $arr[$row['month']]['account_id'] = $row['account_id'];
-            $arr[$row['month']]['account_name'] = $row['account_name'];
-        }
-    }
-
-    $builder = $db->table('purchase_general pg');
-    $builder->select('MONTH(pg.doc_date) as month,YEAR(pg.doc_date) as year,pg.v_type as pg_type,pg.net_amount as pg_amount,ac.id as account_id,ac.name as account_name');
-    $builder->join('purchase_particu pp', 'pg.id = pp.parent_id');
-    $builder->join('account ac', 'ac.id =pg.party_account');
-    $builder->where('(pg.v_type="general" OR pg.v_type = "return")');
-    $builder->where(array('pg.party_account' => $id));
-    // $builder->where(array('ac.is_delete' => '0'));
-    $builder->where(array('pg.is_delete' => '0'));
-    $builder->where(array('pg.is_cancle' => '0'));
-    $builder->where(array('DATE(pg.doc_date)  >= ' => db_date($start_date)));
-    $builder->where(array('DATE(pg.doc_date)  <= ' => db_date($end_date)));
-    $builder->groupBy('pg.id');
-    $query = $builder->get();
-    $pg_expence = $query->getResultArray();
-
-    foreach ($pg_expence as $row) {
-        if ($row['pg_type'] == 'general') {
-            $cr_tot = ((@$arr[$row['month']]['credit']) ? @$arr[$row['month']]['credit'] : 0) + $row['pg_amount'];
-            $arr[$row['month']]['credit'] = $cr_tot;
-
-            $total = (@$arr[$row['month']]['total'] ? $arr[$row['month']]['total'] : 0) + $row['pg_amount'];
-            $arr[$row['month']]['total'] = $total;
-            $arr[$row['month']]['month'] = $row['month'];
-            $arr[$row['month']]['year'] = $row['year'];
-            $arr[$row['month']]['account_id'] = $row['account_id'];
-            $arr[$row['month']]['account_name'] = $row['account_name'];
-        } else {
-
-            $dr_tot = ((@$arr[$row['month']]['debit']) ? @$arr[$row['month']]['debit'] : 0) + $row['pg_amount'];
-            $arr[$row['month']]['debit'] = $dr_tot;
-
-            $total = (@$arr[$row['month']]['total'] ? $arr[$row['month']]['total'] : 0) - $row['pg_amount'];
-            $arr[$row['month']]['total'] = $total;
-            $arr[$row['month']]['month'] = $row['month'];
-            $arr[$row['month']]['year'] = $row['year'];
-            $arr[$row['month']]['account_id'] = $row['account_id'];
-            $arr[$row['month']]['account_name'] = $row['account_name'];
-        }
-    }
-
-    $result = array();
-    $result['other_assets'] = $arr;
-    $result['from'] = $start_date;
-    $result['to'] = $end_date;
-    //echo '<pre>';print_r($result);exit;
     return $result;
 }

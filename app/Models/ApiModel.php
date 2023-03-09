@@ -1864,7 +1864,15 @@ class ApiModel extends Model
         $result_array1 = $result1->getRow();
 
         if (!empty($result_array1)) {
-            if (!empty($post['id']) && $result_array1->id != $post['id']) {
+            if(!empty($post['id']))
+            {
+                if ($result_array1->id != $post['id']) {
+                    $msg = array('st' => 'fail', 'msg' => "Credit note Number Already Exist!!!");
+                    return $msg;
+                }
+            }
+            else
+            {
                 $msg = array('st' => 'fail', 'msg' => "Credit note Number Already Exist!!!");
                 return $msg;
             }

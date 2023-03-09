@@ -722,6 +722,7 @@ class GstModel extends Model
             $builder->select('*,parent_id,taxability,SUM(sub_total) as total ,igst');
             $builder->where('is_delete',0);
             $builder->where('type','return');
+            $builder->where('expence_type!=','rounding_invoices');
             $builder->whereIn('parent_id',$cdnur_ids);
             $builder->groupBy(['parent_id','igst']);
             // $builder->groupBy('igst');
@@ -808,6 +809,7 @@ class GstModel extends Model
             $builder->select('*,parent_id,taxability,igst,sub_total as total');
             $builder->where('is_delete',0);
             $builder->where('type','invoice');
+            $builder->where('expence_type!=','rounding_invoices');
             $builder->whereIn('parent_id',$b2c_ids);
             $query = $builder->get();
             $sale_product = $query->getResultArray();
@@ -1701,6 +1703,8 @@ class GstModel extends Model
             $builder->select('parent_id,taxability,SUM(sub_total) as total ,igst');
             $builder->where('is_delete',0);
             $builder->where('type','return');
+            $builder->where('expence_type!=','discount');
+            $builder->where('expence_type!=','rounding_invoices');
             $builder->whereIn('parent_id',$cdnur_ids);
             $builder->groupBy(['parent_id','igst']);
             $query = $builder->get();
@@ -1777,9 +1781,12 @@ class GstModel extends Model
             $builder->select('parent_id,taxability,igst,sub_total as total');
             $builder->where('is_delete',0);
             $builder->where('type','invoice');
+            $builder->where('expence_type!=','discount');
+            $builder->where('expence_type!=','rounding_invoices');
             $builder->whereIn('parent_id',$b2c_ids);
             $query = $builder->get();
             $sale_product = $query->getResultArray();
+            
         }
        
 
@@ -1902,6 +1909,8 @@ class GstModel extends Model
             $builder->select('*,parent_id,taxability,SUM(sub_total) as total ,igst');
             $builder->where('is_delete',0);
             $builder->where('type','return');
+            $builder->where('expence_type!=','discount');
+            $builder->where('expence_type!=','rounding_invoices');
             $builder->whereIn('parent_id',$cdnur_ids);
             $builder->groupBy(['parent_id','igst']);
             $query = $builder->get();
@@ -1976,6 +1985,8 @@ class GstModel extends Model
             $builder->select('*,parent_id,taxability,igst,sub_total as total');
             $builder->where('is_delete',0);
             $builder->where('type','invoice');
+            $builder->where('expence_type!=','discount');
+            $builder->where('expence_type!=','rounding_invoices');
             $builder->whereIn('parent_id',$b2c_ids);
             $query = $builder->get();
             $sale_product = $query->getResultArray();
