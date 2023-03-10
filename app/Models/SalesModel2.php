@@ -846,11 +846,7 @@ class SalesModel extends Model
             $tds_amt = 0;
         }
 
-        //echo '<pre>';Print_r($total);exit;
-        
-        //$netamount = $total + $post['amty']  +  $post['tot_igst'];
-        $netamount = $total + $post['cess'] + $tds_amt + $post['tot_igst'] + $post['round_diff'];
-      
+        $netamount = $total + $post['amty']  +  $post['tot_igst'];
 
         if (in_array('tds', $post['taxes'])) {
             $netamount +=   $tds_amt;
@@ -881,8 +877,6 @@ class SalesModel extends Model
             $cgst_acc = "";
             $sgst_acc = "";
         }
-        //echo '<pre>';Print_r($netamount);exit;
-        
 
         $pdata = array(
             'voucher_type' => $post['voucher_type'],
@@ -911,7 +905,7 @@ class SalesModel extends Model
             'tot_cgst' => $post['tot_cgst'],
             'tot_sgst' => $post['tot_sgst'],
             'total_amount' => $total,
-            'net_amount' => $netamount,
+            'net_amount' => $netamount + (@$post['round_diff'] ? $post['round_diff'] : 0),
             'round' => @$post['round'],
             'round_diff' => @$post['round_diff'],
             'taxable' => @$post['taxable'],
@@ -1665,7 +1659,18 @@ class SalesModel extends Model
                 }
             }
         }
-       
+        // if ($post['amty_type'] == '%') {
+        //     if ($post['amty'] == '')
+        //         $post['amty'] = 0;
+        //     else
+        //         $post['amty'] = $total *  $post['amty'] / 100;
+        // } else {
+        //     if ($post['amty'] == '')
+        //         $post['amty'] = 0;
+        //     else
+        //         $post['amty'] = $post['amty'];
+        // }
+
         if ($post['cess_type'] == '%') {
             if ($post['cess'] == '')
                 $post['cess'] = 0;
@@ -1681,7 +1686,7 @@ class SalesModel extends Model
         } else {
             $tds_amt = 0;
         }
-        $netamount = $total + $post['cess'] + $tds_amt + $post['tot_igst'] + $post['round_diff'];
+        $netamount = $total + $post['cess'] + $tds_amt + $post['tot_igst'];
       
         if (isset($post['taxes'])) {
             if (!empty($post['taxes'])) {
@@ -1738,7 +1743,7 @@ class SalesModel extends Model
             'tds_amt' => $post['tds_amt'],
             'tds_per' => $post['tds_per'],
             'brokrage_type' => @$post['brokerage_type'],
-            'net_amount' => number_format(@$netamount,2),
+            'net_amount' => round($netamount),
             'due_days' => $post['due_day'],
             'due_date' => $post['due_date'],
             'stat_adj' => isset($post['stat_adj']) ? $post['stat_adj'] : 0,
@@ -1797,6 +1802,7 @@ class SalesModel extends Model
             }
         }
         $gnmodel = new GeneralModel();
+        //echo '<pre>';Print_r($post);exit;
         
         if (!empty($result_array)) {
 
@@ -2451,7 +2457,7 @@ class SalesModel extends Model
             $DataRow[] = $row['custom_inv_no'];
             $DataRow[] = $date;
             $DataRow[] = $row['account_name'];
-            $DataRow[] = $row['net_amount'];
+            $DataRow[] = number_format($row['net_amount'], 2);
             $DataRow[] = $row['other'];
             $DataRow[] = ($row['is_cancle'] == 1) ? '<p class="tx-danger">Cancled</p>' : '<p class="tx-success">Approved</p>';
             $DataRow[] = $btn;
@@ -2729,8 +2735,8 @@ class SalesModel extends Model
             $tds_amt = 0;
         }
 
-        $netamount = $total + $post['cess'] + $tds_amt + $post['tot_igst'] + $post['round_diff'];
-    
+        $netamount = $total + $post['cess'] + $tds_amt + $post['tot_igst'];
+
         if (isset($post['taxes'])) {
             if (!empty($post['taxes'])) {
                 if (in_array('igst', $post['taxes'])) {
@@ -2774,10 +2780,10 @@ class SalesModel extends Model
             'cess_type' => $post['cess_type'],
             'tds_amt' => $post['tds_amt'],
             'tds_per' => $post['tds_per'],
-           // 'net_amount' => round($netamount),
+            'net_amount' => round($netamount),
             'delivery_code' => @$post['delivery_code'],
             'taxes' => json_encode(@$post['taxes']),
-            'net_amount' => number_format($netamount,2),
+            'net_amount' => round($netamount),
             'lr_no' => $post['lrno'],
             'lr_date' => $post['lr_date'],
             'weight' => $post['weight'],
@@ -3499,7 +3505,7 @@ class SalesModel extends Model
 
             $DataRow[] = $date;
             $DataRow[] = $row['account_name'];
-            $DataRow[] = $row['net_amount'];
+            $DataRow[] = number_format($row['net_amount'], 2);
             $DataRow[] = $row['other'];
             $DataRow[] = ($row['is_cancle'] == 1) ? '<p class="tx-danger">Cancled</p>' : '<p class="tx-success">Approved</p>';
             $DataRow[] = $btn;

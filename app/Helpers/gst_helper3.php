@@ -913,11 +913,14 @@ function get_gstr1_detail($start_date = '', $end_date = ''){
     $builder->where(array('DATE(si.invoice_date)  <= ' => $end_date));
     $query = $builder->get();
     $sales_invoice = $query->getResultArray();
+   
+    
     
     $sale_ids = array();    
     foreach($sales_invoice as $row){
         $sale_ids[] = $row['id'];
     }
+    //echo '<pre>';Print_r($sale_ids);exit;
 
     $builder =$db->table('sales_ACinvoice sa');
     $builder->select('sa.*,ac.gst,ac.name,ac.gst_type');
@@ -967,13 +970,13 @@ function get_gstr1_detail($start_date = '', $end_date = ''){
         $builder =$db->table('sales_item');
         $builder->select('*,parent_id,taxability,igst,sub_total as total');
         $builder->whereIn('parent_id', $sale_ids);
-        $builder->where(array('is_delete' => 0));
+        $builder->where(array('is_delete' => 0,'expence_type!='=>'discount'));
         $builder->where(array('type' => 'invoice'));
-        $builder->where(array('expence_type!='=>'discount'));
-        $builder->where(array('expence_type!='=>'rounding_invoices'));
         $query = $builder->get();
         $sales_products = $query->getResultArray();
     }
+    //echo '<pre>';Print_r($sales_products);exit;
+    
    
     foreach($sales as $row){
         
@@ -1218,8 +1221,6 @@ function get_gstr1_detail($start_date = '', $end_date = ''){
         $builder->whereIn('parent_id', $sale_ret_ids);
         $builder->where(array('is_delete' => 0));
         $builder->where(array('type' => 'return'));
-        $builder->where(array('expence_type!='=>'discount'));
-        $builder->where(array('expence_type!='=>'rounding_invoices'));
         $query = $builder->get();
         $sales_ret_products = $query->getResultArray();
     }
@@ -1679,8 +1680,8 @@ function get_state_wise_b2c($b2c,$cr_dr_UnReg_state){
         $builder->select('*,parent_id,taxability,SUM(sub_total) as total ,igst');
         $builder->where('is_delete',0);
         $builder->where('type','return');
-        $builder->where('expence_type!=','discount');
         $builder->where('expence_type!=','rounding_invoices');
+        //$builder->where('expence_type!=' , 'discount');
         $builder->whereIn('parent_id',$cdnur_ids);
         $builder->groupBy(['parent_id','igst']);
         // $builder->groupBy('igst');
@@ -1791,7 +1792,6 @@ function get_state_wise_b2c($b2c,$cr_dr_UnReg_state){
         $builder->select('*,parent_id,taxability,igst,sub_total as total');
         $builder->where('is_delete',0);
         $builder->where('type','invoice');
-        $builder->where('expence_type!=','discount');
         $builder->where('expence_type!=','rounding_invoices');
         $builder->whereIn('parent_id',$b2c_ids);
         $query = $builder->get();
@@ -2544,9 +2544,9 @@ function get_b2b_b2c_detail($start_date = '', $end_date = ''){
         $builder->select('*,taxability,igst,rate,qty,item_disc as disc');
         $builder->whereIn('parent_id', $ids);
         $builder->where(array('is_delete' => 0));
+        $builder->where(array('expence_type' => '!= rounding_invoices'));
+        $builder->where(array('expence_type' => '!= discount'));
         $builder->where(array('type' => 'invoice'));
-        $builder->where(array('expence_type!='=>'discount'));
-        $builder->where(array('expence_type!='=>'rounding_invoices'));
         $query = $builder->get();
         $sale_products = $query->getResultArray();
     }

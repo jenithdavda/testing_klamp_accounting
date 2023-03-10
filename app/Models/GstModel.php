@@ -631,6 +631,8 @@ class GstModel extends Model
                 $builder->where('is_delete', 0);
                 $builder->where('type', 'invoice');
                 $builder->where('parent_id', $row['id']);
+                $builder->where('expence_type!=','discount');
+                $builder->where('expence_type!=','rounding_invoices');
                 $builder->groupBy('igst');
                 $query = $builder->get();
                 $result = $query->getResultArray();
@@ -671,6 +673,8 @@ class GstModel extends Model
                 $builder->where('is_delete', 0);
                 $builder->where('type', 'return');
                 $builder->where('parent_id', $row['id']);
+                $builder->where('expence_type!=','discount');
+                $builder->where('expence_type!=','rounding_invoices');
                 $builder->groupBy('igst');
                 $query = $builder->get();
                 $result = $query->getResultArray();
@@ -722,6 +726,7 @@ class GstModel extends Model
             $builder->select('*,parent_id,taxability,SUM(sub_total) as total ,igst');
             $builder->where('is_delete',0);
             $builder->where('type','return');
+            $builder->where('expence_type!=','discount');
             $builder->where('expence_type!=','rounding_invoices');
             $builder->whereIn('parent_id',$cdnur_ids);
             $builder->groupBy(['parent_id','igst']);
@@ -810,6 +815,7 @@ class GstModel extends Model
             $builder->where('is_delete',0);
             $builder->where('type','invoice');
             $builder->where('expence_type!=','rounding_invoices');
+            $builder->where('expence_type!=','discount');
             $builder->whereIn('parent_id',$b2c_ids);
             $query = $builder->get();
             $sale_product = $query->getResultArray();
@@ -848,6 +854,8 @@ class GstModel extends Model
             }
         }
 
+        // echo '<pre>';Print_r($new_b2b_small);exit;
+        
         foreach ($hsn as $row) {
 
             $taxes = json_decode($row['taxes']);
@@ -1389,22 +1397,24 @@ class GstModel extends Model
         $spreadsheet->setActiveSheetIndex(9)->setCellValue('K4', 'Cess Amount');
 
         $i = 5;
+        if(!empty($hsn_da['data']))
+        {
+            foreach ($hsn_da['data'] as $row) {
 
-        foreach ($hsn_da['data'] as $row) {
+                $spreadsheet->setActiveSheetIndex(9)->setCellValue('A' . $i, $row['hsn_sc']);
+                $spreadsheet->setActiveSheetIndex(9)->setCellValue('B' . $i, @$row['desc']);
+                $spreadsheet->setActiveSheetIndex(9)->setCellValue('C' . $i, @$row['uqc']);
+                $spreadsheet->setActiveSheetIndex(9)->setCellValue('D' . $i, @$row['qty']);
+                $spreadsheet->setActiveSheetIndex(9)->setCellValue('E' . $i, number_format(@$row['val'], 2, '.', ''));
+                $spreadsheet->setActiveSheetIndex(9)->setCellValue('F' . $i, @$row['rate']);
+                $spreadsheet->setActiveSheetIndex(9)->setCellValue('G' . $i, number_format(@$row['txval'], 2, '.', ''));
+                $spreadsheet->setActiveSheetIndex(9)->setCellValue('H' . $i, number_format(@$row['iamt'], 2, '.', ''));
+                $spreadsheet->setActiveSheetIndex(9)->setCellValue('I' . $i, number_format(@$row['camt'], 2, '.', ''));
+                $spreadsheet->setActiveSheetIndex(9)->setCellValue('J' . $i, number_format(@$row['samt'], 2, '.', ''));
+                $spreadsheet->setActiveSheetIndex(9)->setCellValue('K' . $i, '');
 
-            $spreadsheet->setActiveSheetIndex(9)->setCellValue('A' . $i, $row['hsn_sc']);
-            $spreadsheet->setActiveSheetIndex(9)->setCellValue('B' . $i, @$row['desc']);
-            $spreadsheet->setActiveSheetIndex(9)->setCellValue('C' . $i, @$row['uqc']);
-            $spreadsheet->setActiveSheetIndex(9)->setCellValue('D' . $i, @$row['qty']);
-            $spreadsheet->setActiveSheetIndex(9)->setCellValue('E' . $i, number_format(@$row['val'], 2, '.', ''));
-            $spreadsheet->setActiveSheetIndex(9)->setCellValue('F' . $i, @$row['rate']);
-            $spreadsheet->setActiveSheetIndex(9)->setCellValue('G' . $i, number_format(@$row['txval'], 2, '.', ''));
-            $spreadsheet->setActiveSheetIndex(9)->setCellValue('H' . $i, number_format(@$row['iamt'], 2, '.', ''));
-            $spreadsheet->setActiveSheetIndex(9)->setCellValue('I' . $i, number_format(@$row['camt'], 2, '.', ''));
-            $spreadsheet->setActiveSheetIndex(9)->setCellValue('J' . $i, number_format(@$row['samt'], 2, '.', ''));
-            $spreadsheet->setActiveSheetIndex(9)->setCellValue('K' . $i, '');
-
-            $i++;
+                $i++;
+            }
         }
 
         $spreadsheet->getActiveSheet()->setTitle('hsn');
@@ -1444,15 +1454,15 @@ class GstModel extends Model
         if (session('DataSource') != 'ACE20227T93') {
             $spreadsheet->setActiveSheetIndex(10)->setCellValue('A6', 'Credit Note');
 
-            $spreadsheet->setActiveSheetIndex(10)->setCellValue('B5', $outward_sale_from);
-            $spreadsheet->setActiveSheetIndex(10)->setCellValue('C5', $outward_sale_to);
-            $spreadsheet->setActiveSheetIndex(10)->setCellValue('D5', $outward_sale_count + $cancle_sale['sale_count'] + $cancle_gnrlsale['gnrlsale_count']);
-            $spreadsheet->setActiveSheetIndex(10)->setCellValue('E5', $cancle_sale['sale_count'] + $cancle_gnrlsale['gnrlsale_count']);
+            $spreadsheet->setActiveSheetIndex(10)->setCellValue('B5', @$outward_sale_from);
+            $spreadsheet->setActiveSheetIndex(10)->setCellValue('C5', @$outward_sale_to);
+            $spreadsheet->setActiveSheetIndex(10)->setCellValue('D5', @$outward_sale_count + @$cancle_sale['sale_count'] + @$cancle_gnrlsale['gnrlsale_count']);
+            $spreadsheet->setActiveSheetIndex(10)->setCellValue('E5', @$cancle_sale['sale_count'] + @$cancle_gnrlsale['gnrlsale_count']);
 
-            $spreadsheet->setActiveSheetIndex(10)->setCellValue('B6', $credit_sale_from);
-            $spreadsheet->setActiveSheetIndex(10)->setCellValue('C6', $credit_sale_to);
-            $spreadsheet->setActiveSheetIndex(10)->setCellValue('D6', $credit_sale_count + $cancle_ret['ret_count'] + $cancle_gnrlret['gnrlret_count']);
-            $spreadsheet->setActiveSheetIndex(10)->setCellValue('E6', $cancle_ret['ret_count'] + $cancle_gnrlret['gnrlret_count']);
+            $spreadsheet->setActiveSheetIndex(10)->setCellValue('B6', @$credit_sale_from);
+            $spreadsheet->setActiveSheetIndex(10)->setCellValue('C6', @$credit_sale_to);
+            $spreadsheet->setActiveSheetIndex(10)->setCellValue('D6', @$credit_sale_count + @$cancle_ret['ret_count'] + @$cancle_gnrlret['gnrlret_count']);
+            $spreadsheet->setActiveSheetIndex(10)->setCellValue('E6', @$cancle_ret['ret_count'] + @$cancle_gnrlret['gnrlret_count']);
         } else {
             $i = 6;
 

@@ -1411,10 +1411,30 @@
 
         $("#product").on('click', '.btnDelete', function() {
 
-            const index = pids.indexOf($(this).data('id'));
-            if (index !== -1) {
-                delete pids[index];
+            // const index = pids.indexOf($(this).data('id'));
+           
+            // const expence = pids.indexOf($(this).data('is_expence'));
+            // console.log(index);
+            // if (index !== -1) {
+            //     delete pids[index];
+            // }
+            // $(this).closest('tr').remove();
+            // calculate();
+            var id = $(this).data('id');
+            var expence = $(this).data('expence');
+
+            if (expence == 0) {
+                const index = pids_item.indexOf($(this).data('id'));
+                if (index !== -1) {
+                    delete pids_item[index];
+                }
+            } else {
+                const index = pids_exp.indexOf($(this).data('id'));
+                if (index !== -1) {
+                    delete pids_exp[index];
+                }
             }
+
             $(this).closest('tr').remove();
             calculate();
         });
@@ -1468,7 +1488,7 @@
         $('#code').on('select2:select', function(e) {
             var suggestion = e.params.data;
             $('.product_error_new').html('');
-            console.log(pids_item);
+           // console.log(pids_item);
             if (pids_item.includes(parseInt(suggestion.id)) == false) {
                 $('.product_error').html('');
 

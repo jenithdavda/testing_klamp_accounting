@@ -58,6 +58,8 @@ class Gst extends BaseController
         if (!empty($post)) {
             $data['gstr1'] = get_gstr1_detail(db_date($post['from']), db_date($post['to']));
         }
+        //echo '<pre>';Print_r($data);exit;
+        
 
         $data['title'] = "GSTR -1";
         return view('gst/gstr1', $data);

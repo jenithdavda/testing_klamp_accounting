@@ -990,9 +990,7 @@ class PurchaseModel extends Model
         $date = db_date($post['return_date']);
         $due_date = db_date($post['due_date']);
         $lr_date = db_date($post['lr_date']);
-
-        $netamount = $total  + $post['cess'] + $tds_amt + $post['tot_igst'] + $post['round_diff'];
-
+        $netamount = $total  + $post['cess'] + $tds_amt + $post['tot_igst'];
         if (isset($post['taxes'])) {
             if (!empty($post['taxes'])) {
                 if (in_array('igst', $post['taxes'])) {
@@ -1048,7 +1046,7 @@ class PurchaseModel extends Model
             'total_amount' => $total,
             'discount' => $discount,
             'disc_type' => $post['disc_type'],
-            'net_amount' => number_format($netamount,2),
+            'net_amount' => round($netamount),
             'brokerage_type' => @$post['brokerage_type'],
             'round' => @$post['round'],
             'round_diff' => @$post['round_diff'],
@@ -1944,7 +1942,7 @@ class PurchaseModel extends Model
             $tds_amt = 0;
         }
 
-        $netamount = $total + $post['amty'] + $post['tot_igst'] + $post['round_diff'];
+        $netamount = $total + $post['amty'] + $post['tot_igst'];
 
         if (in_array('tds', $post['taxes'])) {
             $netamount += $tds_amt;
@@ -2002,7 +2000,7 @@ class PurchaseModel extends Model
             'tot_cgst' => $post['tot_cgst'],
             'tot_sgst' => $post['tot_sgst'],
             'total_amount' => $total,
-            'net_amount' => $netamount,
+            'net_amount' => $netamount + ($post['round_diff'] ? $post['round_diff']  : 0),
             'round' => @$post['round'],
             'round_diff' => @$post['round_diff'],
             'taxable' => @$post['taxable'],
@@ -2338,8 +2336,8 @@ class PurchaseModel extends Model
         $invoice_date = db_date($post['invoice_date']);
         $due_date = db_date($post['due_date']);
 
-        //$netamount = $total + $post['cess'] + $tds_amt + $post['tot_igst'];
-        $netamount = $total + $post['cess'] + $tds_amt + $post['tot_igst'] + $post['round_diff'];
+        $netamount = $total + $post['cess'] + $tds_amt + $post['tot_igst'];
+        //$netamount = $total + $post['cess'] + $post['amty'] + $tds_amt + $post['tot_igst'] + $post['round_diff'];
 
 
         if (isset($post['taxes'])) {
@@ -2398,7 +2396,7 @@ class PurchaseModel extends Model
             'total_amount' => $total,
             'discount' => $discount,
             'disc_type' => $post['disc_type'],
-            'net_amount' => number_format($netamount,2),
+            'net_amount' => round($netamount),
             'brokerage_type' => @$post['brokerage_type'],
             'round' => @$post['round'],
             'round_diff' => @$post['round_diff'],
@@ -3065,7 +3063,7 @@ class PurchaseModel extends Model
             $DataRow[] = $row['supply_inv'];
             $DataRow[] = user_date($row['invoice_date']);
             $DataRow[] = $row['account_name'] . $gst;
-            $DataRow[] = $row['net_amount'];
+            $DataRow[] = number_format($row['net_amount'], 2);
             $DataRow[] = $row['other'];
             $DataRow[] = ($row['is_cancle'] == 1)  ? '<p class="tx-danger">Cancled</p>' : '<p class="tx-success">Approved</p>';
             $DataRow[] = $btn;
